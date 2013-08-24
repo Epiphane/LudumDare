@@ -74,8 +74,8 @@ while 1:
     deltat = clock.tick(sleeptime)
     
     # Update a "tick" in physics land
-    world.Step(deltat, 10, 10)
-                
+    world.Step(sleeptime, 10, 10)
+    
     # Update minigame. If it returns true, make a new minigame
     winner = arena.update(deltat)
     if  winner:
