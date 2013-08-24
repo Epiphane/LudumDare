@@ -214,3 +214,12 @@ class GardenArena(Arena):
         if event.key is K_s:
             player2.growPlant()
             #player1.aimDown()
+            
+class BattleArena(Arena):
+    def initGame(self, minx, maxx):
+        pass
+        
+    def startGame(self, arena):
+        self.paused = False
+        player1.createWarrior(currentArena - 0.5, (255, 0, 0))
+        player2.createWarrior(currentArena + 0.5, (0, 0, 255))

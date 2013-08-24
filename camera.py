@@ -49,7 +49,7 @@ class Camera():
         for shapeToDraw in shapes:
             if type(shapeToDraw.shape) is b2PolygonShape:
                 DrawPolygon(vertices(shapeToDraw), pygame.Color(0, 0, 0, 255))
-            elif type(shapeToDraw.shape) is b2CircleShape:
+            elif type(shapeToDrwaw.shape) is b2CircleShape:
                 DrawCircle(shapeToDraw.body.position, shapeToDraw.shape.radius, pygame.Color(0, 0, 0, 255))
         
         for shapeToDraw in arena.shapes:
