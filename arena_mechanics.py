@@ -70,6 +70,9 @@ class Arena():
         for shape in self.shapes:
             shape.body.DestroyFixture(shape)
             #world.DestroyBody(shape.body)
+        print("destroyed arena.shapes")
+        self.shapes = []
+        arena.shapes = []
     
         player1.destroy()
         player2.destroy()
@@ -172,6 +175,8 @@ class SoccerArena(Arena):
 class GardenArena(Arena):
         
     def initGame(self, minx, maxx):
+        print("starting new garden")
+        self.shapes = []
         hosehead = world.CreateDynamicBody(position = (20, 20),
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box=(2,1)),

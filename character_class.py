@@ -54,7 +54,7 @@ class Player(pygame.sprite.Sprite):
         for shape in self.shapes:
             shape.body.DestroyFixture(shape)
         self.shapes = []
-            
+        
         self.arena = arena
         
         self.display = True
@@ -73,6 +73,7 @@ class Player(pygame.sprite.Sprite):
         self.shapes[0].body.ApplyForce(force=(0,-250),point=(0,0),wake=True)
                 
     def createGardener(self, arena, color):
+        print("Create gard nah")
         self.clearShapes(arena, color)
     
         body = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 34))
@@ -94,6 +95,7 @@ class Player(pygame.sprite.Sprite):
     def aimDown(self): pass
                 
     def createPlanter(self, arena, color):
+        print("Create plantah")
         self.clearShapes(arena, color)
         self.leaves = []
     

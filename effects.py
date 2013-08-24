@@ -32,16 +32,11 @@ class Hoser:
         pass
     def update(self):
         # Failsafe against crashing the game w/ too many water molecules
-        if self.hosehead is None:
+        if self.hosehead.shape is None:
             done = True
             print("done here!")
             return
-        if len(self.waterMols) > 50:
-            # Destroy the oldest water molecule
-            self.waterMols[0].body.DestroyFixture(self.waterMols[0])
-            arena.shapes.remove(self.waterMols[0])
-            del self.waterMols[0]
-            
+        
         # Spawn a new water molecule at the front end of the hosehead
         # Use the midpoint between two vertices of the hosehead as a position
         hoseheadEdge = ((vertices(self.hosehead)[1][0] + vertices(self.hosehead)[2][0])/(2 * PPM),
@@ -49,7 +44,8 @@ class Hoser:
         newWaterMol = world.CreateDynamicBody(
             position=hoseheadEdge,
             fixtures = b2FixtureDef(density = 1.0, shape = b2PolygonShape(
-                box=(0.2, 0.2))))
+                box=(0.2, 0.2))),
+            userData = "water molecule")
         newWaterMol.linearVelocity.x = 20
         self.waterMols.append(newWaterMol.fixtures[0])
         arena.shapes.append(newWaterMol.fixtures[0])
