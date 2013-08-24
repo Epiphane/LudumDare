@@ -42,7 +42,7 @@ def init():
     # Initialize the ground. Will also need to initialize obstacles/arena
     # components here later on.
     ground = world.CreateStaticBody(
-        position = (400, 400),
+        position = (200, -200),
         shapes = b2PolygonShape(box = (50,10))
     )
     
