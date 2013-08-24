@@ -171,11 +171,26 @@ class SoccerArena(Arena):
             
 class GardenArena(Arena):
         
+    def initGame(self, minx, maxx):
+        hosehead = world.CreateDynamicBody(position = (20, 20),
+            fixtures = b2FixtureDef(
+                shape = b2PolygonShape(box=(2,1)),
+                density = 2),
+            userData="hose head")
+        
+        self.shapes.append(hosehead.fixtures[0])
+        
+        # Start the water hose effect
+        waterEffect = Hoser(hosehead.fixtures[0])
+        effects.append(waterEffect)
+        
     def startGame(self, arena):
         self.paused = False
         player1.createGardener(currentArena - 0.5, (255,0,0))
         player2.createPlanter(currentArena + 0.5, (0,0,255))
         self.initGame((ARENA_WIDTH * (arena - 0.5)) / PPM, (ARENA_WIDTH * (arena + 1.5)) / PPM)
+        
+        # Attach the head of the fire hose the the gardener's arms
 
     def doAction(self, event):
         if event.key is K_a:

@@ -60,6 +60,7 @@ class ContactHandler(b2ContactListener):
         """Checks to see if one of the fixtures named by "contact" is a 
         "desiredName." Returns (desiredFixture, otherFixture) if there's a match"""
         if contact.fixtureA.body.userData == desiredName:
+            print "does it always do this one?"
             return (contact.fixtureA, contact.fixtureB)
         if contact.fixtureB.body.userData == desiredName:
             return (contact.fixtureB, contact.fixtureA)
