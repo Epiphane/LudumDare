@@ -17,6 +17,7 @@ Bring it on, LD.
 # -----------------------------------------------------------------------|
 # -----------------------------------------------------------------------|
 exec(open('init.py'))
+exec(open('effects.py'))
 exec(open('ui_class.py'))
 exec(open('arena_mechanics.py'))
 exec(open('camera.py'))
@@ -31,6 +32,7 @@ def init():
     global shapes           # all the Box2D objects
     global world            # the Box2D world
     global arena            # Arena for minigame
+    global effects          # Sort of like AwesomeRogue!
     
     time_font_sm = pygame.font.Font("fonts/ka1.ttf", 30)
     time_font_lg = pygame.font.Font("fonts/ka1.ttf", 60)
@@ -71,6 +73,7 @@ def init():
    # shapes.append(box2)
     shapes.append(ceiling.fixtures[0])
     shapes.append(ground.fixtures[0])
+    shapes.append(landMineTest.fixtures[0])
     currentArena = 0.5
     
     camera = Camera(currentArena)
@@ -84,6 +87,9 @@ def init():
     # Initialize the contact handler
     contactHandler = ContactHandler()
 
+    # Initialize effects queue
+    effects = []
+    
     
 # -----------------------------------------------------------------------|
 # -----------------------------------------------------------------------|
@@ -117,12 +123,24 @@ while 1:
                     if event.type is pygame.KEYDOWN: sys.exit()
                 arena.doAction(event)
                             
-        player1.update()    
+        player1.update()
         player2.update()
                         
     # Update a "tick" in physics land
     world.Step(TIME_STEP*1.5, 10, 10)
         
+    # Murder things that need murdering
+    for i, shape in enumerate(shapes):
+        if shape.body.userData == "kill me":
+            shape.body.DestroyFixture(shape)
+            del shapes[i]
+        
     arena.draw(screen)
+    
+    for i, ef in enumerate(effects):
+        ef.update()
+        ef.draw(screen)
+        if ef.done:
+            del effects[i]
                         
     pygame.display.flip()

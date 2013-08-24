@@ -10,7 +10,7 @@ pygame.init()
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), DOUBLEBUF)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), DOUBLEBUF, 32)
 pygame.display.set_caption("LD 27")
 clock = pygame.time.Clock()
 
@@ -75,6 +75,10 @@ class ContactHandler(b2ContactListener):
                 # Destroy the land mine and apply a HUGE force to the other guy
                 # Since you can't call DestroyFixture while the physics is iterating,
                 # flag it for destruction by setting userData to "kill me"
-                #blowUp[0].body.userData = "kill me"
+                blowUp[0].body.userData = "kill me"
                 blowUp[1].body.ApplyForce(force=(50000, 0), point=(0, 0), wake=True)
+                explos = Explosion(blowUp[0].body.position.x * PPM,
+                                    blowUp[0].body.position.y * PPM)
+                effects.append(explos)  
+                   
                 
