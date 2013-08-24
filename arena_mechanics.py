@@ -12,44 +12,47 @@ class Arena():
         self.drawRed = 0
         self.bignum = 10
         self.shapes = []
-        
-        self.initWalls()
-        
-        self.camera = Camera()
-        
-        self.player1 = Player(1, (255,0,0))
-        self.player2 = Player(-1, (0,0,255))
+    
+        # Initialize effects queue
+        self.effects = []
     
         # Init physics "world", defining gravity. doSleep means that if an object
         # comes to rest, it can "sleep" and be ignored by the physics engine for a bit.
         self.world = b2World(gravity=(0, 25), doSleep = True)
         
         # Initialize the contact handler
-        self.contactHandler = ContactHandler()
+        self.world.contactListener = ContactHandler()
+        
+        self.initWalls()
+        
+        self.camera = Camera(STAGE_WIDTH_M / 2)
+        
+        self.player1 = Player(1, STAGE_WIDTH_M / 2 - SCREEN_WIDTH_M / 4, (255,0,0))
+        self.player2 = Player(-1, STAGE_WIDTH_M / 2 + SCREEN_WIDTH_M / 4, (0,0,255))
         
     def initWalls(self):
-        ground = world.CreateStaticBody(
+        ground = self.world.CreateStaticBody(
             position = (200, 37.5),
             shapes = b2PolygonShape(box = (800,1)),
             userData = "ground"
         )
         self.shapes.append(ground.fixtures[0])
         
-        ceiling = world.CreateStaticBody(
+        ceiling = self.world.CreateStaticBody(
             position = (200, -15),
             shapes = b2PolygonShape(box = (800,1)),
             userData = "ceiling"
         )
         self.shapes.append(ceiling.fixtures[0])
         
-        leftWall = world.CreateStaticBody(
+        leftWall = self.world.CreateStaticBody(
             position = (0, 0),
             shapes = b2PolygonShape(box = (1,37.5)),
             userData = "left wall"
         )
         self.shapes.append(leftWall.fixtures[0])
         
-        rightWall = world.CreateStaticBody(
+        rightWall = self.world.CreateStaticBody(
             position = (200, 0),
             shapes = b2PolygonShape(box = (1,37.5)),
             userData = "right wall"
@@ -58,22 +61,38 @@ class Arena():
         
     def update(self, dt):
         # Reset forces for the next frame
-        world.ClearForces()
+        self.world.ClearForces()
                         
         # Update a "tick" in physics land
-        world.Step(TIME_STEP*1.5, 10, 10)
+        self.world.Step(TIME_STEP*1.5, 10, 10)
         
         # Murder things that need murdering
-        for i, shape in enumerate(shapes):
+        for i, shape in enumerate(self.shapes):
             if shape.body.userData == "kill me":
                 shape.body.DestroyFixture(shape)
-                del shapes[i]
+                del self.shapes[i]
         
-        for i, ef in enumerate(effects):
+        for i, ef in enumerate(self.effects):
             ef.update()
             ef.draw(screen)
             if ef.done:
-                del effects[i]
+                del self.effects[i]
+                
+    def draw(self, screen):
+        self.drawTimer(screen)
+    
+    def drawTimer(self, screen):
+        color = (self.drawRed,0,0)
+        
+        text = time_font_lg.render(str(self.bignum), True, color)
+        text_sm = time_font_sm.render(str(self.timeRemaining % 1000), True, color)
+        
+        if(self.drawRed > 0):
+            self.drawRed -= 8
+        
+        if(self.bignum == 10): screen.blit(text, (290,0))
+        else: screen.blit(text, (330,0))
+        screen.blit(text_sm, (400,0))
         
     
 class Arena2():

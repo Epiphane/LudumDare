@@ -19,10 +19,10 @@ def DrawCircle(center, radius, color = (0,0,0)):
     pygame.draw.circle(screen, color, (int((center.x + camera.panx) * PPM), int(center.y * PPM)), int(radius*PPM))
             
 class Camera():
-    def __init__(self, offsetX_in_meters):
+    def __init__(self, centerX_in_meters):
         self.background = Back("background")
-        self.offsetX_in_meters = offsetX_in_meters
-        self.offsetX_in_px = offsetX_in_meters * PPM
+        self.centerX_in_meters = centerX_in_meters
+        self.centerX_in_px = centerX_in_meters * PPM
         
         self.speed = 0
         self.delay = 0

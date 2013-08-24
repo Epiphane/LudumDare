@@ -40,9 +40,6 @@ def init():
     arena = Arena()
     gameState = "Arena"
     
-    # Initialize effects queue
-    effects = []
-    
     # Load some images
     images = {}
     images["goal"] = load_image("GOOOAL.png")

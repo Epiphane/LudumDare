@@ -60,9 +60,6 @@ class ContactHandler(b2ContactListener):
         # The nonsense that's required to extend classes in Python
         super(ContactHandler, self).__init__()
         
-        # Tell the world that this is who gets contact events
-        world.contactListener = self
-        
     def __del__(self):
         pass
         
