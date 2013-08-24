@@ -39,8 +39,6 @@ def init():
     
     arena = Arena()
     
-    
-
     # Initialize effects queue
     effects = []
     
