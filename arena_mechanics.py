@@ -74,27 +74,23 @@ class SoccerArena(Arena):
                 shape = b2CircleShape(radius=1),
                 density=5,
                 restitution=0.5),
-                )
-        
-        body.fixtures[0].name = "soccer ball"
+            userData="soccer ball")
         
         self.shapes.append(body.fixtures[0])
         
         wall1 = world.CreateStaticBody(
             position = (200, 0),
-            shapes = b2PolygonShape(box = (1,37.5))
+            shapes = b2PolygonShape(box = (1,37.5)),
+            userData = "left wall"
         )
         
-        wall1.fixtures[0].name = "left wall"
-            
         self.shapes.append(wall1.fixtures[0])
         
         wall2 = world.CreateStaticBody(
             position = (250, 0),
-            shapes = b2PolygonShape(box = (1,37.5))
+            shapes = b2PolygonShape(box = (1,37.5)),
+            userData = "right wall"
         )
-            
-        wall2.fixtures[0].name = "right wall"
             
         self.shapes.append(wall2.fixtures[0])
         self.ball = body

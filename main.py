@@ -43,28 +43,25 @@ def init():
     # components here later on.
     ground = world.CreateStaticBody(
         position = (200, 37.5),
-        shapes = b2PolygonShape(box = (400,1))
+        shapes = b2PolygonShape(box = (400,1)),
+        userData = "ground"
     )
-    
-    ground.name = "ground"
     
     ceiling = world.CreateStaticBody(
         position = (200, -1),
-        shapes = b2PolygonShape(box = (400,1))
+        shapes = b2PolygonShape(box = (400,1)),
+        userData = "ceiling"
     )
-    
-    ceiling.name = "ceiling"
     
     landMineTest = world.CreateStaticBody(
                 position = (225,37.5),
                 fixtures = b2FixtureDef(
                     shape = b2CircleShape(radius=2),
-                    isSensor = True))
-    landMineTest.name = "land mine"
+                    isSensor = True),
+                userData = "land mine")
     
     body = world.CreateDynamicBody(position = (200, 10))
     box = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
-    box.name = "old box"
     
    # body2 = world.CreateDynamicBody(position = (218,-2))
    # box2 = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
@@ -78,9 +75,6 @@ def init():
     
     player1 = Player(1, 8, (255,0,0))
     player2 = Player(-1, 9, (0,0,255))
-    
-    player1.name = "p1"
-    player2.name = "p2"
     
     currentArena = 8.5
     

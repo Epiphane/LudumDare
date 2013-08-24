@@ -56,11 +56,25 @@ class ContactHandler(b2ContactListener):
     def __del__(self):
         pass
         
+    def checkContact(self, contact, desiredName):
+        """Checks to see if one of the fixtures named by "contact" is a 
+        "desiredName." Returns (desiredFixture, otherFixture) if there's a match"""
+        if contact.fixtureA.body.userData == desiredName:
+            return (contact.fixtureA, contact.fixtureB)
+        if contact.fixtureB.body.userData == desiredName:
+            return (contact.fixtureB, contact.fixtureA)
+            
+        return None
+        
     def BeginContact(self, contact):
-        if contact.fixtureA.name is not None:
-            print(contact.fixtureA.name)
-        if contact.fixtureB.name is not None:
-            print(contact.fixtureB.name)
-    
-    
-    
+        
+        blowUp = self.checkContact(contact, "land mine")
+        if blowUp is not None:
+            # mass > 0 implies it's not a "Static" object
+            if blowUp[1].massData.mass > 0:
+                # Destroy the land mine and apply a HUGE force to the other guy
+                # Since you can't call DestroyFixture while the physics is iterating,
+                # flag it for destruction by setting userData to "kill me"
+                #blowUp[0].body.userData = "kill me"
+                blowUp[1].body.ApplyForce(force=(50000, 0), point=(0, 0), wake=True)
+                
