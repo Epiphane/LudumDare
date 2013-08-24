@@ -23,21 +23,25 @@ exec(open('camera.py'))
 exec(open('character_class.py'))
 
 def init():
-    global font                # Font
+    global time_font_lg,time_font_sm                # Font
     global player1, player2    # Players
     global currentArena        # Midpoint
     global camera            # duh
     global Import_sprite,interface        # RenderPlains
     global shapes           # all the Box2D objects
     global world            # the Box2D world
+    global arena            # Arena for minigame
     
-    font = pygame.font.Font("fonts/ka1.ttf", 30)
+    time_font_sm = pygame.font.Font("fonts/ka1.ttf", 30)
+    time_font_lg = pygame.font.Font("fonts/ka1.ttf", 60)
     
     player1 = Player(1, 8)
-    player2 = Player(1, 9)
+    player2 = Player(-1, 9)
     currentArena = 8.5
     
     camera = Camera(currentArena)
+    
+    arena = Arena()
     
     # Init physics "world", defining gravity. doSleep means that if an object
     # comes to rest, it can "sleep" and be ignored by the physics engine for a bit.
@@ -69,7 +73,14 @@ while 1:
     deltat = clock.tick(sleeptime)
     
     # Update a "tick" in physics land
-    world.Step(sleeptime, 10, 10)
+    world.Step(deltat, 10, 10)
+                
+    # Update minigame. If it returns true, make a new minigame
+    winner = arena.update(deltat)
+    if  winner:
+        if winner == 1: changeArena(currentArena + player1.direction)
+        elif winner == 2: changeArena(currentArena + player2.direction)
+        arena = Arena()
     
     # Reset forces for the next frame
     world.ClearForces()
@@ -88,8 +99,9 @@ while 1:
                 if event.type is pygame.KEYDOWN: changeArena(currentArena - 1)
             if event.key is K_d:
                 if event.type is pygame.KEYDOWN: changeArena(currentArena + 1)
-                
+    
     camera.update()
     camera.draw(screen)
+    arena.draw(screen)
                         
     pygame.display.flip()
