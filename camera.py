@@ -17,11 +17,15 @@ class Camera():
 		if self.speed < CAMERA_MAX_PAN_SPEED * -1: self.speed = CAMERA_MAX_PAN_SPEED * -1
 		self.panx += self.speed
 		if self.panx > self.goalx:
+			if(self.speed != 0):
+				self.speed -= 5;
 			self.speed -= 5;
 		elif self.panx < self.goalx:
+			if(self.speed != 0):
+				self.speed += 5;
 			self.speed += 5;
 			
-		if self.panx == self.goalx:
+		
 		
 	def panCam(self, arena):
 		self.goalx = -ARENA_WIDTH * (arena - 0.5)

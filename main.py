@@ -19,6 +19,7 @@ Bring it on, LD.
 exec(open('init.py'))
 exec(open('ui_class.py'))
 exec(open('arena_mechanics.py'))
+exec(open('camera.py'))
 exec(open('character_class.py'))
 
 def init():
