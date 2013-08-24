@@ -7,14 +7,14 @@ class Explosion:
     def __init__(self, ex, ey):
         self.x, self.y = int(ex), int(ey)
     def draw(self, screen):
-        print(self.alpha)
+        # Transparency sucks. Make a new surface then draw the splosion onto it,
+        # then draw that new surface on to the old surface.
         s = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), HWSURFACE)
         s.set_alpha(self.alpha)
         s.set_colorkey(pygame.Color(0, 0, 0))
         pygame.draw.circle(s, pygame.Color(237, 211, 17),
                             (self.x,self.y), self.size)
         screen.blit(s, (0,0))
-        
     def update(self):
         self.size += 6
         self.alpha -= 15

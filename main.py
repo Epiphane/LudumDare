@@ -33,6 +33,7 @@ def init():
     global world            # the Box2D world
     global arena            # Arena for minigame
     global effects          # Sort of like AwesomeRogue!
+    global images           # Dict of all the images we have to draw
     
     time_font_sm = pygame.font.Font("fonts/ka1.ttf", 30)
     time_font_lg = pygame.font.Font("fonts/ka1.ttf", 60)
@@ -55,12 +56,12 @@ def init():
         userData = "ceiling"
     )
     
-    landMineTest = world.CreateStaticBody(
+    """landMineTest = world.CreateStaticBody(
                 position = (25,37.5),
                 fixtures = b2FixtureDef(
                     shape = b2CircleShape(radius=2),
                     isSensor = True),
-                userData = "land mine")
+                userData = "land mine")"""
     
     body = world.CreateDynamicBody(position = (200, 10))
     box = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
@@ -73,7 +74,7 @@ def init():
    # shapes.append(box2)
     shapes.append(ceiling.fixtures[0])
     shapes.append(ground.fixtures[0])
-    shapes.append(landMineTest.fixtures[0])
+    #shapes.append(landMineTest.fixtures[0])
     currentArena = 0.5
     
     camera = Camera(currentArena)
@@ -90,6 +91,14 @@ def init():
     # Initialize effects queue
     effects = []
     
+    # Load some images
+    images = {}
+    images["goal"] = load_image("GOOOAL.png")
+    
+    # Make sure alpha will properly render
+    for key in images:
+        images[key] = (images[key][0].convert_alpha(), images[key][1])
+        
     
 # -----------------------------------------------------------------------|
 # -----------------------------------------------------------------------|
