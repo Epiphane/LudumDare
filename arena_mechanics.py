@@ -101,8 +101,8 @@ class Arena():
         
         for shape in self.shapes:
             if isinstance(shape.shape, b2CircleShape):
-                print shape.body.position
-                pos = (int(shape.body.position.x * PPM + offsetX), int(shape.body.position.y * PPM + offsetY))
+                print shape.body.position.x * PPM, offsetX
+                pos = (int(shape.body.position.x * PPM - offsetX), int(shape.body.position.y * PPM + offsetY))
                 print pos
                 DrawCircle(pos, shape.shape.radius, (0,0,0))
             else:
