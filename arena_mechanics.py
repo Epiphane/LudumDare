@@ -10,6 +10,8 @@ class Arena():
         self.timeRemaining = 10000 # 10 seconds
         self.drawRed = 0
         self.bignum = 10
+        self.shapes = []
+        
         self.initGame()
         
     def initGame(self): pass
@@ -63,11 +65,23 @@ class PrepareForBattle(Arena):
         
 class SoccerArena(Arena):
     def initGame(self):
-        body = world.CreateDynamicBody(position = (250,12),
+        body = world.CreateDynamicBody(position = (225,12),
             fixtures = b2FixtureDef(
                 shape = b2CircleShape(radius=10),
                 density=1.0))
-        #ball = body.CreateFixture(shape = b2CircleShape(radius=0.2), density = 1, friction = 0.3)  
-        #ball = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)  
         
-        shapes.append(body.fixtures[0])
+        self.shapes.append(body.fixtures[0])
+        
+        ground = world.CreateStaticBody(
+            position = (200, 0),
+            shapes = b2PolygonShape(box = (1,37.5))
+        )
+            
+        self.shapes.append(ground.fixtures[0])
+        
+        ground = world.CreateStaticBody(
+            position = (250, 0),
+            shapes = b2PolygonShape(box = (1,37.5))
+        )
+            
+        self.shapes.append(ground.fixtures[0])
