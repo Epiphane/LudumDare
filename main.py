@@ -43,7 +43,7 @@ def init():
     # components here later on.
     ground = world.CreateStaticBody(
         position = (200, 37.5),
-        shapes = b2PolygonShape(box = (800,1))
+        shapes = b2PolygonShape(box = (800,1)),
         userData = "ground"
     )
     
@@ -54,7 +54,7 @@ def init():
     )
     
     landMineTest = world.CreateStaticBody(
-                position = (225,37.5),
+                position = (25,37.5),
                 fixtures = b2FixtureDef(
                     shape = b2CircleShape(radius=2),
                     isSensor = True),
@@ -75,10 +75,10 @@ def init():
     
     camera = Camera(currentArena)
     
-    player1 = Player(1, 0, (255,0,0))
-    player2 = Player(-1, 1, (0,0,255))
+    player1 = Player(1, currentArena - 0.5, (255,0,0))
+    player2 = Player(-1, currentArena + 0.5, (0,0,255))
     
-    arena = SoccerArena()
+    arena = PrepareForBattle()
     arena.startGame(currentArena)
     
     # Initialize the contact handler
@@ -97,7 +97,7 @@ while 1:
     
     deltat = clock.tick(TARGET_FPS)
     
-    camera.update()
+    camera.update(deltat)
     camera.draw(screen)
     if camera.stopped:
     
@@ -115,18 +115,7 @@ while 1:
             if hasattr(event, 'key'):
                 if event.key is K_ESCAPE: 
                     if event.type is pygame.KEYDOWN: sys.exit()
-                if event.key is K_a:
-                    player1.input["left"] = (event.type is pygame.KEYDOWN)
-                if event.key is K_d:
-                    player1.input["right"] = (event.type is pygame.KEYDOWN)
-                if event.key == K_LEFT:
-                    player2.input["left"] = (event.type is pygame.KEYDOWN)
-                if event.key == K_RIGHT:
-                    player2.input["right"] = (event.type is pygame.KEYDOWN)
-                if event.key == K_UP:
-                    player2.kick()
-                if event.key is K_w:
-                    player1.kick()
+                arena.doAction(event)
                             
         player1.update()    
         player2.update()
