@@ -74,13 +74,7 @@ class Player(pygame.sprite.Sprite):
             self.growPlant()
             
     def jump(self):
-<<<<<<< HEAD
         self.shapes[0].body.linearVelocity.y == -15
-                
-=======
-        self.shapes[0].body.ApplyForce(force=(0,-250),point=(0,0),wake=True)
-    
->>>>>>> 4420f1d3367a230a4c1bf225d2f6e25ed63ab962
     def createGardener(self, arena, color, minx):
         self.clearShapes(arena, color)
         y = 30

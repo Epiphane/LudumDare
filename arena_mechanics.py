@@ -48,16 +48,15 @@ class Arena():
         self.bignum = math.trunc(self.timeRemaining / 1000)
         if self.bignum != oldbignum and self.bignum < 4: self.drawRed = 128
         
-        print self.lost,
-        print self.won
         if(self.timeRemaining <= 0):
             return self.endMinigame()
-        if self.lost:
-            self.lost = False
-            return 2
-        if self.won:
-            self.won = False
-            return 1
+        elif self.timeRemaining <= 6000:
+            if self.lost:
+                self.lost = False
+                return 2
+            if self.won:
+                self.won = False
+                return 1
         return False
         
     def draw(self, screen):
@@ -103,9 +102,11 @@ class Arena():
             player1.jump()
             
     def loseMinigame(self):
+        if self.time >= 8000: return
         self.lost = True
             
     def wonMinigame(self):
+        if self.time >= 8000: return
         self.won = True
         
 class PrepareForBattle(Arena):
@@ -251,8 +252,20 @@ class FishingArena(Arena):
         self.initGame((ARENA_WIDTH * (arena - 0.5)) / PPM, (ARENA_WIDTH * (arena + 1.5)) / PPM)
 
     def doAction(self, event):
-            player2.growPlant()
-            #player1.aimDown()
+        if event.key is K_a:
+            player1.input["left"] = (event.type is pygame.KEYDOWN)
+        if event.key is K_d:
+            player1.input["right"] = (event.type is pygame.KEYDOWN)
+        if event.key == K_LEFT:
+            player2.input["left"] = (event.type is pygame.KEYDOWN)
+        if event.key == K_RIGHT:
+            player2.input["right"] = (event.type is pygame.KEYDOWN)
+        if event.key == K_UP:
+            player2.input["up"] = (event.type is pygame.KEYDOWN)
+        if event.key == K_DOWN:
+            player2.input["down"] = (event.type is pygame.KEYDOWN)
+        if event.key is K_w:
+            player1.reelInLine()
             
 class BattleArena(Arena):
         
@@ -270,22 +283,6 @@ class BattleArena(Arena):
         
         rocketLaunch2 = RocketLaunch(rocket2)
         effects.append(rocketLaunch2)
-        
-    def doAction(self, event):
-        if event.key is K_a:
-            player1.input["left"] = (event.type is pygame.KEYDOWN)
-        if event.key is K_d:
-            player1.input["right"] = (event.type is pygame.KEYDOWN)
-        if event.key == K_LEFT:
-            player2.input["left"] = (event.type is pygame.KEYDOWN)
-        if event.key == K_RIGHT:
-            player2.input["right"] = (event.type is pygame.KEYDOWN)
-        if event.key == K_UP:
-            player2.input["up"] = (event.type is pygame.KEYDOWN)
-        if event.key == K_DOWN:
-            player2.input["down"] = (event.type is pygame.KEYDOWN)
-        if event.key is K_w:
-            player1.reelInLine()
     
         if event.key == K_UP: 
             # aim launcher
