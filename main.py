@@ -39,7 +39,7 @@ def init():
     
     # Init physics "world", defining gravity. doSleep means that if an object
     # comes to rest, it can "sleep" and be ignored by the physics engine for a bit.
-    world = b2World(gravity=(0, 10), doSleep = True)
+    world = b2World(gravity=(0, 25), doSleep = True)
     
     # Initialize the ground. Will also need to initialize obstacles/arena
     # components here later on.
@@ -55,25 +55,14 @@ def init():
         userData = "ceiling"
     )
     
-    landMineTest = world.CreateStaticBody(
-                position = (25,37.5),
-                fixtures = b2FixtureDef(
-                    shape = b2CircleShape(radius=2),
-                    isSensor = True),
-                userData = "land mine")
-    
-    body = world.CreateDynamicBody(position = (200, 10))
-    box = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
-    
    # body2 = world.CreateDynamicBody(position = (218,-2))
    # box2 = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
     
     shapes = []
-    shapes.append(box)
+    #shapes.append(box)
    # shapes.append(box2)
     shapes.append(ceiling.fixtures[0])
     shapes.append(ground.fixtures[0])
-    shapes.append(landMineTest.fixtures[0])
     currentArena = 0.5
     
     camera = Camera(currentArena)

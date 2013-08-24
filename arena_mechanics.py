@@ -103,7 +103,7 @@ class SoccerArena(Arena):
         body = world.CreateDynamicBody(position = ((minx + maxx) / 2,24),
             fixtures = b2FixtureDef(
                 shape = b2CircleShape(radius=1),
-                density=5,
+                density=1,
                 restitution=0.5),
             userData="soccer ball")
         
@@ -136,6 +136,10 @@ class SoccerArena(Arena):
         if event.key == K_RIGHT:
             player2.input["right"] = (event.type is pygame.KEYDOWN)
         if event.key == K_UP:
-            player2.kick()
+            player2.jump()
+        if event.key == K_DOWN:pass
+            #player2.kick(1)
         if event.key is K_w:
-            player1.kick()
+            player1.jump()
+        if event.key is K_s: pass
+            #player1.kick(-1)
