@@ -1,10 +1,3 @@
-def changeArena(arenaNum):
-	global currentArena		# Midpoint
-	global camera
-	
-	currentArena = arenaNum
-	camera.panCam(arenaNum)
-	
 ARENA_WIDTH = 400
 CAMERA_MAX_PAN_SPEED = 75
 class Camera():
