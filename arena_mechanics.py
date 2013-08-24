@@ -66,6 +66,11 @@ class Arena():
         # Update a "tick" in physics land
         self.world.Step(TIME_STEP*1.5, 10, 10)
         
+        self.timeRemaining -= dt
+        oldbignum = self.bignum
+        self.bignum = math.trunc(self.timeRemaining / 1000)
+        if self.bignum != oldbignum and self.bignum < 4: self.drawRed = 128
+        
         # Murder things that need murdering
         for i, shape in enumerate(self.shapes):
             if shape.body.userData == "kill me":

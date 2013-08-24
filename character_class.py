@@ -14,6 +14,9 @@ class Player(pygame.sprite.Sprite):
                 restitution=0)
             )
         self.shapes.append(block.fixtures[0])
+        
+    def draw(self, screen, offsetX, offsetY):
+        pass
     
     def destroy(self):
         destructionShapes = []

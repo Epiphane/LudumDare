@@ -67,6 +67,8 @@ while 1:
             if gameState == "Arena":
                 arena.doAction(event)
     
+    screen.fill((255,255,255))
+    
     if gameState == "Arena":
         arena.update(dt)
         arena.draw(screen)
