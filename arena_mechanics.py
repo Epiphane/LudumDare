@@ -45,6 +45,10 @@ class Arena():
         screen.blit(text_sm, (400,0))
         
     def endMinigame(self):
+        for shape in shapes:
+            shape.body.destroyFixture(shape)
+            world.destroyBody(shape.body)
+    
         if(random.random() < 0.5): return 1
         else: return 2
         
@@ -65,10 +69,10 @@ class PrepareForBattle(Arena):
         
 class SoccerArena(Arena):
     def initGame(self):
-        body = world.CreateDynamicBody(position = (225,12),
+        body = world.CreateDynamicBody(position = (225,24),
             fixtures = b2FixtureDef(
                 shape = b2CircleShape(radius=1),
-                density=1.0,
+                density=5,
                 restitution=0.5),
                 )
         

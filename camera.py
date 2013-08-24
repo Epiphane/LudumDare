@@ -16,7 +16,6 @@ def DrawCircle(center, radius, color = (0,0,0)):
     if not center or not radius:
         return
 
-    print (int((center.x + camera.panx) * PPM), int(center.y * PPM))
     pygame.draw.circle(screen, color, (int((center.x + camera.panx) * PPM), int(center.y * PPM)), int(radius*PPM))
             
 class Camera():
@@ -32,17 +31,29 @@ class Camera():
     def draw(self, screen):
         screen.blit(self.background.image, (self.panx * PPM, 0))
         
+        for shapeToDraw in player1.shapes:
+            if type(shapeToDraw.shape) is b2PolygonShape:
+                DrawPolygon(vertices(shapeToDraw), player1.color)
+            elif type(shapeToDraw.shape) is b2CircleShape:
+                DrawCircle(shapeToDraw.body.position, shapeToDraw.shape.radius, player1.color)
+        
+        for shapeToDraw in player2.shapes:
+            if type(shapeToDraw.shape) is b2PolygonShape:
+                DrawPolygon(vertices(shapeToDraw), player2.color)
+            elif type(shapeToDraw.shape) is b2CircleShape:
+                DrawCircle(shapeToDraw.body.position, shapeToDraw.shape.radius, player2.color)
+        
         for shapeToDraw in shapes:
             if type(shapeToDraw.shape) is b2PolygonShape:
-                DrawPolygon(vertices(shapeToDraw), pygame.Color(255, 0, 0, 255))
+                DrawPolygon(vertices(shapeToDraw), pygame.Color(0, 0, 0, 255))
             elif type(shapeToDraw.shape) is b2CircleShape:
-                DrawCircle(shapeToDraw.body.position, shapeToDraw.shape.radius, pygame.Color(255, 0, 0, 255))
+                DrawCircle(shapeToDraw.body.position, shapeToDraw.shape.radius, pygame.Color(0, 0, 0, 255))
         
         for shapeToDraw in arena.shapes:
             if type(shapeToDraw.shape) is b2PolygonShape:
-                DrawPolygon(vertices(shapeToDraw), pygame.Color(255, 0, 0, 255))
+                DrawPolygon(vertices(shapeToDraw), pygame.Color(0, 0, 0, 255))
             elif type(shapeToDraw.shape) is b2CircleShape:
-                DrawCircle(shapeToDraw.body.position, shapeToDraw.shape.radius, pygame.Color(255, 0, 0, 255))
+                DrawCircle(shapeToDraw.body.position, shapeToDraw.shape.radius, pygame.Color(0, 0, 0, 255))
         
     def update(self):
         if self.speed > CAMERA_MAX_PAN_SPEED: self.speed = CAMERA_MAX_PAN_SPEED
