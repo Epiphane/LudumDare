@@ -24,6 +24,7 @@ class Arena():
         self.world.contactListener = ContactHandler()
         
         self.initWalls()
+        self.startGame(STAGE_WIDTH_M / 2)
         
         self.camera = Camera(STAGE_WIDTH_M / 2)
         
@@ -71,6 +72,8 @@ class Arena():
         self.player1.update()
         self.player2.update()
         
+        self.camera.update(self.ball)
+        
         # Murder things that need murdering
         for i, shape in enumerate(self.shapes):
             if shape.body.userData == "kill me":
@@ -97,7 +100,11 @@ class Arena():
         self.player2.draw(screen, offsetX, offsetY)
         
         for shape in self.shapes:
-            DrawPolygon(vertices_with_offset(shape, offsetX, offsetY), (0,0,0))
+            if isinstance(shape.shape, b2CircleShape):
+                pos = (int(shape.body.position.x * PPM + offsetX), int(shape.body.position.y * PPM + offsetY))
+                DrawCircle(pos, shape.shape.radius, (0,0,0))
+            else:
+                DrawPolygon(vertices_with_offset(shape, offsetX, offsetY), (0,0,0))
     
     def drawTimer(self, screen):
         color = (self.drawRed,0,0)
@@ -132,14 +139,14 @@ class Arena():
         if event.key is K_s: pass
   
     def startGame(self, middle_x):
-        ball = world.CreateDynamicBody(position = (middle_x,27),
+        self.ball = self.world.CreateDynamicBody(position = (middle_x,27),
             fixtures = b2FixtureDef(
                 shape = b2CircleShape(radius=1),
                 density=1,
                 restitution=0.5),
             userData="soccer ball")
         
-        self.shapes.append(ball.fixtures[0])
+        self.shapes.append(self.ball.fixtures[0])
         
         #goal = world.CreateStaticBody(
         #    position = (maxx + 2, 45),
