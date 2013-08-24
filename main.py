@@ -93,7 +93,6 @@ while 1:
     for event in pygame.event.get():
         if event.type is pygame.QUIT: sys.exit()
         if hasattr(event, 'key'):
-            print(event.key, K_LEFT)
             if event.key is K_ESCAPE: 
                 if event.type is pygame.KEYDOWN: sys.exit()
             if event.key is K_a:
@@ -102,11 +101,11 @@ while 1:
                 if event.type is pygame.KEYDOWN: changeArena(currentArena + 1)
             if event.key == K_LEFT:
                 if event.type is pygame.KEYDOWN:
-                    print("left trigger", shapes[0].body.position)
-                    f = shapes[0].body.GetWorldVector(localVector=(200.0, 200.0))
-                    p = shapes[0].body.GetWorldPoint(localPoint = (0.0, 0.0))
-                    shapes[0].body.ApplyForce( f, p, True )
-    
+                    print("left trigger")
+                    #shapes[0].body.ApplyForce( f, p, True )
+                    shapes[0].body.ApplyLinearImpulse( b2Vec2(0, 50),
+                        shapes[0].body.GetWorldPoint())
+                    
     camera.update()
     camera.draw(screen)
     arena.draw(screen)

@@ -16,7 +16,7 @@ clock = pygame.time.Clock()
 
 TARGET_FPS = 60
 TIME_STEP = 1.0/TARGET_FPS
-PPM = 3
+PPM = 4
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('img', name)
