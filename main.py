@@ -19,8 +19,6 @@ Bring it on, LD.
 exec(open('init.py'))
 exec(open('ui_class.py'))
 
-pygame.display.flip()
-
 def init():
 	global font				# Font
 	global background		# Sprites
@@ -34,6 +32,28 @@ def init():
 	
 	background = Back("background")
 	
-	raw_input()
-	
+# -----------------------------------------------------------------------|
+# -----------------------------------------------------------------------|
+#                                  MAIN LOOP                             |
+# -----------------------------------------------------------------------|
+# -----------------------------------------------------------------------|
 init()
+while 1:
+	# USER INPUT
+	deltat = clock.tick(50)
+	
+	# Check user input
+	for event in pygame.event.get():
+		if event.type is pygame.QUIT: sys.exit()
+		if hasattr(event, 'key'):
+			if event.key is K_ESCAPE: 
+				if event.type is pygame.KEYDOWN: sys.exit()
+			if event.key is K_a:
+				if event.type is pygame.KEYDOWN: background.rect[0] -= 1
+			if event.key is K_d:
+				if event.type is pygame.KEYDOWN: background.rect[0] += 1
+				
+	
+	screen.blit(background.image, background.rect)
+						
+	pygame.display.flip()
