@@ -50,15 +50,19 @@ def init():
     # Initialize the ground. Will also need to initialize obstacles/arena
     # components here later on.
     ground = world.CreateStaticBody(
-        position = (200, -200),
+        position = (400, 400),
         shapes = b2PolygonShape(box = (50,10))
     )
     
-    body = world.CreateDynamicBody(position = (220,4))
+    body = world.CreateDynamicBody(position = (50,100))
     box = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
+    
+    body2 = world.CreateDynamicBody(position = (218,-2))
+    box2 = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
     
     shapes = []
     shapes.append(box)
+    shapes.append(box2)
     shapes.append(ground.fixtures[0])
 
     
@@ -101,7 +105,7 @@ while 1:
                     print("left trigger", shapes[0].body.position)
                     f = shapes[0].body.GetWorldVector(localVector=(200.0, 200.0))
                     p = shapes[0].body.GetWorldPoint(localPoint = (0.0, 0.0))
-                    shapes[0].body.ApplyForce( f, shapes[0].body.position, True )
+                    shapes[0].body.ApplyForce( f, p, True )
     
     camera.update()
     camera.draw(screen)

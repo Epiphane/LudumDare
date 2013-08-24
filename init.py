@@ -6,12 +6,16 @@ from pygame.locals import *
 
 pygame.init()
 
-screen = pygame.display.set_mode((800,600), DOUBLEBUF)
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), DOUBLEBUF)
 pygame.display.set_caption("Project Hiatus")
 clock = pygame.time.Clock()
 
 TARGET_FPS = 60
 TIME_STEP = 1.0/TARGET_FPS
+PPM = 3
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('img', name)
@@ -28,18 +32,13 @@ def load_image(name, colorkey=None):
     return image, image.get_rect()  
   
 def vertices(shapeIn):
+    # Grab the old vertices from the shape
     olds = shapeIn.shape.vertices
-    posx = shapeIn.body.position.x
-    posy = shapeIn.body.position.y
+    # Convert them (with magic) using the body.transform thing
+    result = [(shapeIn.body.transform*v)*PPM for v in olds]
+    # Fix the coordinates (flip y upside down)
+    result = [(v[0], SCREEN_HEIGHT - v[1]) for v in result]
     
-    result = []
-    
-    # Translate the vertices by the position and multiply by like 3
-    for vertex in olds:
-        newx = (vertex[0] + posx) * 3
-        newy = (vertex[1] + posy) * -3
-        result.append( (newx, newy) )
-        
     return result
     
 
