@@ -95,14 +95,33 @@ class Player(pygame.sprite.Sprite):
                 
     def createPlanter(self, arena, color):
         self.clearShapes(arena, color)
+        self.leaves = []
     
         body = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 34))
-        box = body.CreatePolygonFixture(box = (1,1), density = 2, friction = 0.3)
+        box = body.CreatePolygonFixture(vertices=[(-1,-1),(-1,1),(1,1),(1,-1)], density = 2, friction = 0.3)
         self.shapes.append(box)
         
-        pot = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 29))
-        box = pot.CreatePolygonFixture(vertices=[(-2,0),(-1,1),(1,1),(2,0)], density = 2, friction = 0.3)
+        pot = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 32))
+        box = pot.CreatePolygonFixture(vertices=[(-1,0),(-1,0.25),(-0.75,1),(0.75,1),(1,0.25),(1,0)], density = 0.5, friction = 0.3)
         self.shapes.append(box)
+        self.pot = pot
         
-        world.CreateWeldJoint(bodyA=body, bodyB=pot, collideConnected=True)
+        world.CreateRevoluteJoint(bodyA=body, bodyB=pot, anchor=b2Vec2((ARENA_WIDTH * (arena + 0.5)) / PPM, 33), collideConnected=True)
         
+    def growPlant(self):
+        
+        if len(self.leaves) <= 1:
+            leaf = world.CreateDynamicBody(position = (self.pot.worldCenter.x + random.random()*2-1, 33))
+            box = leaf.CreatePolygonFixture(vertices=[(-0.25,-0.25),(-0.25,0),(0,0.25),(0.25,0.25),(0.25,0),(0,-0.25)], density = 0.5, friction = 0.3)
+            self.leaves.append(leaf)
+            self.shapes.append(box)
+            world.CreateRevoluteJoint(bodyA=leaf, bodyB=self.pot, anchor=b2Vec2(self.pot.worldCenter.x + random.random()*2-1, 33), collideConnected=True)
+        else:
+            index = int(random.random() * (len(self.leaves) - 2))
+            oldleaf = self.leaves[int(index)]
+            
+            leaf = world.CreateDynamicBody(position = (oldleaf.worldCenter.x + random.random()*0.5-0.25, oldleaf.worldCenter.y - 0.2))
+            box = leaf.CreatePolygonFixture(vertices=[(-0.25,-0.25),(-0.25,0),(0,0.25),(0.25,0.25),(0.25,0),(0,-0.25)], density = 0.5, friction = 0.3)
+            self.leaves.append(leaf)
+            self.shapes.append(box)
+            world.CreateRevoluteJoint(bodyA=leaf, bodyB=oldleaf, anchor=oldleaf.worldCenter, collideConnected=True)
