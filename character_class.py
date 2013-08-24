@@ -4,6 +4,7 @@ class Player(pygame.sprite.Sprite):
         self.direction = direction
         self.shapes = []
         self.create(arena, color)
+        self.gottaGrow = False
     
     def destroy(self):
         destructionShapes = []
@@ -69,12 +70,15 @@ class Player(pygame.sprite.Sprite):
         if self.input["right"]:
             self.shapes[0].body.linearVelocity.x += 10
             
+        if self.gottaGrow:
+            self.growPlant()
+            
     def jump(self):
-        self.shapes[0].body.ApplyForce(force=(0,-250),point=(0,0),wake=True)
+        self.shapes[0].body.linearVelocity.y == -15
                 
     def createGardener(self, arena, color, minx):
         self.clearShapes(arena, color)
-        y = 31
+        y = 30
         numPlanks = 20
     
         gardnerBody = world.CreateDynamicBody(position = (minx+numPlanks, 34))
@@ -128,9 +132,10 @@ class Player(pygame.sprite.Sprite):
             anchor=(minx+numPlanks, y),
             )
         
-        arm1 = world.CreateDynamicBody(position = (minx+0.5+numPlanks, 31.5))
+        arm1 = world.CreateDynamicBody(position = (minx+0.5+numPlanks, 30.5))
         box = arm1.CreatePolygonFixture(box = (.2,1), density = 2, friction = 0.3)
         self.shapes.append(box)
+        self.arm1 = arm1
         
         world.CreateWeldJoint(bodyA=arm1, bodyB=hosehead)
         
@@ -138,16 +143,19 @@ class Player(pygame.sprite.Sprite):
             bodyA=gardnerBody, 
             bodyB=arm1, 
             anchor=(minx+0.5+numPlanks, 34),
-            lowerAngle = -0.1*b2_pi, upperAngle = 0.1*b2_pi, enableLimit = True)
+            lowerAngle = -0.01*b2_pi, upperAngle = 0.01*b2_pi, enableLimit = True)
         
         # Start the water hose effect
         waterEffect = Hoser(hosehead.fixtures[0])
         effects.append(waterEffect)
-    def aimUp(self): pass
-    def aimDown(self): pass
+        
+    def aimUp(self):
+        self.arm1.ApplyTorque(100, wake=True)
+    
+    def aimDown(self):
+        self.arm1.ApplyTorque(-100, wake=True)
                 
     def createPlanter(self, arena, color):
-        print("Create plantah")
         self.clearShapes(arena, color)
         self.leaves = []
     
@@ -155,7 +163,7 @@ class Player(pygame.sprite.Sprite):
         box = body.CreatePolygonFixture(vertices=[(-1,-1),(-1,1),(1,1),(1,-1)], density = 2, friction = 0.3)
         self.shapes.append(box)
         
-        pot = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 32))
+        pot = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 32), userData = "pot")
         box = pot.CreatePolygonFixture(vertices=[(-1,0),(-1,0.25),(-0.75,1),(0.75,1),(1,0.25),(1,0)], density = 0.5, friction = 0.3)
         self.shapes.append(box)
         self.pot = pot
@@ -163,7 +171,7 @@ class Player(pygame.sprite.Sprite):
         world.CreateRevoluteJoint(bodyA=body, bodyB=pot, anchor=b2Vec2((ARENA_WIDTH * (arena + 0.5)) / PPM, 33), collideConnected=True)
         
     def growPlant(self):
-        
+        self.gottaGrow = False
         if len(self.leaves) <= 1:
             leaf = world.CreateDynamicBody(position = (self.pot.worldCenter.x + random.random()*2-1, 33))
             box = leaf.CreatePolygonFixture(vertices=[(-0.25,-0.25),(-0.25,0),(0,0.25),(0.25,0.25),(0.25,0),(0,-0.25)], density = 0.5, friction = 0.3)
@@ -179,3 +187,65 @@ class Player(pygame.sprite.Sprite):
             self.leaves.append(leaf)
             self.shapes.append(box)
             world.CreateRevoluteJoint(bodyA=leaf, bodyB=oldleaf, anchor=oldleaf.worldCenter, collideConnected=True)
+            
+    def createFisher(self, currentArena, color, bait):
+        self.clearShapes(currentArena, color)
+    
+        body = world.CreateDynamicBody(position = ((ARENA_WIDTH * (currentArena + 0.5)) / PPM, 20))
+        box = body.CreatePolygonFixture(box = (1,2), density = 20, friction = 0.3)
+        self.shapes.append(box)
+        
+        arm = world.CreateDynamicBody(position = (body.worldCenter.x + 8, body.worldCenter.y + 0.5))
+        box = arm.CreatePolygonFixture(box = (12,0.2), density = 2)
+        self.shapes.append(box)
+        
+        world.CreateRevoluteJoint(bodyA=body, bodyB=arm, anchor=body.worldCenter, collideConnected=False)
+
+        shape=b2PolygonShape(box=(0.125,0.5))
+        fd=b2FixtureDef(
+                    shape=shape,
+                    friction=0.2,
+                    density=1,
+                    categoryBits=0x0001,
+                    maskBits=(0xFFFF & ~0x0002),
+                    )
+        
+        N=10
+        x=body.worldCenter.x + 20
+        y=body.worldCenter.y + 0.5
+
+        prevBody=arm
+        for i in range(N):
+            body = world.CreateDynamicBody(
+                        position=(x, 0.5+i+y), 
+                        fixtures=fd,
+                        )
+            
+            world.CreateRevoluteJoint(
+                bodyA=prevBody,
+                bodyB=body,
+                anchor=(x, i+y),
+                collideConnected=False
+                )
+                
+            self.shapes.append(body.fixtures[0])
+            prevBody = body
+        
+        player2.clearShapes(currentArena, (0,0,255))
+    
+        body = world.CreateDynamicBody(position = (x, N+y+1))
+        box = body.CreatePolygonFixture(box = (1,2), density = 2, friction = 0.3)
+        player2.shapes.append(box)
+            
+        world.CreateRevoluteJoint(
+                bodyA=prevBody,
+                bodyB=body,
+                anchor=(x, i+y),
+                collideConnected=False
+            )
+        
+    def reelInLine(self):
+        self.shapes[1].body.ApplyForce(force=(-6000,0),point=(1,0), wake=True)
+        
+    def thrash(self):
+        self.shapes[0].body.ApplyLinearImpulse(impulse=(10,0),point=(0,0), wake=True)

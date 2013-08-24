@@ -12,6 +12,8 @@ class Arena():
         self.drawRed = 0
         self.bignum = 10
         self.shapes = []
+        self.lost = False
+        self.won = False
         
         self.paused = True
         
@@ -46,8 +48,16 @@ class Arena():
         self.bignum = math.trunc(self.timeRemaining / 1000)
         if self.bignum != oldbignum and self.bignum < 4: self.drawRed = 128
         
+        print self.lost,
+        print self.won
         if(self.timeRemaining <= 0):
             return self.endMinigame()
+        if self.lost:
+            self.lost = False
+            return 2
+        if self.won:
+            self.won = False
+            return 1
         return False
         
     def draw(self, screen):
@@ -68,8 +78,7 @@ class Arena():
         
     def endMinigame(self):
         for shape in self.shapes:
-            shape.body.DestroyFixture(shape)
-            #world.DestroyBody(shape.body)
+            world.DestroyBody(shape.body)
         print("destroyed arena.shapes")
         self.shapes = []
         arena.shapes = []
@@ -92,6 +101,12 @@ class Arena():
             player2.jump()
         if event.key is K_w:
             player1.jump()
+            
+    def loseMinigame(self):
+        self.lost = True
+            
+    def wonMinigame(self):
+        self.won = True
         
 class PrepareForBattle(Arena):
     def initGame(self, minx, maxx):
@@ -191,11 +206,59 @@ class GardenArena(Arena):
             player2.input["left"] = (event.type is pygame.KEYDOWN)
         if event.key == K_RIGHT:
             player2.input["right"] = (event.type is pygame.KEYDOWN)
-        if event.key == K_UP: pass
+        if event.key == K_UP: 
+            player2.jump()
         if event.key == K_DOWN:pass
         if event.key is K_w and event.type is pygame.KEYDOWN:
-            player2.growPlant()
-            #player1.aimUp()
+            player1.aimUp()
         if event.key is K_s:
-            player2.growPlant()
-            #player1.aimDown()
+            player1.aimDown()
+        
+class FishingArena(Arena):
+    def initGame(self, minx, maxx):
+        
+        ground = world.CreateStaticBody(
+            position = (ARENA_WIDTH * (currentArena) / PPM + 2, 25),
+            shapes = b2PolygonShape(box = (14,1)),
+            userData = "ground"
+        )
+        self.shapes.append(ground.fixtures[0])
+        
+        wall = world.CreateStaticBody(
+            position = ((ARENA_WIDTH * currentArena) / PPM + 16, 36.5),
+            shapes = b2PolygonShape(box = (1,12.5)),
+            userData = "wall"
+        )
+        self.shapes.append(wall.fixtures[0])
+        
+        wall1 = world.CreateStaticBody(
+            position = (minx, 0),
+            shapes = b2PolygonShape(box = (1,37.5)),
+            userData = "left wall"
+        )
+        
+        self.shapes.append(wall1.fixtures[0])
+        
+        wall2 = world.CreateStaticBody(
+            position = (maxx, 0),
+            shapes = b2PolygonShape(box = (1,37.5)),
+            userData = "right wall"
+        )
+        
+    def startGame(self, arena):
+        self.paused = False
+        player1.createFisher(currentArena - 0.5, (255,0,0), player2)
+        self.initGame((ARENA_WIDTH * (arena - 0.5)) / PPM, (ARENA_WIDTH * (arena + 1.5)) / PPM)
+
+    def doAction(self, event):
+        if event.key == K_LEFT:
+            player2.input["left"] = (event.type is pygame.KEYDOWN)
+        if event.key == K_RIGHT:
+            player2.input["right"] = (event.type is pygame.KEYDOWN)
+        if event.key == K_UP:
+            player2.input["up"] = (event.type is pygame.KEYDOWN)
+        if event.key == K_DOWN:
+            player2.input["down"] = (event.type is pygame.KEYDOWN)
+        if event.key is K_w:
+            player1.reelInLine()
+    

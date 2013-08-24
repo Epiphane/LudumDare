@@ -117,7 +117,14 @@ while 1:
             if winner == 1: changeArena(currentArena + 1)
             elif winner == 2: changeArena(currentArena - 1)
             else: changeArena(currentArena)
-            arena = GardenArena()
+            
+            lvl = int(random.random() * 3)
+            if lvl == 0:
+                    arena = SoccerArena()
+            elif lvl == 1:
+                    arena = GardenArena()
+            else:
+                    arena = FishingArena()
         
         # Check user input
         for event in pygame.event.get():

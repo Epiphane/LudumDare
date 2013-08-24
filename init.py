@@ -60,7 +60,6 @@ class ContactHandler(b2ContactListener):
         """Checks to see if one of the fixtures named by "contact" is a 
         "desiredName." Returns (desiredFixture, otherFixture) if there's a match"""
         if contact.fixtureA.body.userData == desiredName:
-            print "does it always do this one?"
             return (contact.fixtureA, contact.fixtureB)
         if contact.fixtureB.body.userData == desiredName:
             return (contact.fixtureB, contact.fixtureA)
@@ -87,7 +86,7 @@ class ContactHandler(b2ContactListener):
         if goooal is not None:
             # Verify that the soccer ball is the thing in the goal
             if goooal[1].body.userData == "soccer ball":
-                print("GOOOOAL YOU DID IT SUCCESS AND STUFF")
+                arena.wonMinigame()
                 
         kick = self.checkContact(contact, "soccer ball")
         if kick is not None:
@@ -97,3 +96,17 @@ class ContactHandler(b2ContactListener):
                     kick[0].body.ApplyForce(force=(3000,-1000),point=(0,0), wake=True)
                 else:
                     kick[0].body.ApplyForce(force=(-3000,-1000),point=(0,0), wake=True)
+                
+        pot = self.checkContact(contact, "pot")
+        if pot is not None:
+            # mass > 0 implies it's not a "Static" object
+            if pot[1].body.userData == "WADAH":
+                pot[1].body.userData = "kill me"
+                player2.gottaGrow = True
+            if pot[1].body.userData == "ground":
+                arena.loseMinigame()
+                
+        hose = self.checkContact(contact, "hose head")
+        if hose is not None:
+            if hose[1].body.userData == "ground":
+                arena.loseMinigame()

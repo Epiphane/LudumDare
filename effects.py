@@ -27,28 +27,45 @@ class Hoser:
     done = False
     def __init__(self, hosehead):
         self.hosehead = hosehead
+        self.other = 0
     def draw(self, screen):
-        # Hoser doesn't inherently draw anything
+        for shapeToDraw in self.waterMols:
+            DrawCircle(shapeToDraw.body.position, shapeToDraw.shape.radius, pygame.Color(0, 0, 0, 255))
         pass
     def update(self):
         # Failsafe against crashing the game w/ too many water molecules
         if self.hosehead.shape is None:
             done = True
-            print("done here!")
             return
+            
+        #if self.other > 0:
+        #    self.other -= 1
+        #    return
+        #self.other = 3
         
         # Spawn a new water molecule at the front end of the hosehead
         # Use the midpoint between two vertices of the hosehead as a position
-        hoseheadEdge = ((vertices(self.hosehead)[1][0] + vertices(self.hosehead)[2][0])/(2 * PPM),
-                        (vertices(self.hosehead)[1][1] + vertices(self.hosehead)[2][1])/(2 * PPM))
-        slope = (vertices(self.hosehead)[1][1] - vertices(self.hosehead)[2][1]) / (vertices(self.hosehead)[2][0] - vertices(self.hosehead)[3][0])
+        olds = self.hosehead.shape.vertices
+        # Convert them (with magic) using the body.transform thing
+        vertices = [(self.hosehead.body.transform*v) for v in olds]
+        
+        hoseheadEdge = ((vertices[1][0] + vertices[2][0])/2,
+                        (vertices[1][1] + vertices[2][1])/2)
+                        
+        slope = -1 * (vertices[2][0] - vertices[1][0]) / (vertices[1][1] - vertices[2][1])
         newWaterMol = world.CreateDynamicBody(
+            userData="WADAH",
             position=hoseheadEdge,
-            fixtures = b2FixtureDef(density = 1.0, shape = b2PolygonShape(
-                box=(0.2, 0.2))))
-        newWaterMol.linearVelocity.y = math.sqrt(30 / (slope*slope+1))
-        newWaterMol.linearVelocity.x = 900 - newWaterMol.linearVelocity.y*newWaterMol.linearVelocity.y
+            fixtures = b2FixtureDef(density = 5, shape = b2CircleShape(
+                radius=0.2)))
+                
+        speed = random.random() * 1600
+        newWaterMol.linearVelocity.x = math.sqrt(speed / (slope*slope+1))
+        newWaterMol.linearVelocity.y = -1 * math.sqrt(speed + 20 - newWaterMol.linearVelocity.x*newWaterMol.linearVelocity.x)
         self.waterMols.append(newWaterMol.fixtures[0])
-        arena.shapes.append(newWaterMol.fixtures[0])
+        
+        if len(self.waterMols) > 80:
+            self.waterMols[0].body.DestroyFixture(self.waterMols[0])
+            self.waterMols.remove(self.waterMols[0])
             
             
