@@ -10,6 +10,9 @@ class Arena():
         self.timeRemaining = 10000 # 10 seconds
         self.drawRed = 0
         self.bignum = 10
+        self.initGame()
+        
+    def initGame(self): pass
         
     def update(self, dt):
         if not camera.stopped: return False
@@ -57,3 +60,11 @@ class PrepareForBattle(Arena):
         
     def endMinigame(self):
         return -1
+        
+class SoccerArena(Arena):
+    def initGame(self):
+        body = world.CreateDynamicBody(position = (20,4))
+        #ball = body.CreatePolygonFixture(circle = (0.5), density = 1, friction = 0.3)  
+        ball = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)  
+        
+        shapes.append(ball)

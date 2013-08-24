@@ -1,5 +1,6 @@
 import pygame, math, random, sys, os, hashlib
 from Box2D import *
+import Box2D
 import time
 from pygame.locals import *
 
