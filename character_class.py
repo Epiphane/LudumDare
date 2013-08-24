@@ -90,17 +90,19 @@ class Player(pygame.sprite.Sprite):
         world.CreateRevoluteJoint(bodyA=body, bodyB=arm1, anchor=b2Vec2((ARENA_WIDTH * (arena + 0.5)) / PPM - 0.25, 34), collideConnected=False, lowerAngle = -0.25*b2_pi, upperAngle = 0.25*b2_pi, enableLimit = True)
         world.CreateRevoluteJoint(bodyA=body, bodyB=arm2, anchor=b2Vec2((ARENA_WIDTH * (arena + 0.5)) / PPM + 0.25, 34), collideConnected=True)
         
+    def aimUp(self): pass
+    def aimDown(self): pass
                 
     def createPlanter(self, arena, color):
         self.clearShapes(arena, color)
     
         body = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 34))
-        box = body.CreatePolygonFixture(box = (1,2), density = 2, friction = 0.3)
+        box = body.CreatePolygonFixture(box = (1,1), density = 2, friction = 0.3)
         self.shapes.append(box)
         
-        arm1 = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM - 0.25, 33))
-        box = arm1.CreatePolygonFixture(box = (.4,.4), density = 2, friction = 0.3)
+        pot = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 29))
+        box = pot.CreatePolygonFixture(vertices=[(-2,0),(-1,1),(1,1),(2,0)], density = 2, friction = 0.3)
         self.shapes.append(box)
         
-        world.CreateRevoluteJoint(bodyA=body, bodyB=arm1, anchor=b2Vec2((ARENA_WIDTH * (arena + 0.5)) / PPM - 0.25, 33.5), collideConnected=True, lowerAngle = -0.25*b2_pi, upperAngle = 0.25*b2_pi, enableLimit = True)
-       # world.CreateRevoluteJoint(bodyA=body, bodyB=arm2, anchor=b2Vec2((ARENA_WIDTH * (arena + 0.5)) / PPM + 0.25, 33.5), collideConnected=True)
+        world.CreateWeldJoint(bodyA=body, bodyB=pot, collideConnected=True)
+        
