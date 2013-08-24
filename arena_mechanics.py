@@ -63,7 +63,7 @@ class PrepareForBattle(Arena):
         
 class SoccerArena(Arena):
     def initGame(self):
-        body = world.CreateDynamicBody(position = (219.9,-12),
+        body = world.CreateDynamicBody(position = (250,12),
             fixtures = b2FixtureDef(
                 shape = b2CircleShape(radius=10),
                 density=1.0))
