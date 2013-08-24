@@ -23,8 +23,8 @@ class Camera():
     def draw(self, screen):
         screen.blit(self.background.image, (self.panx, 0))
         
-        for body in shapes:
-            DrawPolygon(body.shape.vertices, pygame.Color(255, 0, 0, 255))
+        for shapeToDraw in shapes:
+            DrawPolygon(vertices(shapeToDraw), pygame.Color(255, 0, 0, 255))
         
     def update(self):
         if self.speed > CAMERA_MAX_PAN_SPEED: self.speed = CAMERA_MAX_PAN_SPEED

@@ -46,11 +46,11 @@ def init():
     # Initialize the ground. Will also need to initialize obstacles/arena
     # components here later on.
     ground = world.CreateStaticBody(
-        position = (0, 500),
+        position = (0, -200),
         shapes = b2PolygonShape(box = (50,10))
     )
     
-    body = world.CreateDynamicBody(position = (0,4))
+    body = world.CreateDynamicBody(position = (20,4))
     box = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
     
     shapes = []
@@ -65,7 +65,7 @@ def init():
 init()
 while 1:
     # USER INPUT
-    sleeptime = 1000 / 60
+    sleeptime = 1000 / 30
     deltat = clock.tick(sleeptime)
     
     # Update a "tick" in physics land

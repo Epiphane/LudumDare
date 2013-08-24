@@ -10,10 +10,6 @@ screen = pygame.display.set_mode((800,600), DOUBLEBUF)
 pygame.display.set_caption("Project Hiatus")
 clock = pygame.time.Clock()
 
-# Get x and y of shape objects
-getx = lambda shape: shape.GetWorldPoint(localPoint = (0, 0)).x
-gety = lambda shape: shape.GetWorldPoint(localPoint = (0, 0)).y
-
 def load_image(name, colorkey=None):
     fullname = os.path.join('img', name)
     try:
@@ -26,9 +22,22 @@ def load_image(name, colorkey=None):
         if colorkey is -1:
             colorkey = image.get_at((0,0))
         image.set_colorkey(colorkey, RLEACCEL)
-    return image, image.get_rect()
+    return image, image.get_rect()  
+  
+def vertices(shapeIn):
+    olds = shapeIn.shape.vertices
+    posx = shapeIn.body.position.x
+    posy = shapeIn.body.position.y
     
-
+    result = []
+    
+    # Translate the vertices by the position and multiply by like 3
+    for vertex in olds:
+        newx = (vertex[0] + posx) * 3
+        newy = (vertex[1] + posy) * -3
+        result.append( (newx, newy) )
+        
+    return result
     
 
     
