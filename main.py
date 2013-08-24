@@ -17,6 +17,7 @@ Bring it on, LD.
 # -----------------------------------------------------------------------|
 # -----------------------------------------------------------------------|
 exec(open('init.py'))
+exec(open('title.py'))
 exec(open('effects.py'))
 exec(open('ui_class.py'))
 exec(open('arena_mechanics.py'))
@@ -38,7 +39,7 @@ def init():
     time_font_lg = pygame.font.Font("fonts/ka1.ttf", 60)
     
     arena = Arena()
-    gameState = "Arena"
+    gameState = "Title"
     
     # Load some images
     images = {}
@@ -55,11 +56,14 @@ def init():
 # -----------------------------------------------------------------------|
 # -----------------------------------------------------------------------|
 init()
+initTitle()
 while 1:
     dt = clock.tick(TARGET_FPS)
     
     # Check user input
     for event in pygame.event.get():
+        if gameState == "Title":
+            titleInput(event)
         if event.type is pygame.QUIT: sys.exit()
         if hasattr(event, 'key'):
             if event.key is K_ESCAPE: 
@@ -67,8 +71,8 @@ while 1:
             if gameState == "Arena":
                 arena.doAction(event)
     
-    screen.fill((255,255,255))
-    
+    if gameState == "Title":
+        drawTitle(screen)
     if gameState == "Arena":
         arena.update(dt)
         arena.draw(screen)
