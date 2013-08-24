@@ -25,7 +25,7 @@ class Arena():
         self.world = b2World(gravity=(0, 25), doSleep = True)
         
         # Initialize the contact handler
-        contactHandler = ContactHandler()
+        self.contactHandler = ContactHandler()
         
     def initWalls(self):
         ground = world.CreateStaticBody(
@@ -55,6 +55,25 @@ class Arena():
             userData = "right wall"
         )
         self.shapes.append(rightWall.fixtures[0])
+        
+    def update(self, dt):
+        # Reset forces for the next frame
+        world.ClearForces()
+                        
+        # Update a "tick" in physics land
+        world.Step(TIME_STEP*1.5, 10, 10)
+        
+        # Murder things that need murdering
+        for i, shape in enumerate(shapes):
+            if shape.body.userData == "kill me":
+                shape.body.DestroyFixture(shape)
+                del shapes[i]
+        
+        for i, ef in enumerate(effects):
+            ef.update()
+            ef.draw(screen)
+            if ef.done:
+                del effects[i]
         
     
 class Arena2():

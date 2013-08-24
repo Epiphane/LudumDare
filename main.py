@@ -38,6 +38,7 @@ def init():
     time_font_lg = pygame.font.Font("fonts/ka1.ttf", 60)
     
     arena = Arena()
+    gameState = "Arena"
     
     # Initialize effects queue
     effects = []
@@ -58,13 +59,7 @@ def init():
 # -----------------------------------------------------------------------|
 init()
 while 1:
-    # Reset forces for the next frame
-    world.ClearForces()
-    
-    deltat = clock.tick(TARGET_FPS)
-    
-    camera.update(deltat)
-    camera.draw(screen)
+    dt = clock.tick(TARGET_FPS)
     
     # Check user input
     for event in pygame.event.get():
@@ -72,25 +67,11 @@ while 1:
         if hasattr(event, 'key'):
             if event.key is K_ESCAPE: 
                 if event.type is pygame.KEYDOWN: sys.exit()
-            arena.doAction(event)
-                        
-    # Update a "tick" in physics land
-    world.Step(TIME_STEP*1.5, 10, 10)
-        
-    # Murder things that need murdering
-    for i, shape in enumerate(shapes):
-        if shape.body.userData == "kill me":
-            shape.body.DestroyFixture(shape)
-            del shapes[i]
-        
-    arena.draw(screen)
+            if gameState == "Arena":
+                arena.doAction(event)
     
-    for i, ef in enumerate(effects):
-        ef.update()
-        ef.draw(screen)
-        if ef.done:
-            del effects[i]
+    if gameState == "Arena":
+        arena.update(dt)
+        arena.draw(screen)
                         
     pygame.display.flip()
-    
-def initWalls():
