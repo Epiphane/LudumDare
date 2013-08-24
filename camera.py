@@ -1,16 +1,23 @@
 ARENA_WIDTH = 400
 CAMERA_MAX_PAN_SPEED = 75
 
-def DrawPolygon(vertices, color):
-        """ Draw a wireframe polygon given the screen vertices with the specified color."""
-        if not vertices:
-            return
+def DrawPolygon(vertices, color = (0,0,0)):
+    """ Draw a wireframe polygon given the screen vertices with the specified color."""
+    if not vertices:
+        return
 
-        if len(vertices) == 2:
-            pygame.draw.aaline(screen, color, vertices[0], vertices)
-        else:
-            pygame.draw.polygon(screen, color, vertices, 1)
+    if len(vertices) == 2:
+        pygame.draw.aaline(screen, color, vertices[0], vertices)
+    else:
+        pygame.draw.polygon(screen, color, vertices, 1)
 
+def DrawCircle(center, radius, color = (0,0,0)):
+    """ Draw a wireframe polygon given the screen vertices with the specified color."""
+    if not center or not radius:
+        return
+
+    pygame.draw.circle(screen, color, (int(center.x * 3), int(center.y * -3)), int(radius*3))
+            
 class Camera():
     def __init__(self, arena):
         self.background = Back("background")
@@ -25,7 +32,10 @@ class Camera():
         screen.blit(self.background.image, (self.panx, 0))
         
         for shapeToDraw in shapes:
-            DrawPolygon(vertices(shapeToDraw), pygame.Color(255, 0, 0, 255))
+            if type(shapeToDraw.shape) is b2PolygonShape:
+                DrawPolygon(vertices(shapeToDraw), pygame.Color(255, 0, 0, 255))
+            elif type(shapeToDraw.shape) is b2CircleShape:
+                DrawCircle(shapeToDraw.body.position, shapeToDraw.shape.radius, pygame.Color(255, 0, 0, 255))
         
     def update(self):
         if self.speed > CAMERA_MAX_PAN_SPEED: self.speed = CAMERA_MAX_PAN_SPEED

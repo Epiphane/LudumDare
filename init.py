@@ -43,5 +43,3 @@ def vertices(shapeIn):
         
     return result
     
-
-    
