@@ -74,8 +74,13 @@ class Player(pygame.sprite.Sprite):
             self.growPlant()
             
     def jump(self):
+<<<<<<< HEAD
         self.shapes[0].body.linearVelocity.y == -15
                 
+=======
+        self.shapes[0].body.ApplyForce(force=(0,-250),point=(0,0),wake=True)
+    
+>>>>>>> 4420f1d3367a230a4c1bf225d2f6e25ed63ab962
     def createGardener(self, arena, color, minx):
         self.clearShapes(arena, color)
         y = 30
@@ -249,3 +254,45 @@ class Player(pygame.sprite.Sprite):
         
     def thrash(self):
         self.shapes[0].body.ApplyLinearImpulse(impulse=(10,0),point=(0,0), wake=True)
+    def createWarrior(self, arena, color):
+        self.clearShapes(arena, color)
+        
+        launchers = 0x0002
+        humans = 0x0004
+        
+        noTouchingLaunchers = 0xFFFF ^ launchers
+        noTouchingHumans = 0xFFFF ^ humans
+        
+        # Create warrior body, with "Rocket launcher" on top
+        warriorBody = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 20),
+                        fixtures = b2FixtureDef(
+                                shape = b2PolygonShape(box=(1, 2, (0, 2.5), 0)),
+                                density = 2,
+                                filter = b2Filter(
+                                    categoryBits = humans,
+                                    maskBits = noTouchingLaunchers
+                                )),
+                        userData = "warrior"
+                        )
+        rocketLauncherBody = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 20),
+                        fixtures = b2FixtureDef(
+                                shape = b2PolygonShape(box=(1.2,0.5,(0, 0), 0)),
+                                density = -50,
+                                filter = b2Filter(
+                                    categoryBits = launchers,
+                                    maskBits = noTouchingHumans
+                                )),
+                        userData = "rocket launcher"
+                        )
+                        
+        # Bind 'em together with revolute joint
+        world.CreateRevoluteJoint(bodyA=warriorBody, bodyB=rocketLauncherBody, 
+                localAnchorA = (0,0), localAnchorB = (0, 0), collideConnected=False)
+        self.shapes.append(warriorBody.fixtures[0])
+        self.shapes.append(rocketLauncherBody.fixtures[0])
+        
+    def aimRocket(self, degree):
+        self.shapes[1].body.angularVelocity += degree
+        
+    def getRocketLauncher(self):
+        return self.shapes[1]

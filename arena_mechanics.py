@@ -251,6 +251,31 @@ class FishingArena(Arena):
         self.initGame((ARENA_WIDTH * (arena - 0.5)) / PPM, (ARENA_WIDTH * (arena + 1.5)) / PPM)
 
     def doAction(self, event):
+            player2.growPlant()
+            #player1.aimDown()
+            
+class BattleArena(Arena):
+        
+    def startGame(self, arena):
+        self.paused = False
+        player1.createWarrior(currentArena - 0.5, (255, 0, 0))
+        player2.createWarrior(currentArena + 0.5, (0, 0, 255))
+        self.initGame((ARENA_WIDTH * (arena - 0.5)) / PPM, (ARENA_WIDTH * (arena + 1.5)) / PPM)
+        
+        rocket1 = player1.getRocketLauncher()
+        rocket2 = player2.getRocketLauncher()
+        
+        rocketLaunch1 = RocketLaunch(rocket1)
+        effects.append(rocketLaunch1)
+        
+        rocketLaunch2 = RocketLaunch(rocket2)
+        effects.append(rocketLaunch2)
+        
+    def doAction(self, event):
+        if event.key is K_a:
+            player1.input["left"] = (event.type is pygame.KEYDOWN)
+        if event.key is K_d:
+            player1.input["right"] = (event.type is pygame.KEYDOWN)
         if event.key == K_LEFT:
             player2.input["left"] = (event.type is pygame.KEYDOWN)
         if event.key == K_RIGHT:
@@ -262,3 +287,24 @@ class FishingArena(Arena):
         if event.key is K_w:
             player1.reelInLine()
     
+        if event.key == K_UP: 
+            # aim launcher
+            if event.type is pygame.KEYDOWN:
+                player2.aimRocket(1)
+            elif event.type is pygame.KEYUP:
+                player2.aimRocket(-1)
+        if event.key == K_DOWN:
+            if event.type is pygame.KEYDOWN:
+                player2.aimRocket(-1)      
+            elif event.type is pygame.KEYUP:
+                player2.aimRocket(1)       
+        if event.key is K_w:               
+            if event.type is pygame.KEYDOWN:
+                player1.aimRocket(-1)     
+            elif event.type is pygame.KEYUP:
+                player1.aimRocket(1)
+        if event.key is K_s:       
+            if event.type is pygame.KEYDOWN:
+                player1.aimRocket(1)     
+            elif event.type is pygame.KEYUP:
+                player1.aimRocket(-1)
