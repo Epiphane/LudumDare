@@ -16,7 +16,7 @@ def DrawCircle(center, radius, color = (0,0,0)):
     if not center or not radius:
         return
 
-    pygame.draw.circle(screen, color, (int(center.x * 3), int(center.y * -3)), int(radius*3))
+    pygame.draw.circle(screen, color, (int(center.x * PPM), int(center.y * PPM)), int(radius*3))
             
 class Camera():
     def __init__(self, arena):

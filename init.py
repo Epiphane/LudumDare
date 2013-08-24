@@ -38,7 +38,7 @@ def vertices(shapeIn):
     # Convert them (with magic) using the body.transform thing
     result = [(shapeIn.body.transform*v)*PPM for v in olds]
     # Fix the coordinates (flip y upside down)
-    result = [(v[0], - v[1]) for v in result]
+    result = [(v[0],  v[1]) for v in result]
     
     return result
     

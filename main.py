@@ -37,24 +37,24 @@ def init():
     
     # Init physics "world", defining gravity. doSleep means that if an object
     # comes to rest, it can "sleep" and be ignored by the physics engine for a bit.
-    world = b2World(gravity=(0, -10), doSleep = True)
+    world = b2World(gravity=(0, 10), doSleep = True)
     
     # Initialize the ground. Will also need to initialize obstacles/arena
     # components here later on.
     ground = world.CreateStaticBody(
-        position = (400, 400),
+        position = (240, 200),
         shapes = b2PolygonShape(box = (50,10))
     )
     
-    body = world.CreateDynamicBody(position = (50,100))
+    body = world.CreateDynamicBody(position = (252,20))
     box = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
     
-    body2 = world.CreateDynamicBody(position = (218,-2))
-    box2 = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
+   # body2 = world.CreateDynamicBody(position = (218,-2))
+   # box2 = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
     
     shapes = []
     shapes.append(box)
-    shapes.append(box2)
+   # shapes.append(box2)
     shapes.append(ground.fixtures[0])
     
     player1 = Player(1, 8)
