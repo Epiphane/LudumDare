@@ -42,6 +42,13 @@ def vertices(shapeIn):
     
     return result
     
+def vertices_no_pan(shapeIn):
+    # Grab the old vertices from the shape
+    olds = shapeIn.shape.vertices
+    # Convert them (with magic) using the body.transform thing
+    result = [(shapeIn.body.transform*v)*PPM for v in olds]
+    return result
+    
 class ContactHandler(b2ContactListener):
     """Extends the contact listener and can override the sexy, sexy event handling
     methods with its own jazz."""
