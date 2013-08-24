@@ -42,3 +42,23 @@ def vertices(shapeIn):
     
     return result
     
+class ContactHandler(b2ContactListener):
+    """Extends the contact listener and can override the sexy, sexy event handling
+    methods with its own jazz."""
+    
+    def __init__(self):
+        # The nonsense that's required to extend classes in Python
+        super(ContactHandler, self).__init__()
+        
+        # Tell the world that this is who gets contact events
+        world.contactListener = self
+        
+    def __del__(self):
+        pass
+        
+    def BeginContact(self, contact):
+        print(contact.fixtureA, contact.fixtureB)
+        
+    
+    
+    

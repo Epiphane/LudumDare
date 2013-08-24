@@ -42,11 +42,22 @@ def init():
     # Initialize the ground. Will also need to initialize obstacles/arena
     # components here later on.
     ground = world.CreateStaticBody(
-        position = (0, 37.5),
-        shapes = b2PolygonShape(box = (10,400))
+        position = (200, 37.5),
+        shapes = b2PolygonShape(box = (400,1))
     )
     
-    body = world.CreateDynamicBody(position = (225,0))
+    ceiling = world.CreateStaticBody(
+        position = (200, 0),
+        shapes = b2PolygonShape(box = (400,1))
+    )
+    
+    landMineTest = world.CreateStaticBody(
+                position = (225,37.5),
+                fixtures = b2FixtureDef(
+                    shape = b2CircleShape(radius=2),
+                    isSensor = True))
+    
+    body = world.CreateDynamicBody(position = (200, 10))
     box = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
     
    # body2 = world.CreateDynamicBody(position = (218,-2))
@@ -55,7 +66,9 @@ def init():
     shapes = []
     shapes.append(box)
    # shapes.append(box2)
+    shapes.append(ceiling.fixtures[0])
     shapes.append(ground.fixtures[0])
+    shapes.append(landMineTest.fixtures[0])
     
     player1 = Player(1, 8)
     player2 = Player(-1, 9)
@@ -64,6 +77,9 @@ def init():
     camera = Camera(currentArena)
     
     arena = SoccerArena()
+    
+    # Initialize the contact handler
+    contactHandler = ContactHandler()
 
     
 # -----------------------------------------------------------------------|
@@ -73,7 +89,6 @@ def init():
 # -----------------------------------------------------------------------|
 init()
 while 1:
-        
     # Update a "tick" in physics land
     world.Step(TIME_STEP, 10, 10)
     
@@ -100,12 +115,12 @@ while 1:
                 if event.type is pygame.KEYDOWN: changeArena(currentArena - 1)
             if event.key is K_d:
                 if event.type is pygame.KEYDOWN: changeArena(currentArena + 1)
+            if event.key is K_SPACE:
+                arena.ball.ApplyForce(force=(1300,-2700), point=arena.ball.position, wake=True)
             if event.key == K_LEFT:
                 if event.type is pygame.KEYDOWN:
                     print("left trigger")
                     shapes[0].body.ApplyForce( b2Vec2(0, 50), shapes[0].body.GetWorldPoint(localPoint = (12, 12)), True )
-                    #shapes[0].body.ApplyLinearImpulse( force = (0, 50),
-                       # point = (0, 0), impulse = )
                     
     camera.update()
     camera.draw(screen)
