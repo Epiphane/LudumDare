@@ -41,7 +41,7 @@ class Camera():
     def update(self, ball):
         if abs(ball.position.x - self.centerX_in_meters) > CAMERA_PILLOW_SPACE_M:
             self.panning = True
-            if abs(self.dx) + CAMERA_SPEEDUP_SPEED <= CAMERA_MAX_PAN_SPEED:
+            if abs(self.dx) + CAMERA_SPEEDUP_SPEED <= CAMERA_MAX_PAN_SPEED_PX:
                 if ball.position.x - self.centerX_in_meters > 0:
                     self.dx += CAMERA_SPEEDUP_SPEED
                 else:
