@@ -9,7 +9,7 @@ class Arena():
     def __init__(self):
         self.timeRemaining = 10000 # 10 seconds
         self.drawRed = 0
-        self.bignum = 9
+        self.bignum = 10
         
     def update(self, dt):
         if not camera.stopped: return False
@@ -24,6 +24,9 @@ class Arena():
         return False
         
     def draw(self, screen):
+        self.drawTimer(screen)
+    
+    def drawTimer(self, screen):
         color = (self.drawRed,0,0)
         
         text = time_font_lg.render(str(self.bignum), True, color)
@@ -32,9 +35,25 @@ class Arena():
         if(self.drawRed > 0):
             self.drawRed -= 8
         
-        screen.blit(text, (330,0))
+        if(self.bignum == 10): screen.blit(text, (290,0))
+        else: screen.blit(text, (330,0))
         screen.blit(text_sm, (400,0))
         
     def endMinigame(self):
         if(random.random() < 0.5): return 1
         else: return 2
+        
+class PrepareForBattle(Arena):
+    def __init__(self):
+        self.timeRemaining = 3000
+        self.bignum = 3
+        
+    def draw(self, screen):
+        self.drawTimer(screen)
+        
+        text = (time_font_lg.render("PREPARE", True, (0, 30, 0)), time_font_lg.render("YOURSELF", True, (0, 30, 0)))
+        screen.blit(text[0], (190,180))
+        screen.blit(text[1], (180,260))
+        
+    def endMinigame(self):
+        return -1

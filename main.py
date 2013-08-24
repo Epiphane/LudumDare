@@ -41,7 +41,7 @@ def init():
     
     camera = Camera(currentArena)
     
-    arena = Arena()
+    arena = PrepareForBattle()
     
     # Init physics "world", defining gravity. doSleep means that if an object
     # comes to rest, it can "sleep" and be ignored by the physics engine for a bit.
@@ -60,6 +60,7 @@ def init():
     shapes = []
     shapes.append(box)
     shapes.append(ground.fixtures[0])
+
     
 # -----------------------------------------------------------------------|
 # -----------------------------------------------------------------------|
@@ -80,6 +81,7 @@ while 1:
     if  winner:
         if winner == 1: changeArena(currentArena + player1.direction)
         elif winner == 2: changeArena(currentArena + player2.direction)
+        else: changeArena(currentArena)
         arena = Arena()
     
     # Reset forces for the next frame
