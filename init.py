@@ -40,16 +40,17 @@ def vertices(shapeIn):
     olds = shapeIn.shape.vertices
     # Convert them (with magic) using the body.transform thing
     result = [(shapeIn.body.transform*v)*PPM for v in olds]
-    # Fix the coordinates (flip y upside down)
-    result = [(v[0] + camera.panx * PPM,  v[1]) for v in result]
     
     return result
-    
-def vertices_no_pan(shapeIn):
+  
+def vertices_with_offset(shapeIn, offsetX, offsetY):
     # Grab the old vertices from the shape
     olds = shapeIn.shape.vertices
     # Convert them (with magic) using the body.transform thing
     result = [(shapeIn.body.transform*v)*PPM for v in olds]
+    # Fix the coordinates
+    result = [(v[0] - offsetX,  v[1] - offsetY) for v in result]
+    
     return result
     
 class ContactHandler(b2ContactListener):
@@ -74,7 +75,7 @@ class ContactHandler(b2ContactListener):
         return None
         
     def BeginContact(self, contact):
-        
+    
         blowUp = self.checkContact(contact, "land mine")
         if blowUp is not None:
             # mass > 0 implies it's not a "Static" object
@@ -87,33 +88,3 @@ class ContactHandler(b2ContactListener):
                 explos = Explosion(blowUp[0].body.position.x * PPM,
                                     blowUp[0].body.position.y * PPM)
                 effects.append(explos)  
-                   
-        # "Soccer" game win condition
-        goooal = self.checkContact(contact, "goal")
-        if goooal is not None:
-            # Verify that the soccer ball is the thing in the goal
-            if goooal[1].body.userData == "soccer ball":
-                arena.wonMinigame()
-                
-        kick = self.checkContact(contact, "soccer ball")
-        if kick is not None:
-            # mass > 0 implies it's not a "Static" object
-            if kick[1].massData.mass > 0:
-                if(kick[0].body.position.x > kick[1].body.position.x):
-                    kick[0].body.ApplyForce(force=(3000,-1000),point=(0,0), wake=True)
-                else:
-                    kick[0].body.ApplyForce(force=(-3000,-1000),point=(0,0), wake=True)
-                
-        pot = self.checkContact(contact, "pot")
-        if pot is not None:
-            # mass > 0 implies it's not a "Static" object
-            if pot[1].body.userData == "WADAH":
-                pot[1].body.userData = "kill me"
-                player2.gottaGrow = True
-            if pot[1].body.userData == "ground":
-                arena.loseMinigame()
-                
-        hose = self.checkContact(contact, "hose head")
-        if hose is not None:
-            if hose[1].body.userData == "ground":
-                arena.loseMinigame()

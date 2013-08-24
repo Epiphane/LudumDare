@@ -1,19 +1,38 @@
 class Player(pygame.sprite.Sprite):
-    def __init__(self, direction, start_x, color):
+    def __init__(self, direction, color, arena):
         self.input = {"up": False, "down": False, "left": False, "right": False}
         self.direction = direction
         self.color = color
         self.shapes = []
+        self.arena = arena
         
-    def materialize(self, start_x):
-        block = world.CreateDynamicBody(
-            position = (start_x, 34),
+    def __init__(self, direction, start_x, color, arena):
+        self.input = {"up": False, "down": False, "left": False, "right": False}
+        self.direction = direction
+        self.color = color
+        self.shapes = []
+        self.arena = arena
+        
+        self.materialize(start_x, arena)
+        
+    def materialize(self, start_x, arena):
+        block = arena.world.CreateDynamicBody(
+            position = (start_x, 30),
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (1,2)),
                 density=10,
                 restitution=0)
             )
         self.shapes.append(block.fixtures[0])
+        foot = block.CreateFixture(
+                shape = b2PolygonShape(vertices = [(-0.5,1.5),(-0.5,2.5),(0.5,2.5),(0.5,1.5)]),
+                isSensor=True
+            )
+        self.foot = block.fixtures[1]
+        
+    def draw(self, screen, offsetX, offsetY):
+        if len(self.shapes) > 0:
+            DrawPolygon(vertices_with_offset(self.shapes[0], offsetX, offsetY), self.color)
     
     def destroy(self):
         destructionShapes = []
@@ -68,8 +87,6 @@ class Player(pygame.sprite.Sprite):
         if self.input["right"]:
             self.shapes[0].body.linearVelocity.x += 10
             
-        if self.gottaGrow:
-            self.growPlant()
-            
     def jump(self):
-        self.shapes[0].body.linearVelocity.y == -15
+        if len(self.foot.body.contacts) > 0:
+            self.shapes[0].body.linearVelocity.y = -15
