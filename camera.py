@@ -37,7 +37,6 @@ class Camera():
         
     def draw(self, screen):
         screen.blit(self.background.image, (self.panx * PPM, 0))
-        label = 
         
     def update(self, ball):
         self.centerX_in_meters = ball.position.x
