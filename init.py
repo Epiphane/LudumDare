@@ -11,6 +11,9 @@ screen = pygame.display.set_mode((800,600), DOUBLEBUF)
 pygame.display.set_caption("Project Hiatus")
 clock = pygame.time.Clock()
 
+TARGET_FPS = 60
+TIME_STEP = 1.0/TARGET_FPS
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('img', name)
     try:

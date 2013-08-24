@@ -42,11 +42,11 @@ def init():
     # Initialize the ground. Will also need to initialize obstacles/arena
     # components here later on.
     ground = world.CreateStaticBody(
-        position = (0, -200),
+        position = (200, -200),
         shapes = b2PolygonShape(box = (50,10))
     )
     
-    body = world.CreateDynamicBody(position = (20,4))
+    body = world.CreateDynamicBody(position = (220,4))
     box = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
     
     shapes = []
@@ -69,12 +69,13 @@ def init():
 # -----------------------------------------------------------------------|
 init()
 while 1:
-    # USER INPUT
-    sleeptime = 1000 / 30
-    deltat = clock.tick(sleeptime)
-    
+    # Reset forces for the next frame
+    world.ClearForces()
+        
     # Update a "tick" in physics land
-    world.Step(sleeptime, 10, 10)
+    world.Step(TIME_STEP, 10, 10)
+    
+    deltat = clock.tick(TARGET_FPS)
     
     # Update minigame. If it returns true, make a new minigame
     winner = arena.update(deltat)
@@ -84,19 +85,23 @@ while 1:
         else: changeArena(currentArena)
         arena = Arena()
     
-    # Reset forces for the next frame
-    world.ClearForces()
-        
     # Check user input
     for event in pygame.event.get():
         if event.type is pygame.QUIT: sys.exit()
         if hasattr(event, 'key'):
+            print(event.key, K_LEFT)
             if event.key is K_ESCAPE: 
                 if event.type is pygame.KEYDOWN: sys.exit()
             if event.key is K_a:
                 if event.type is pygame.KEYDOWN: changeArena(currentArena - 1)
             if event.key is K_d:
                 if event.type is pygame.KEYDOWN: changeArena(currentArena + 1)
+            if event.key == K_LEFT:
+                if event.type is pygame.KEYDOWN:
+                    print("left trigger", shapes[0].body.position)
+                    f = shapes[0].body.GetWorldVector(localVector=(200.0, 200.0))
+                    p = shapes[0].body.GetWorldPoint(localPoint = (0.0, 0.0))
+                    shapes[0].body.ApplyForce( f, shapes[0].body.position, True )
     
     camera.update()
     camera.draw(screen)
