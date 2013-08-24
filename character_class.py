@@ -90,3 +90,4 @@ class Player(pygame.sprite.Sprite):
     def jump(self):
         if len(self.foot.body.contacts) > 0:
             self.shapes[0].body.linearVelocity.y = -15
+            self.shapes[0].body.angularVelocity = 5.4
