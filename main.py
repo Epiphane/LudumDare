@@ -23,13 +23,12 @@ exec(open('arena_mechanics.py'))
 exec(open('camera.py'))
 exec(open('character_class.py'))
 
+
 def init():
     global time_font_lg,time_font_sm                # Font
     global player1, player2    # Players
     global currentArena        # Midpoint
-    global camera            # duh
-    global Import_sprite,interface        # RenderPlains
-    global shapes           # all the Box2D objects
+    global gameState            # duh
     global world            # the Box2D world
     global arena            # Arena for minigame
     global effects          # Sort of like AwesomeRogue!
@@ -38,50 +37,9 @@ def init():
     time_font_sm = pygame.font.Font("fonts/ka1.ttf", 30)
     time_font_lg = pygame.font.Font("fonts/ka1.ttf", 60)
     
-    # Init physics "world", defining gravity. doSleep means that if an object
-    # comes to rest, it can "sleep" and be ignored by the physics engine for a bit.
-    world = b2World(gravity=(0, 25), doSleep = True)
+    arena = Arena()
     
-    # Initialize the ground. Will also need to initialize obstacles/arena
-    # components here later on.
-    ground = world.CreateStaticBody(
-        position = (200, 37.5),
-        shapes = b2PolygonShape(box = (800,1)),
-        userData = "ground"
-    )
     
-    ceiling = world.CreateStaticBody(
-        position = (200, -1),
-        shapes = b2PolygonShape(box = (400,1)),
-        userData = "ceiling"
-    )
-    
-    landMineTest = world.CreateStaticBody(
-                position = (25,37.5),
-                fixtures = b2FixtureDef(
-                    shape = b2CircleShape(radius=2),
-                    isSensor = True),
-                userData = "land mine")
-    
-    body = world.CreateDynamicBody(position = (200, 10))
-    box = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
-    
-    shapes = []
-    shapes.append(ceiling.fixtures[0])
-    shapes.append(ground.fixtures[0])
-    shapes.append(landMineTest.fixtures[0])
-    currentArena = 0.5
-    
-    camera = Camera(currentArena)
-    
-    player1 = Player(1, currentArena - 0.5, (255,0,0))
-    player2 = Player(-1, currentArena + 0.5, (0,0,255))
-    
-    arena = PrepareForBattle()
-    arena.startGame(currentArena)
-    
-    # Initialize the contact handler
-    contactHandler = ContactHandler()
 
     # Initialize effects queue
     effects = []
@@ -109,33 +67,14 @@ while 1:
     
     camera.update(deltat)
     camera.draw(screen)
-    if camera.stopped:
     
-        # Update minigame. If it returns true, make a new minigame
-        winner = arena.update(deltat)
-        if  winner:
-            if winner == 1: changeArena(currentArena + 1)
-            elif winner == 2: changeArena(currentArena - 1)
-            else: changeArena(currentArena)
-            
-            lvl = int(random.random() * 3)
-            if lvl == 0:
-                    arena = SoccerArena()
-            elif lvl == 1:
-                    arena = GardenArena()
-            else:
-                    arena = FishingArena()
-        
-        # Check user input
-        for event in pygame.event.get():
-            if event.type is pygame.QUIT: sys.exit()
-            if hasattr(event, 'key'):
-                if event.key is K_ESCAPE: 
-                    if event.type is pygame.KEYDOWN: sys.exit()
-                arena.doAction(event)
-                            
-        player1.update()
-        player2.update()
+    # Check user input
+    for event in pygame.event.get():
+        if event.type is pygame.QUIT: sys.exit()
+        if hasattr(event, 'key'):
+            if event.key is K_ESCAPE: 
+                if event.type is pygame.KEYDOWN: sys.exit()
+            arena.doAction(event)
                         
     # Update a "tick" in physics land
     world.Step(TIME_STEP*1.5, 10, 10)
@@ -155,3 +94,5 @@ while 1:
             del effects[i]
                         
     pygame.display.flip()
+    
+def initWalls():

@@ -19,11 +19,10 @@ def DrawCircle(center, radius, color = (0,0,0)):
     pygame.draw.circle(screen, color, (int((center.x + camera.panx) * PPM), int(center.y * PPM)), int(radius*PPM))
             
 class Camera():
-    def __init__(self, arena):
+    def __init__(self, offsetX_in_meters):
         self.background = Back("background")
-        self.arena = arena
-        self.panx = (-ARENA_WIDTH * (arena - 0.5)) / PPM
-        self.goalx = (-ARENA_WIDTH * (arena - 0.5)) / PPM
+        self.offsetX_in_meters = offsetX_in_meters
+        self.offsetX_in_px = offsetX_in_meters * PPM
         
         self.speed = 0
         self.delay = 0
@@ -57,6 +56,7 @@ class Camera():
             # planning to have an image for every body, and store the 
             # filename for the image in userData. In the meantime, just check
             # for the guys that we DO have images predefined for
+            if not hasattr(shapeToDraw.body, 'userData'): continue
             if shapeToDraw.body.userData == "goal":
                 screen.blit(images["goal"][0],vertices(shapeToDraw)[0])
             if type(shapeToDraw.shape) is b2PolygonShape:

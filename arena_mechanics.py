@@ -12,10 +12,52 @@ class Arena():
         self.drawRed = 0
         self.bignum = 10
         self.shapes = []
-        self.lost = False
-        self.won = False
         
-        self.paused = True
+        self.initWalls()
+        
+        self.camera = Camera()
+        
+        self.player1 = Player(1, (255,0,0))
+        self.player2 = Player(-1, (0,0,255))
+    
+        # Init physics "world", defining gravity. doSleep means that if an object
+        # comes to rest, it can "sleep" and be ignored by the physics engine for a bit.
+        self.world = b2World(gravity=(0, 25), doSleep = True)
+        
+        # Initialize the contact handler
+        contactHandler = ContactHandler()
+        
+    def initWalls(self):
+        ground = world.CreateStaticBody(
+            position = (200, 37.5),
+            shapes = b2PolygonShape(box = (800,1)),
+            userData = "ground"
+        )
+        self.shapes.append(ground.fixtures[0])
+        
+        ceiling = world.CreateStaticBody(
+            position = (200, -15),
+            shapes = b2PolygonShape(box = (800,1)),
+            userData = "ceiling"
+        )
+        self.shapes.append(ceiling.fixtures[0])
+        
+        leftWall = world.CreateStaticBody(
+            position = (0, 0),
+            shapes = b2PolygonShape(box = (1,37.5)),
+            userData = "left wall"
+        )
+        self.shapes.append(leftWall.fixtures[0])
+        
+        rightWall = world.CreateStaticBody(
+            position = (200, 0),
+            shapes = b2PolygonShape(box = (1,37.5)),
+            userData = "right wall"
+        )
+        self.shapes.append(rightWall.fixtures[0])
+        
+    
+class Arena2():
         
     def startGame(self, arena):
         self.paused = False
@@ -51,12 +93,8 @@ class Arena():
         if(self.timeRemaining <= 0):
             return self.endMinigame()
         elif self.timeRemaining <= 6000:
-            if self.lost:
-                self.lost = False
-                return 2
-            if self.won:
-                self.won = False
-                return 1
+            if self.lost or self.won:
+                return self.endMinigame()
         return False
         
     def draw(self, screen):
@@ -76,16 +114,25 @@ class Arena():
         screen.blit(text_sm, (400,0))
         
     def endMinigame(self):
-        for shape in self.shapes:
+        self.paused = True
+        print "ending"
+        while len(self.shapes) > 0:
+            shape = self.shapes[0]
             world.DestroyBody(shape.body)
-        print("destroyed arena.shapes")
-        self.shapes = []
-        arena.shapes = []
+            arena.shapes.remove(shape)
+            print "destroyed a.shape -> ", len(arena.shapes),"left"
+            
+        print "Over"
+        if self.lost:
+            self.lost = False
+            return 2
+        if self.won:
+            self.won = False
+            return 1
     
         player1.destroy()
         player2.destroy()
-        if(random.random() < 0.5): return 1
-        else: return 1
+        return 1
         
     def doAction(self, event):
         if event.key is K_a:
@@ -102,34 +149,12 @@ class Arena():
             player1.jump()
             
     def loseMinigame(self):
-        if self.time >= 8000: return
+        if self.timeRemaining >= 8000: return
         self.lost = True
             
     def wonMinigame(self):
-        if self.time >= 8000: return
+        if self.timeRemaining >= 8000: return
         self.won = True
-        
-class PrepareForBattle(Arena):
-    def initGame(self, minx, maxx):
-        self.timeRemaining = 3000
-        self.bignum = 3
-        
-    def startGame(self, arena):
-        self.paused = False
-        player1.display = False
-        player2.display = False
-        self.initGame((ARENA_WIDTH * (arena - 0.5)) / PPM, (ARENA_WIDTH * (arena + 1.5)) / PPM)
-        
-    def draw(self, screen):
-        self.drawTimer(screen)
-        
-        text = (time_font_lg.render("PREPARE", True, (0, 70, 0)), time_font_lg.render("YOURSELF", True, (0, 70, 0)))
-        screen.blit(text[0], (190,180))
-        screen.blit(text[1], (180,260))
-        
-    def endMinigame(self):
-        changePlayers = False
-        return -1
         
 class SoccerArena(Arena):
     def initGame(self, minx, maxx):
@@ -188,120 +213,24 @@ class SoccerArena(Arena):
         if event.key is K_s: pass
             #player1.kick(-1)
             
-class GardenArena(Arena):
-        
-    def startGame(self, arena):
-        self.paused = False
-        player2.createPlanter(currentArena + 0.5, (0,0,255))
-        player1.createGardener(currentArena - 0.5, (255,0,0), (ARENA_WIDTH * (arena - 0.5)) / PPM)
-        self.initGame((ARENA_WIDTH * (arena - 0.5)) / PPM, (ARENA_WIDTH * (arena + 1.5)) / PPM)
-        
-        # Attach the head of the fire hose the the gardener's arms
-
-    def doAction(self, event):
-        if event.key is K_a:
-            player1.input["left"] = (event.type is pygame.KEYDOWN)
-        if event.key is K_d:
-            player1.input["right"] = (event.type is pygame.KEYDOWN)
-        if event.key == K_LEFT:
-            player2.input["left"] = (event.type is pygame.KEYDOWN)
-        if event.key == K_RIGHT:
-            player2.input["right"] = (event.type is pygame.KEYDOWN)
-        if event.key == K_UP: 
-            player2.jump()
-        if event.key == K_DOWN:pass
-        if event.key is K_w and event.type is pygame.KEYDOWN:
-            player1.aimUp()
-        if event.key is K_s:
-            player1.aimDown()
-        
-class FishingArena(Arena):
+class PrepareForBattle(Arena):
     def initGame(self, minx, maxx):
-        
-        ground = world.CreateStaticBody(
-            position = (ARENA_WIDTH * (currentArena) / PPM + 2, 25),
-            shapes = b2PolygonShape(box = (14,1)),
-            userData = "ground"
-        )
-        self.shapes.append(ground.fixtures[0])
-        
-        wall = world.CreateStaticBody(
-            position = ((ARENA_WIDTH * currentArena) / PPM + 16, 36.5),
-            shapes = b2PolygonShape(box = (1,12.5)),
-            userData = "wall"
-        )
-        self.shapes.append(wall.fixtures[0])
-        
-        wall1 = world.CreateStaticBody(
-            position = (minx, 0),
-            shapes = b2PolygonShape(box = (1,37.5)),
-            userData = "left wall"
-        )
-        
-        self.shapes.append(wall1.fixtures[0])
-        
-        wall2 = world.CreateStaticBody(
-            position = (maxx, 0),
-            shapes = b2PolygonShape(box = (1,37.5)),
-            userData = "right wall"
-        )
+        self.timeRemaining = 3000
+        self.bignum = 3
         
     def startGame(self, arena):
         self.paused = False
-        player1.createFisher(currentArena - 0.5, (255,0,0), player2)
-        self.initGame((ARENA_WIDTH * (arena - 0.5)) / PPM, (ARENA_WIDTH * (arena + 1.5)) / PPM)
-
-    def doAction(self, event):
-        if event.key is K_a:
-            player1.input["left"] = (event.type is pygame.KEYDOWN)
-        if event.key is K_d:
-            player1.input["right"] = (event.type is pygame.KEYDOWN)
-        if event.key == K_LEFT:
-            player2.input["left"] = (event.type is pygame.KEYDOWN)
-        if event.key == K_RIGHT:
-            player2.input["right"] = (event.type is pygame.KEYDOWN)
-        if event.key == K_UP:
-            player2.input["up"] = (event.type is pygame.KEYDOWN)
-        if event.key == K_DOWN:
-            player2.input["down"] = (event.type is pygame.KEYDOWN)
-        if event.key is K_w:
-            player1.reelInLine()
-            
-class BattleArena(Arena):
-        
-    def startGame(self, arena):
-        self.paused = False
-        player1.createWarrior(currentArena - 0.5, (255, 0, 0))
-        player2.createWarrior(currentArena + 0.5, (0, 0, 255))
+        player1.display = False
+        player2.display = False
         self.initGame((ARENA_WIDTH * (arena - 0.5)) / PPM, (ARENA_WIDTH * (arena + 1.5)) / PPM)
         
-        rocket1 = player1.getRocketLauncher()
-        rocket2 = player2.getRocketLauncher()
+    def draw(self, screen):
+        self.drawTimer(screen)
         
-        rocketLaunch1 = RocketLaunch(rocket1)
-        effects.append(rocketLaunch1)
+        text = (time_font_lg.render("PREPARE", True, (0, 70, 0)), time_font_lg.render("YOURSELF", True, (0, 70, 0)))
+        screen.blit(text[0], (190,180))
+        screen.blit(text[1], (180,260))
         
-        rocketLaunch2 = RocketLaunch(rocket2)
-        effects.append(rocketLaunch2)
-    
-        if event.key == K_UP: 
-            # aim launcher
-            if event.type is pygame.KEYDOWN:
-                player2.aimRocket(1)
-            elif event.type is pygame.KEYUP:
-                player2.aimRocket(-1)
-        if event.key == K_DOWN:
-            if event.type is pygame.KEYDOWN:
-                player2.aimRocket(-1)      
-            elif event.type is pygame.KEYUP:
-                player2.aimRocket(1)       
-        if event.key is K_w:               
-            if event.type is pygame.KEYDOWN:
-                player1.aimRocket(-1)     
-            elif event.type is pygame.KEYUP:
-                player1.aimRocket(1)
-        if event.key is K_s:       
-            if event.type is pygame.KEYDOWN:
-                player1.aimRocket(1)     
-            elif event.type is pygame.KEYUP:
-                player1.aimRocket(-1)
+    def endMinigame(self):
+        changePlayers = False
+        return -1

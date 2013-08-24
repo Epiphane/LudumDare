@@ -4,19 +4,22 @@ import Box2D
 import time
 from pygame.locals import *
 
-
-pygame.init()
-
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), DOUBLEBUF, 32)
-pygame.display.set_caption("LD 27")
-clock = pygame.time.Clock()
+STAGE_WIDTH_PX = 3200
+STAGE_WIDTH_M = 200
+SCREEN_WIDTH_PX = 800
+SCREEN_WIDTH_M = 50
+SCREEN_HEIGHT_PX = 600
+SCREEN_HEIGHT_M = 37.5
+PPM = 16
 
 TARGET_FPS = 60
 TIME_STEP = 1.0/TARGET_FPS
-PPM = 16
+
+pygame.init()
+
+screen = pygame.display.set_mode((SCREEN_WIDTH_PX, SCREEN_HEIGHT_PX), DOUBLEBUF, 32)
+pygame.display.set_caption("LD 27")
+clock = pygame.time.Clock()
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('img', name)
