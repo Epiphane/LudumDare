@@ -203,7 +203,9 @@ class GardenArena(Arena):
             player2.input["right"] = (event.type is pygame.KEYDOWN)
         if event.key == K_UP: pass
         if event.key == K_DOWN:pass
-        if event.key is K_w:
-            player1.aimUp()
+        if event.key is K_w and event.type is pygame.KEYDOWN:
+            player2.growPlant()
+            #player1.aimUp()
         if event.key is K_s:
-            player1.aimDown()
+            player2.growPlant()
+            #player1.aimDown()
