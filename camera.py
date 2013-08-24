@@ -16,22 +16,29 @@ def DrawCircle(center, radius, color = (0,0,0)):
     if not center or not radius:
         return
 
-    pygame.draw.circle(screen, color, (int(center.x * PPM), int(center.y * PPM)), int(radius*3))
+    print (int((center.x + camera.panx) * PPM), int(center.y * PPM))
+    pygame.draw.circle(screen, color, (int((center.x + camera.panx) * PPM), int(center.y * PPM)), int(radius*3))
             
 class Camera():
     def __init__(self, arena):
         self.background = Back("background")
         self.arena = arena
-        self.panx = -ARENA_WIDTH * (arena - 0.5)
-        self.goalx = -ARENA_WIDTH * (arena - 0.5)
+        self.panx = (-ARENA_WIDTH * (arena - 0.5)) / PPM
+        self.goalx = (-ARENA_WIDTH * (arena - 0.5)) / PPM
         
         self.speed = 0
         self.stopped = True
         
     def draw(self, screen):
-        screen.blit(self.background.image, (self.panx, 0))
+        screen.blit(self.background.image, (self.panx * PPM, 0))
         
         for shapeToDraw in shapes:
+            if type(shapeToDraw.shape) is b2PolygonShape:
+                DrawPolygon(vertices(shapeToDraw), pygame.Color(255, 0, 0, 255))
+            elif type(shapeToDraw.shape) is b2CircleShape:
+                DrawCircle(shapeToDraw.body.position, shapeToDraw.shape.radius, pygame.Color(255, 0, 0, 255))
+        
+        for shapeToDraw in arena.shapes:
             if type(shapeToDraw.shape) is b2PolygonShape:
                 DrawPolygon(vertices(shapeToDraw), pygame.Color(255, 0, 0, 255))
             elif type(shapeToDraw.shape) is b2CircleShape:
@@ -59,4 +66,4 @@ class Camera():
         self.stopped = True
         
     def panCam(self, arena):
-        self.goalx = -ARENA_WIDTH * (arena - 0.5)
+        self.goalx = (-ARENA_WIDTH * (arena - 0.5)) / PPM
