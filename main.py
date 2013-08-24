@@ -50,16 +50,16 @@ def init():
     # Initialize the ground. Will also need to initialize obstacles/arena
     # components here later on.
     ground = world.CreateStaticBody(
-        position = (0, -10),
+        position = (0, 500),
         shapes = b2PolygonShape(box = (50,10))
     )
     
     body = world.CreateDynamicBody(position = (0,4))
-    box = body.CreatePolygonFixture(box = (1,1), density = 1, friction = 0.3)
+    box = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
     
-    shapes = {}
-    shapes["box"] = body
-    shapes["ground"] = ground
+    shapes = []
+    shapes.append(box)
+    shapes.append(ground.fixtures[0])
     
 # -----------------------------------------------------------------------|
 # -----------------------------------------------------------------------|
@@ -84,10 +84,6 @@ while 1:
     
     # Reset forces for the next frame
     world.ClearForces()
-    
-    # Draw dem boxes
-    for shape in shapes:
-        print("drawing shapes yo")
         
     # Check user input
     for event in pygame.event.get():
