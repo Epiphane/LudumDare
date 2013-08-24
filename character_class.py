@@ -54,7 +54,7 @@ class Player(pygame.sprite.Sprite):
         for shape in self.shapes:
             shape.body.DestroyFixture(shape)
         self.shapes = []
-            
+        
         self.arena = arena
         
         self.display = True
@@ -147,6 +147,7 @@ class Player(pygame.sprite.Sprite):
     def aimDown(self): pass
                 
     def createPlanter(self, arena, color):
+        print("Create plantah")
         self.clearShapes(arena, color)
         self.leaves = []
     

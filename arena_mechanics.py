@@ -70,6 +70,9 @@ class Arena():
         for shape in self.shapes:
             shape.body.DestroyFixture(shape)
             #world.DestroyBody(shape.body)
+        print("destroyed arena.shapes")
+        self.shapes = []
+        arena.shapes = []
     
         player1.destroy()
         player2.destroy()
