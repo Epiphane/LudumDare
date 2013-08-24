@@ -43,10 +43,10 @@ def init():
     # components here later on.
     ground = world.CreateStaticBody(
         position = (0, 37.5),
-        shapes = b2PolygonShape(box = (1,400))
+        shapes = b2PolygonShape(box = (10,400))
     )
     
-    body = world.CreateDynamicBody(position = (1052,20))
+    body = world.CreateDynamicBody(position = (225,0))
     box = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
     
    # body2 = world.CreateDynamicBody(position = (218,-2))
@@ -73,11 +73,12 @@ def init():
 # -----------------------------------------------------------------------|
 init()
 while 1:
-    # Reset forces for the next frame
-    world.ClearForces()
         
     # Update a "tick" in physics land
     world.Step(TIME_STEP, 10, 10)
+    
+    # Reset forces for the next frame
+    world.ClearForces()
     
     deltat = clock.tick(TARGET_FPS)
     
@@ -102,9 +103,9 @@ while 1:
             if event.key == K_LEFT:
                 if event.type is pygame.KEYDOWN:
                     print("left trigger")
-                    #shapes[0].body.ApplyForce( f, p, True )
-                    shapes[0].body.ApplyLinearImpulse( b2Vec2(0, 50),
-                        shapes[0].body.GetWorldPoint())
+                    shapes[0].body.ApplyForce( b2Vec2(0, 50), shapes[0].body.GetWorldPoint(localPoint = (12, 12)), True )
+                    #shapes[0].body.ApplyLinearImpulse( force = (0, 50),
+                       # point = (0, 0), impulse = )
                     
     camera.update()
     camera.draw(screen)
