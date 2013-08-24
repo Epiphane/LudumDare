@@ -101,9 +101,9 @@ class Arena():
         
         for shape in self.shapes:
             if isinstance(shape.shape, b2CircleShape):
-                print shape.body.position.x * PPM, offsetX
+               # print shape.body.position.x * PPM, offsetX
                 pos = (int(shape.body.position.x * PPM - offsetX), int(shape.body.position.y * PPM + offsetY))
-                print pos
+                #print pos
                 DrawCircle(pos, shape.shape.radius, (0,0,0))
             else:
                 DrawPolygon(vertices_with_offset(shape, offsetX, offsetY), (0,0,0))
@@ -135,11 +135,17 @@ class Arena():
             self.player2.input["right"] = (event.type is pygame.KEYDOWN)
         if event.key == K_UP:
             self.player2.jump()
-        if event.key == K_DOWN:pass
         if event.key is K_w:
             self.player1.jump()
-        if event.key is K_s: pass
-  
+        if event.key is K_s and self.player1.input["right"]:
+            self.player1.slideTackle("r")
+        if event.key is K_s and self.player1.input["left"]:
+            self.player1.slideTackle("l")
+        if event.key == K_DOWN and self.player2.input["right"]:
+            self.player2.slideTackle("r")
+        if event.key == K_DOWN and self.player2.input["left"]:
+            self.player2.slideTackle("l")
+            
     def startGame(self, middle_x):
         self.ball = self.world.CreateDynamicBody(position = (middle_x,27),
             fixtures = b2FixtureDef(

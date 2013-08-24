@@ -1,3 +1,4 @@
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, direction, color, arena):
         self.input = {"up": False, "down": False, "left": False, "right": False}
@@ -86,7 +87,17 @@ class Player(pygame.sprite.Sprite):
             self.shapes[0].body.linearVelocity.x -= 10
         if self.input["right"]:
             self.shapes[0].body.linearVelocity.x += 10
+        
             
     def jump(self):
         if len(self.foot.body.contacts) > 0:
             self.shapes[0].body.linearVelocity.y = -15
+            
+    def slideTackle(self, dir):
+        if dir == "r":
+            print("slide tackle right")
+            self.shapes[0].body.ApplyForce(force=(1000,0), point=(2,2), wake=True)
+        if dir == "l":
+            print("slide tackle left")
+            self.shapes[0].body.ApplyForce(force=(-1000,0), point=(2,2), wake=True)
+            
