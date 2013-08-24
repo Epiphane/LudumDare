@@ -42,11 +42,16 @@ def init():
     # Initialize the ground. Will also need to initialize obstacles/arena
     # components here later on.
     ground = world.CreateStaticBody(
-        position = (0, 37.5),
-        shapes = b2PolygonShape(box = (1,400))
+        position = (200, 37.5),
+        shapes = b2PolygonShape(box = (400,1))
     )
     
-    body = world.CreateDynamicBody(position = (1052,20))
+    ceiling = world.CreateStaticBody(
+        position = (200, 0),
+        shapes = b2PolygonShape(box = (400,1))
+    )
+    
+    body = world.CreateDynamicBody(position = (200, 10))
     box = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
     
    # body2 = world.CreateDynamicBody(position = (218,-2))
@@ -55,6 +60,7 @@ def init():
     shapes = []
     shapes.append(box)
    # shapes.append(box2)
+    shapes.append(ceiling.fixtures[0])
     shapes.append(ground.fixtures[0])
     
     player1 = Player(1, 8)
@@ -73,11 +79,11 @@ def init():
 # -----------------------------------------------------------------------|
 init()
 while 1:
-    # Reset forces for the next frame
-    world.ClearForces()
-        
     # Update a "tick" in physics land
     world.Step(TIME_STEP, 10, 10)
+    
+    # Reset forces for the next frame
+    world.ClearForces()
     
     deltat = clock.tick(TARGET_FPS)
     
@@ -100,6 +106,8 @@ while 1:
                 if event.type is pygame.KEYDOWN: changeArena(currentArena - 1)
             if event.key is K_d:
                 if event.type is pygame.KEYDOWN: changeArena(currentArena + 1)
+            if event.key is K_SPACE:
+                arena.ball.ApplyForce(force=(1300,-2700), point=arena.ball.position, wake=True)
             if event.key == K_LEFT:
                 if event.type is pygame.KEYDOWN:
                     print("left trigger", shapes[0].body.position)

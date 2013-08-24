@@ -67,21 +67,24 @@ class SoccerArena(Arena):
     def initGame(self):
         body = world.CreateDynamicBody(position = (225,12),
             fixtures = b2FixtureDef(
-                shape = b2CircleShape(radius=10),
-                density=1.0))
+                shape = b2CircleShape(radius=1),
+                density=1.0,
+                restitution=0.5),
+                )
         
         self.shapes.append(body.fixtures[0])
         
-        ground = world.CreateStaticBody(
+        wall1 = world.CreateStaticBody(
             position = (200, 0),
             shapes = b2PolygonShape(box = (1,37.5))
         )
             
-        self.shapes.append(ground.fixtures[0])
+        self.shapes.append(wall1.fixtures[0])
         
-        ground = world.CreateStaticBody(
+        wall2 = world.CreateStaticBody(
             position = (250, 0),
             shapes = b2PolygonShape(box = (1,37.5))
         )
             
-        self.shapes.append(ground.fixtures[0])
+        self.shapes.append(wall2.fixtures[0])
+        self.ball = body
