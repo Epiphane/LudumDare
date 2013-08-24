@@ -12,6 +12,8 @@ class Arena():
         self.drawRed = 0
         self.bignum = 10
         self.shapes = []
+        
+        self.modifications = []
     
         # Initialize effects queue
         self.effects = []
@@ -101,9 +103,7 @@ class Arena():
         
         for shape in self.shapes:
             if isinstance(shape.shape, b2CircleShape):
-                print shape.body.position.x * PPM, offsetX
                 pos = (int(shape.body.position.x * PPM - offsetX), int(shape.body.position.y * PPM + offsetY))
-                print pos
                 DrawCircle(pos, shape.shape.radius, (0,0,0))
             else:
                 DrawPolygon(vertices_with_offset(shape, offsetX, offsetY), (0,0,0))
@@ -120,9 +120,6 @@ class Arena():
         if(self.bignum == 10): screen.blit(text, (290,0))
         else: screen.blit(text, (330,0))
         screen.blit(text_sm, (400,0))
-        
-    def randomEvent(self):
-        print "Something exciting happens!"
 
     def doAction(self, event):
         if event.key is K_a:
@@ -168,6 +165,36 @@ class Arena():
     
         #player1.destroy()
         #player2.destroy()
+        
+    def randomEvent(self):
+        while len(self.modifications) > 0:
+            mod = self.modifications[0]
+            if(mod == "changeBall"): self.changeBall_revert()
+            del self.modifications[0]
+        self.modifications.append(ChangeBall(self.ball.fixtures[0]))
+        event = math.floor(random.random())
+        
+        if(event == 0):
+            self.changeBall()
+            self.modifications.append("changeBall")
+        
+    def changeBall(self):
+        self.oldBall = self.ball
+        self.shapes.remove(self.ball.fixtures[0])
+        self.ball = self.world.CreateDynamicBody(position = self.ball.position,
+            fixtures = b2FixtureDef(
+                shape = b2PolygonShape(vertices=[(-1+random.random(),-1+random.random()),(-1+random.random(),0.25+random.random()),(-0.5+random.random(),0.25+random.random()),(-0.5+random.random(),1+random.random()),(0.5+random.random(),0.5+random.random()),(1+random.random(),0.2+random.random()),(0+random.random(),0.5+random.random())]),
+                density=1,
+                restitution=0.5),
+            userData="soccer ball")
+        self.shapes.append(self.ball.fixtures[0])
+    
+    def changeBall_revert(self):
+        self.shapes.remove(self.ball.fixtures[0])
+        self.oldBall.position = self.ball.position
+        self.ball = self.oldBall
+        self.shapes.append(self.ball.fixtures[0])
+        
             
 class PrepareForBattle(Arena):
     def initGame(self, minx, maxx):

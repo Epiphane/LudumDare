@@ -23,6 +23,7 @@ exec(open('ui_class.py'))
 exec(open('arena_mechanics.py'))
 exec(open('camera.py'))
 exec(open('character_class.py'))
+exec(open('random_events.py'))
 
 
 def init():
