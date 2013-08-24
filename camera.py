@@ -56,13 +56,11 @@ class Camera():
                 DrawCircle(shapeToDraw.body.position, shapeToDraw.shape.radius, pygame.Color(0, 0, 0, 255))
         
     def update(self):
-        if self.speed > CAMERA_MAX_PAN_SPEED: self.speed = CAMERA_MAX_PAN_SPEED
-        if self.speed < CAMERA_MAX_PAN_SPEED * -1: self.speed = CAMERA_MAX_PAN_SPEED * -1
         if self.panx > self.goalx:
-            self.speed = -20
+            self.speed = -0.5
             self.stopped = False
         elif self.panx < self.goalx:
-            self.speed = 20
+            self.speed = 0.5
             self.stopped = False
         else:
             self.stop()
@@ -75,6 +73,8 @@ class Camera():
         self.panx = self.goalx
         self.speed = 0
         self.stopped = True
+        if arena.paused: 
+            arena.startGame(currentArena)
         
     def panCam(self, arena):
         self.goalx = (-ARENA_WIDTH * (arena - 0.5)) / PPM

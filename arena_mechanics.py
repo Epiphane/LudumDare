@@ -7,14 +7,18 @@ def changeArena(arenaNum):
     
 class Arena():
     def __init__(self):
-        self.timeRemaining = 10000 # 10 seconds
+        self.timeRemaining = 5000 # 10 seconds
         self.drawRed = 0
         self.bignum = 10
         self.shapes = []
         
-        self.initGame()
+        self.paused = True
         
-    def initGame(self): pass
+    def startGame(self, arena):
+        self.paused = False
+        self.initGame((ARENA_WIDTH * (arena - 0.5)) / PPM, (ARENA_WIDTH * (arena + 1.5)) / PPM)
+        
+    def initGame(self, minx, maxx): pass
         
     def update(self, dt):
         if not camera.stopped: return False
@@ -45,15 +49,17 @@ class Arena():
         screen.blit(text_sm, (400,0))
         
     def endMinigame(self):
-        for shape in shapes:
-            shape.body.destroyFixture(shape)
-            world.destroyBody(shape.body)
+        for shape in self.shapes:
+            shape.body.DestroyFixture(shape)
+            #world.DestroyBody(shape.body)
     
+        player1.destroy()
+        player2.destroy()
         if(random.random() < 0.5): return 1
-        else: return 2
+        else: return 1
         
 class PrepareForBattle(Arena):
-    def __init__(self):
+    def __init__(self, arena):
         self.timeRemaining = 3000
         self.bignum = 3
         

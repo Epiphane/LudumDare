@@ -43,7 +43,7 @@ def init():
     # components here later on.
     ground = world.CreateStaticBody(
         position = (200, 37.5),
-        shapes = b2PolygonShape(box = (400,1))
+        shapes = b2PolygonShape(box = (800,1))
     )
     
     ceiling = world.CreateStaticBody(
@@ -62,14 +62,15 @@ def init():
    # shapes.append(box2)
     shapes.append(ceiling.fixtures[0])
     shapes.append(ground.fixtures[0])
-    
-    player1 = Player(1, 8, (255,0,0))
-    player2 = Player(-1, 9, (0,0,255))
-    currentArena = 8.5
+    currentArena = 0.5
     
     camera = Camera(currentArena)
     
+    player1 = Player(1, 0, (255,0,0))
+    player2 = Player(-1, 1, (0,0,255))
+    
     arena = SoccerArena()
+    arena.startGame(currentArena)
 
     
 # -----------------------------------------------------------------------|
@@ -84,41 +85,43 @@ while 1:
     
     deltat = clock.tick(TARGET_FPS)
     
-    # Update minigame. If it returns true, make a new minigame
-    winner = arena.update(deltat)
-    if  winner:
-        if winner == 1: changeArena(currentArena + player1.direction)
-        elif winner == 2: changeArena(currentArena + player2.direction)
-        else: changeArena(currentArena)
-        arena = Arena()
-    
-    # Check user input
-    for event in pygame.event.get():
-        if event.type is pygame.QUIT: sys.exit()
-        if hasattr(event, 'key'):
-            if event.key is K_ESCAPE: 
-                if event.type is pygame.KEYDOWN: sys.exit()
-            if event.key is K_a:
-                player1.input["left"] = (event.type is pygame.KEYDOWN)
-            if event.key is K_d:
-                player1.input["right"] = (event.type is pygame.KEYDOWN)
-            if event.key == K_LEFT:
-                player2.input["left"] = (event.type is pygame.KEYDOWN)
-            if event.key == K_RIGHT:
-                player2.input["right"] = (event.type is pygame.KEYDOWN)
-            if event.key == K_UP:
-                player2.shapes[0].body.ApplyForce(force=(500,0), point=(0,3), wake=True)
-            if event.key is K_w:
-                player1.shapes[0].body.ApplyForce(force=(-500,0), point=(0,3), wake=True)
-                        
-    player1.update()    
-    player2.update()
-                    
-    # Update a "tick" in physics land
-    world.Step(TIME_STEP*2, 10, 10)
-    
     camera.update()
     camera.draw(screen)
+    if camera.stopped:
+    
+        # Update minigame. If it returns true, make a new minigame
+        winner = arena.update(deltat)
+        if  winner:
+            if winner == 1: changeArena(currentArena + 1)
+            elif winner == 2: changeArena(currentArena - 1)
+            else: changeArena(currentArena)
+            arena = SoccerArena()
+        
+        # Check user input
+        for event in pygame.event.get():
+            if event.type is pygame.QUIT: sys.exit()
+            if hasattr(event, 'key'):
+                if event.key is K_ESCAPE: 
+                    if event.type is pygame.KEYDOWN: sys.exit()
+                if event.key is K_a:
+                    player1.input["left"] = (event.type is pygame.KEYDOWN)
+                if event.key is K_d:
+                    player1.input["right"] = (event.type is pygame.KEYDOWN)
+                if event.key == K_LEFT:
+                    player2.input["left"] = (event.type is pygame.KEYDOWN)
+                if event.key == K_RIGHT:
+                    player2.input["right"] = (event.type is pygame.KEYDOWN)
+                if event.key == K_UP:
+                    player2.kick()
+                if event.key is K_w:
+                    player1.kick()
+                            
+        player1.update()    
+        player2.update()
+                        
+    # Update a "tick" in physics land
+    world.Step(TIME_STEP*1.5, 10, 10)
+        
     arena.draw(screen)
                         
     pygame.display.flip()
