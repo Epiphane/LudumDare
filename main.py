@@ -117,7 +117,7 @@ while 1:
             if winner == 1: changeArena(currentArena + 1)
             elif winner == 2: changeArena(currentArena - 1)
             else: changeArena(currentArena)
-            arena = GardenArena()
+            arena = BattleArena()
         
         # Check user input
         for event in pygame.event.get():

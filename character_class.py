@@ -181,3 +181,44 @@ class Player(pygame.sprite.Sprite):
             
     def createWarrior(self, arena, color):
         self.clearShapes(arena, color)
+        
+        launchers = 0x0002
+        humans = 0x0004
+        
+        noTouchingLaunchers = 0xFFFF ^ launchers
+        noTouchingHumans = 0xFFFF ^ humans
+        
+        # Create warrior body, with "Rocket launcher" on top
+        warriorBody = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 20),
+                        fixtures = b2FixtureDef(
+                                shape = b2PolygonShape(box=(1, 2, (0, 2.5), 0)),
+                                density = 2,
+                                filter = b2Filter(
+                                    categoryBits = humans,
+                                    maskBits = noTouchingLaunchers
+                                )),
+                        userData = "warrior"
+                        )
+        rocketLauncherBody = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 20),
+                        fixtures = b2FixtureDef(
+                                shape = b2PolygonShape(box=(1.2,0.5,(0, 0), 0)),
+                                density = -50,
+                                filter = b2Filter(
+                                    categoryBits = launchers,
+                                    maskBits = noTouchingHumans
+                                )),
+                        userData = "rocket launcher"
+                        )
+                        
+        # Bind 'em together with revolute joint
+        world.CreateRevoluteJoint(bodyA=warriorBody, bodyB=rocketLauncherBody, 
+                localAnchorA = (0,0), localAnchorB = (0, 0), collideConnected=False)
+        self.shapes.append(warriorBody.fixtures[0])
+        self.shapes.append(rocketLauncherBody.fixtures[0])
+        
+    def aimRocket(self, degree):
+        self.shapes[1].body.angularVelocity += degree
+        
+    def getRocketLauncher(self):
+        return self.shapes[1]
+        

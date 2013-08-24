@@ -50,5 +50,19 @@ class Hoser:
         newWaterMol.linearVelocity.x = 900 - newWaterMol.linearVelocity.y*newWaterMol.linearVelocity.y
         self.waterMols.append(newWaterMol.fixtures[0])
         arena.shapes.append(newWaterMol.fixtures[0])
-            
-            
+        
+class RocketLaunch:
+    rocketCooldown = 0
+    done = False
+    rocketLauncher = None
+    def __init__(self, rocketLauncher):
+        self.rocketLauncher = rocketLauncher
+    def draw(self, screen):
+        pass
+    def update(self):
+        self.rocketCooldown -= 1
+        if self.rocketCooldown <= 0:
+            print("Launching rocket!")
+            self.rocketCooldown = 100
+            #newRocket = world.CreateDynamicBody(
+              #  position = rocketEdge
