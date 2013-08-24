@@ -26,22 +26,25 @@ class Camera():
         self.goalx = (-ARENA_WIDTH * (arena - 0.5)) / PPM
         
         self.speed = 0
+        self.delay = 0
         self.stopped = True
         
     def draw(self, screen):
         screen.blit(self.background.image, (self.panx * PPM, 0))
         
-        for shapeToDraw in player1.shapes:
-            if type(shapeToDraw.shape) is b2PolygonShape:
-                DrawPolygon(vertices(shapeToDraw), player1.color)
-            elif type(shapeToDraw.shape) is b2CircleShape:
-                DrawCircle(shapeToDraw.body.position, shapeToDraw.shape.radius, player1.color)
+        if player1.display:
+            for shapeToDraw in player1.shapes:
+                if type(shapeToDraw.shape) is b2PolygonShape:
+                    DrawPolygon(vertices(shapeToDraw), player1.color)
+                elif type(shapeToDraw.shape) is b2CircleShape:
+                    DrawCircle(shapeToDraw.body.position, shapeToDraw.shape.radius, player1.color)
         
-        for shapeToDraw in player2.shapes:
-            if type(shapeToDraw.shape) is b2PolygonShape:
-                DrawPolygon(vertices(shapeToDraw), player2.color)
-            elif type(shapeToDraw.shape) is b2CircleShape:
-                DrawCircle(shapeToDraw.body.position, shapeToDraw.shape.radius, player2.color)
+        if player2.display:
+            for shapeToDraw in player2.shapes:
+                if type(shapeToDraw.shape) is b2PolygonShape:
+                    DrawPolygon(vertices(shapeToDraw), player2.color)
+                elif type(shapeToDraw.shape) is b2CircleShape:
+                    DrawCircle(shapeToDraw.body.position, shapeToDraw.shape.radius, player2.color)
         
         for shapeToDraw in shapes:
             if type(shapeToDraw.shape) is b2PolygonShape:
@@ -62,7 +65,7 @@ class Camera():
                 DrawCircle(shapeToDraw.body.position, shapeToDraw.shape.radius, pygame.Color(0, 0, 0, 255))
             
         
-    def update(self):
+    def update(self, dt):
         if self.panx > self.goalx:
             self.speed = -0.5
             self.stopped = False
@@ -70,18 +73,21 @@ class Camera():
             self.speed = 0.5
             self.stopped = False
         else:
-            self.stop()
+            self.stop(dt)
             
         self.panx += self.speed
         if abs(self.panx - self.goalx) <= abs(self.speed) and self.speed != 0:
-            self.stop()
+            self.stop(dt)
             
-    def stop(self):
+    def stop(self, dt):
         self.panx = self.goalx
         self.speed = 0
-        self.stopped = True
-        if arena.paused: 
-            arena.startGame(currentArena)
+        if self.delay > 0:
+            self.delay -= dt
+        else:
+            self.stopped = True
+            if arena.paused: 
+                arena.startGame(currentArena)
         
     def panCam(self, arena):
         self.goalx = (-ARENA_WIDTH * (arena - 0.5)) / PPM

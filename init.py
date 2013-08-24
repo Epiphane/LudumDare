@@ -88,3 +88,11 @@ class ContactHandler(b2ContactListener):
             if goooal[1].body.userData == "soccer ball":
                 print("GOOOOAL YOU DID IT SUCCESS AND STUFF")
                 
+        kick = self.checkContact(contact, "soccer ball")
+        if kick is not None:
+            # mass > 0 implies it's not a "Static" object
+            if kick[1].massData.mass > 0:
+                if(kick[0].body.position.x > kick[1].body.position.x):
+                    kick[0].body.ApplyForce(force=(3000,-1000),point=(0,0), wake=True)
+                else:
+                    kick[0].body.ApplyForce(force=(-3000,-1000),point=(0,0), wake=True)

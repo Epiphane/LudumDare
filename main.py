@@ -40,7 +40,7 @@ def init():
     
     # Init physics "world", defining gravity. doSleep means that if an object
     # comes to rest, it can "sleep" and be ignored by the physics engine for a bit.
-    world = b2World(gravity=(0, 10), doSleep = True)
+    world = b2World(gravity=(0, 25), doSleep = True)
     
     # Initialize the ground. Will also need to initialize obstacles/arena
     # components here later on.
@@ -56,33 +56,30 @@ def init():
         userData = "ceiling"
     )
     
-    """landMineTest = world.CreateStaticBody(
+    landMineTest = world.CreateStaticBody(
                 position = (25,37.5),
                 fixtures = b2FixtureDef(
                     shape = b2CircleShape(radius=2),
                     isSensor = True),
-                userData = "land mine")"""
+                userData = "land mine")
     
     body = world.CreateDynamicBody(position = (200, 10))
     box = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
     
-   # body2 = world.CreateDynamicBody(position = (218,-2))
-   # box2 = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
-    
     shapes = []
-    shapes.append(box)
+    #shapes.append(box)
    # shapes.append(box2)
     shapes.append(ceiling.fixtures[0])
     shapes.append(ground.fixtures[0])
-    #shapes.append(landMineTest.fixtures[0])
+    shapes.append(landMineTest.fixtures[0])
     currentArena = 0.5
     
     camera = Camera(currentArena)
     
-    player1 = Player(1, 0, (255,0,0))
-    player2 = Player(-1, 1, (0,0,255))
+    player1 = Player(1, currentArena - 0.5, (255,0,0))
+    player2 = Player(-1, currentArena + 0.5, (0,0,255))
     
-    arena = SoccerArena()
+    arena = PrepareForBattle()
     arena.startGame(currentArena)
     
     # Initialize the contact handler
@@ -112,7 +109,7 @@ while 1:
     
     deltat = clock.tick(TARGET_FPS)
     
-    camera.update()
+    camera.update(deltat)
     camera.draw(screen)
     if camera.stopped:
     
@@ -130,18 +127,7 @@ while 1:
             if hasattr(event, 'key'):
                 if event.key is K_ESCAPE: 
                     if event.type is pygame.KEYDOWN: sys.exit()
-                if event.key is K_a:
-                    player1.input["left"] = (event.type is pygame.KEYDOWN)
-                if event.key is K_d:
-                    player1.input["right"] = (event.type is pygame.KEYDOWN)
-                if event.key == K_LEFT:
-                    player2.input["left"] = (event.type is pygame.KEYDOWN)
-                if event.key == K_RIGHT:
-                    player2.input["right"] = (event.type is pygame.KEYDOWN)
-                if event.key == K_UP:
-                    player2.kick()
-                if event.key is K_w:
-                    player1.kick()
+                arena.doAction(event)
                             
         player1.update()
         player2.update()
