@@ -81,6 +81,12 @@ class ContactHandler(b2ContactListener):
                                     blowUp[0].body.position.y * PPM)
                 effects.append(explos)  
                    
+        # "Soccer" game win condition
+        goooal = self.checkContact(contact, "goal")
+        if goooal is not None:
+            # Verify that the soccer ball is the thing in the goal
+            if goooal[1].body.userData == "soccer ball":
+                print("GOOOOAL YOU DID IT SUCCESS AND STUFF")
                 
         kick = self.checkContact(contact, "soccer ball")
         if kick is not None:

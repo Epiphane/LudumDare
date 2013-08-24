@@ -53,10 +53,17 @@ class Camera():
                 DrawCircle(shapeToDraw.body.position, shapeToDraw.shape.radius, pygame.Color(0, 0, 0, 255))
         
         for shapeToDraw in arena.shapes:
+            # Eventually, we could tell it to load "userData.png," if we're
+            # planning to have an image for every body, and store the 
+            # filename for the image in userData. In the meantime, just check
+            # for the guys that we DO have images predefined for
+            if shapeToDraw.body.userData == "goal":
+                screen.blit(images["goal"][0],vertices(shapeToDraw)[0])
             if type(shapeToDraw.shape) is b2PolygonShape:
                 DrawPolygon(vertices(shapeToDraw), pygame.Color(0, 0, 0, 255))
             elif type(shapeToDraw.shape) is b2CircleShape:
                 DrawCircle(shapeToDraw.body.position, shapeToDraw.shape.radius, pygame.Color(0, 0, 0, 255))
+            
         
     def update(self, dt):
         if self.panx > self.goalx:

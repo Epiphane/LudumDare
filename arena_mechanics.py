@@ -137,9 +137,19 @@ class SoccerArena(Arena):
             shapes = b2PolygonShape(box = (1,37.5)),
             userData = "right wall"
         )
-            
+        
         self.shapes.append(wall2.fixtures[0])
         self.ball = body
+        
+        goal = world.CreateStaticBody(
+            position = (maxx + 2, 45),
+            shapes = b2PolygonShape(box = (12.5,18)),
+            userData = "goal"
+        )
+        
+        goal.fixtures[0].sensor = True
+        
+        self.shapes.append(goal.fixtures[0])
 
     def doAction(self, event):
         if event.key is K_a:
