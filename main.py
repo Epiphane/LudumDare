@@ -35,14 +35,6 @@ def init():
     time_font_sm = pygame.font.Font("fonts/ka1.ttf", 30)
     time_font_lg = pygame.font.Font("fonts/ka1.ttf", 60)
     
-    player1 = Player(1, 8)
-    player2 = Player(-1, 9)
-    currentArena = 8.5
-    
-    camera = Camera(currentArena)
-    
-    arena = PrepareForBattle()
-    
     # Init physics "world", defining gravity. doSleep means that if an object
     # comes to rest, it can "sleep" and be ignored by the physics engine for a bit.
     world = b2World(gravity=(0, -10), doSleep = True)
@@ -64,6 +56,14 @@ def init():
     shapes.append(box)
     shapes.append(box2)
     shapes.append(ground.fixtures[0])
+    
+    player1 = Player(1, 8)
+    player2 = Player(-1, 9)
+    currentArena = 8.5
+    
+    camera = Camera(currentArena)
+    
+    arena = SoccerArena()
 
     
 # -----------------------------------------------------------------------|

@@ -1,5 +1,6 @@
 import pygame, math, random, sys, os, hashlib
 from Box2D import *
+import Box2D
 import time
 from pygame.locals import *
 
@@ -40,6 +41,4 @@ def vertices(shapeIn):
     result = [(v[0], SCREEN_HEIGHT - v[1]) for v in result]
     
     return result
-    
-
     
