@@ -57,8 +57,10 @@ class ContactHandler(b2ContactListener):
         pass
         
     def BeginContact(self, contact):
-        print(contact.fixtureA, contact.fixtureB)
-        
+        if contact.fixtureA.name is not None:
+            print(contact.fixtureA.name)
+        if contact.fixtureB.name is not None:
+            print(contact.fixtureB.name)
     
     
     

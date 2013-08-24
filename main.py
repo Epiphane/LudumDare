@@ -46,19 +46,25 @@ def init():
         shapes = b2PolygonShape(box = (400,1))
     )
     
+    ground.name = "ground"
+    
     ceiling = world.CreateStaticBody(
-        position = (200, 0),
+        position = (200, -1),
         shapes = b2PolygonShape(box = (400,1))
     )
+    
+    ceiling.name = "ceiling"
     
     landMineTest = world.CreateStaticBody(
                 position = (225,37.5),
                 fixtures = b2FixtureDef(
                     shape = b2CircleShape(radius=2),
                     isSensor = True))
+    landMineTest.name = "land mine"
     
     body = world.CreateDynamicBody(position = (200, 10))
     box = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
+    box.name = "old box"
     
    # body2 = world.CreateDynamicBody(position = (218,-2))
    # box2 = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
@@ -70,8 +76,12 @@ def init():
     shapes.append(ground.fixtures[0])
     shapes.append(landMineTest.fixtures[0])
     
-    player1 = Player(1, 8)
-    player2 = Player(-1, 9)
+    player1 = Player(1, 8, (255,0,0))
+    player2 = Player(-1, 9, (0,0,255))
+    
+    player1.name = "p1"
+    player2.name = "p2"
+    
     currentArena = 8.5
     
     camera = Camera(currentArena)
@@ -89,9 +99,6 @@ def init():
 # -----------------------------------------------------------------------|
 init()
 while 1:
-    # Update a "tick" in physics land
-    world.Step(TIME_STEP, 10, 10)
-    
     # Reset forces for the next frame
     world.ClearForces()
     
@@ -112,16 +119,24 @@ while 1:
             if event.key is K_ESCAPE: 
                 if event.type is pygame.KEYDOWN: sys.exit()
             if event.key is K_a:
-                if event.type is pygame.KEYDOWN: changeArena(currentArena - 1)
+                player1.input["left"] = (event.type is pygame.KEYDOWN)
             if event.key is K_d:
-                if event.type is pygame.KEYDOWN: changeArena(currentArena + 1)
-            if event.key is K_SPACE:
-                arena.ball.ApplyForce(force=(1300,-2700), point=arena.ball.position, wake=True)
+                player1.input["right"] = (event.type is pygame.KEYDOWN)
             if event.key == K_LEFT:
-                if event.type is pygame.KEYDOWN:
-                    print("left trigger")
-                    shapes[0].body.ApplyForce( b2Vec2(0, 50), shapes[0].body.GetWorldPoint(localPoint = (12, 12)), True )
+                player2.input["left"] = (event.type is pygame.KEYDOWN)
+            if event.key == K_RIGHT:
+                player2.input["right"] = (event.type is pygame.KEYDOWN)
+            if event.key == K_UP:
+                player2.shapes[0].body.ApplyForce(force=(500,0), point=(0,3), wake=True)
+            if event.key is K_w:
+                player1.shapes[0].body.ApplyForce(force=(-500,0), point=(0,3), wake=True)
+                        
+    player1.update()    
+    player2.update()
                     
+    # Update a "tick" in physics land
+    world.Step(TIME_STEP*2, 10, 10)
+    
     camera.update()
     camera.draw(screen)
     arena.draw(screen)
