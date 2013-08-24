@@ -19,6 +19,7 @@ Bring it on, LD.
 exec(open('init.py'))
 exec(open('ui_class.py'))
 exec(open('arena_mechanics.py'))
+exec(open('camera.py'))
 exec(open('character_class.py'))
 
 def init():
@@ -37,6 +38,7 @@ def init():
     currentArena = 8.5
     
     camera = Camera(currentArena)
+    
     # Init physics "world", defining gravity. doSleep means that if an object
     # comes to rest, it can "sleep" and be ignored by the physics engine for a bit.
     world = b2World(gravity=(0, -10), doSleep = True)
@@ -75,8 +77,7 @@ while 1:
     # Draw dem boxes
     for shape in shapes:
         print("drawing shapes yo")
-         
-    
+        
     # Check user input
     for event in pygame.event.get():
         if event.type is pygame.QUIT: sys.exit()
