@@ -1,29 +1,39 @@
-import pygame, math, random, sys, os, hashlib
-import Box2D
-import time
-from pygame.locals import *
+""" 
+LUDUM DARE 27 ENTRY
+8/23/2013 - 8/26/2013
+THEME: 10 Seconds
+BY: Thomas Steinke, Elliot Fiske, Eli Backer
 
-pygame.init()
+May be uploaded to http://thomassteinke.net
+or another domain later, if decided.
 
-screen = pygame.display.set_mode((800,600), DOUBLEBUF)
-pygame.display.set_caption("Project Hiatus")
-clock = pygame.time.Clock()
+Bring it on, LD.
 
-def load_image(name, colorkey=None):
-	fullname = os.path.join('img', name)
-	try:
-		image = pygame.image.load(fullname)
-	except pygame.error, message:
-		print 'Cannot load image:', name
-		raise SystemExit, message
-	image = image.convert()
-	if colorkey is not None:
-		if colorkey is -1:
-			colorkey = image.get_at((0,0))
-		image.set_colorkey(colorkey, RLEACCEL)
-	return image, image.get_rect()
+"""
 
-image, image_size = load_image("rzone.png")
+# -----------------------------------------------------------------------|
+# -----------------------------------------------------------------------|
+#                      INITIALIZE CLASSES AND GAME                       |
+# -----------------------------------------------------------------------|
+# -----------------------------------------------------------------------|
+exec(open('init.py'))
+exec(open('ui_class.py'))
 
-screen.blit(image, (0,0))
 pygame.display.flip()
+
+def init():
+	global font				# Font
+	global background		# Sprites
+	global Popup_sprite,Modify_sprite	# RenderPlains
+	global Import_sprite,interface		# RenderPlains
+	global background			# RenderPlains
+	global State,Modify,needInit,popup	# Global Variables
+	global timer,client,SERVER		# Global Variables
+
+	font = pygame.font.Font("fonts/ka1.ttf", 30)
+	
+	background = Back("background")
+	
+	raw_input()
+	
+init()
