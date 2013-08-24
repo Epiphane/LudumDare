@@ -5,6 +5,7 @@ def DrawPolygon(vertices, color = (0,0,0)):
     """ Draw a wireframe polygon given the screen vertices with the specified color."""
     if not vertices:
         return
+        
 
     if len(vertices) == 2:
         pygame.draw.aaline(screen, color, vertices[0], vertices)
@@ -27,6 +28,15 @@ class Camera():
         self.speed = 0
         self.delay = 0
         self.stopped = True
+    
+    def getOffset_in_meters(self):
+        offsetX_in_meters = self.centerX_in_meters - SCREEN_WIDTH_M / 2
+        offsetY_in_meters = 0
+        return offsetX_in_meters, offsetY_in_meters
+        
+    def getOffset_in_px(self):
+        offsetX_in_meters, offsetY_in_meters = self.getOffset_in_meters()
+        return offsetX_in_meters * PPM, offsetY_in_meters * PPM
         
     def draw(self, screen):
         screen.blit(self.background.image, (self.panx * PPM, 0))
