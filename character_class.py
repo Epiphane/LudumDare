@@ -72,24 +72,77 @@ class Player(pygame.sprite.Sprite):
     def jump(self):
         self.shapes[0].body.ApplyForce(force=(0,-250),point=(0,0),wake=True)
                 
-    def createGardener(self, arena, color):
+    def createGardener(self, arena, color, minx):
         self.clearShapes(arena, color)
+        y = 31
+        numPlanks = 20
     
-        body = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 34))
-        box = body.CreatePolygonFixture(box = (1,2), density = 2, friction = 0.3)
+        gardnerBody = world.CreateDynamicBody(position = (minx+numPlanks, 34))
+        box = gardnerBody.CreatePolygonFixture(box = (1,2), density = 20, friction = 0.3)
         self.shapes.append(box)
         
-        arm1 = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM - 0.25, 31.5))
+        # Make hose
+        # The ground
+        ground = world.CreateBody(
+                    position=(minx+0.5,31),
+                    fixtures=b2FixtureDef(
+                        shape=b2PolygonShape(box=(0.6,0.125))
+                        )
+                )
+
+        plank=b2FixtureDef(
+                    shape=b2PolygonShape(box=(0.6,0.125)),
+                    density=2,
+                    friction=0.2,
+                )
+
+        # Create one Chain (Only the left end is fixed)
+        prevBody = ground
+        self.shapes.append(ground.fixtures[0])
+        for i in range(numPlanks):
+            body = world.CreateDynamicBody(
+                        position=(minx+0.5+i, y), 
+                        fixtures=plank,
+                    )
+
+            world.CreateRevoluteJoint(
+                bodyA=prevBody,
+                bodyB=body,
+                anchor=(minx+i, y),
+                )
+
+            prevBody = body
+            self.shapes.append(body.fixtures[0])
+        
+        hosehead = world.CreateDynamicBody(position = (minx+0.5+numPlanks, y),
+            fixtures = b2FixtureDef(
+                shape = b2PolygonShape(box=(1,0.4)),
+                density = 2),
+            userData="hose head")
+        
+        self.shapes.append(hosehead.fixtures[0])
+            
+        world.CreateRevoluteJoint(
+            bodyA=prevBody,
+            bodyB=hosehead,
+            anchor=(minx+numPlanks, y),
+            )
+        
+        arm1 = world.CreateDynamicBody(position = (minx+0.5+numPlanks, 31.5))
         box = arm1.CreatePolygonFixture(box = (.2,1), density = 2, friction = 0.3)
         self.shapes.append(box)
         
-        arm2 = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM + 0.25, 31.5))
-        box = arm2.CreatePolygonFixture(box = (.2,1), density = 2, friction = 0.3)
-        self.shapes.append(box)
+        world.CreateWeldJoint(bodyA=arm1, bodyB=hosehead)
         
-        world.CreateRevoluteJoint(bodyA=body, bodyB=arm1, anchor=b2Vec2((ARENA_WIDTH * (arena + 0.5)) / PPM - 0.25, 34), collideConnected=False, lowerAngle = -0.25*b2_pi, upperAngle = 0.25*b2_pi, enableLimit = True)
-        world.CreateRevoluteJoint(bodyA=body, bodyB=arm2, anchor=b2Vec2((ARENA_WIDTH * (arena + 0.5)) / PPM + 0.25, 34), collideConnected=True)
+        world.CreateRevoluteJoint(
+            bodyA=gardnerBody, 
+            bodyB=arm1, 
+            anchor=(minx+0.5+numPlanks, 34),
+            lowerAngle = -0.1*b2_pi, upperAngle = 0.1*b2_pi, enableLimit = True)
         
+        # Start the water hose effect
+        waterEffect = Hoser(hosehead.fixtures[0])
+        effects.append(waterEffect)
     def aimUp(self): pass
     def aimDown(self): pass
                 

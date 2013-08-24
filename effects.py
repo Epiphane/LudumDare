@@ -46,11 +46,13 @@ class Hoser:
         # Use the midpoint between two vertices of the hosehead as a position
         hoseheadEdge = ((vertices(self.hosehead)[1][0] + vertices(self.hosehead)[2][0])/(2 * PPM),
                         (vertices(self.hosehead)[1][1] + vertices(self.hosehead)[2][1])/(2 * PPM))
+        slope = (vertices(self.hosehead)[1][1] - vertices(self.hosehead)[2][1]) / (vertices(self.hosehead)[2][0] - vertices(self.hosehead)[3][0])
         newWaterMol = world.CreateDynamicBody(
             position=hoseheadEdge,
             fixtures = b2FixtureDef(density = 1.0, shape = b2PolygonShape(
                 box=(0.2, 0.2))))
-        newWaterMol.linearVelocity.x = 20
+        newWaterMol.linearVelocity.y = math.sqrt(30 / (slope*slope+1))
+        newWaterMol.linearVelocity.x = 900 - newWaterMol.linearVelocity.y*newWaterMol.linearVelocity.y
         self.waterMols.append(newWaterMol.fixtures[0])
         arena.shapes.append(newWaterMol.fixtures[0])
             
