@@ -93,6 +93,8 @@ class Player(pygame.sprite.Sprite):
         if len(self.foot.body.contacts) > 0:
             self.shapes[0].body.linearVelocity.y = -15
             
+            self.shapes[0].body.angularVelocity = 5.4
+            
     def slideTackle(self, dir):
         if dir == "r":
             print("slide tackle right")

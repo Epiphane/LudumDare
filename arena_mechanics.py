@@ -177,7 +177,6 @@ class Arena():
             mod = self.modifications[0]
             if(mod == "changeBall"): self.changeBall_revert()
             del self.modifications[0]
-        self.modifications.append(ChangeBall(self.ball.fixtures[0]))
         event = math.floor(random.random())
         
         if(event == 0):
