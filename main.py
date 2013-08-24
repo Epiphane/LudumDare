@@ -59,6 +59,7 @@ init()
 initTitle()
 while 1:
     dt = clock.tick(TARGET_FPS)
+    screen.fill((255,255,255))
     
     # Check user input
     for event in pygame.event.get():
