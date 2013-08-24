@@ -21,7 +21,22 @@ class Arena():
         player2.create(currentArena + 0.5, (0,0,255))
         self.initGame((ARENA_WIDTH * (arena - 0.5)) / PPM, (ARENA_WIDTH * (arena + 1.5)) / PPM)
         
-    def initGame(self, minx, maxx): pass
+    def initGame(self, minx, maxx):
+        wall1 = world.CreateStaticBody(
+            position = (minx, 0),
+            shapes = b2PolygonShape(box = (1,37.5)),
+            userData = "left wall"
+        )
+        
+        self.shapes.append(wall1.fixtures[0])
+        
+        wall2 = world.CreateStaticBody(
+            position = (maxx, 0),
+            shapes = b2PolygonShape(box = (1,37.5)),
+            userData = "right wall"
+        )
+            
+        self.shapes.append(wall2.fixtures[0])
         
     def update(self, dt):
         if not camera.stopped: return False
@@ -143,3 +158,27 @@ class SoccerArena(Arena):
             player1.jump()
         if event.key is K_s: pass
             #player1.kick(-1)
+            
+class GardenArena(Arena):
+        
+    def startGame(self, arena):
+        self.paused = False
+        player1.createGardener(currentArena - 0.5, (255,0,0))
+        player2.createPlanter(currentArena + 0.5, (0,0,255))
+        self.initGame((ARENA_WIDTH * (arena - 0.5)) / PPM, (ARENA_WIDTH * (arena + 1.5)) / PPM)
+
+    def doAction(self, event):
+        if event.key is K_a:
+            player1.input["left"] = (event.type is pygame.KEYDOWN)
+        if event.key is K_d:
+            player1.input["right"] = (event.type is pygame.KEYDOWN)
+        if event.key == K_LEFT:
+            player2.input["left"] = (event.type is pygame.KEYDOWN)
+        if event.key == K_RIGHT:
+            player2.input["right"] = (event.type is pygame.KEYDOWN)
+        if event.key == K_UP: pass
+        if event.key == K_DOWN:pass
+        if event.key is K_w:
+            player1.aimUp()
+        if event.key is K_s:
+            player1.aimDown()

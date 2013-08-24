@@ -55,12 +55,7 @@ def init():
         userData = "ceiling"
     )
     
-   # body2 = world.CreateDynamicBody(position = (218,-2))
-   # box2 = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
-    
     shapes = []
-    #shapes.append(box)
-   # shapes.append(box2)
     shapes.append(ceiling.fixtures[0])
     shapes.append(ground.fixtures[0])
     currentArena = 0.5
@@ -102,7 +97,7 @@ while 1:
             if winner == 1: changeArena(currentArena + 1)
             elif winner == 2: changeArena(currentArena - 1)
             else: changeArena(currentArena)
-            arena = SoccerArena()
+            arena = GardenArena()
         
         # Check user input
         for event in pygame.event.get():

@@ -33,15 +33,7 @@ class Player(pygame.sprite.Sprite):
         self.shapes = destructionShapes
                 
     def create(self, arena, color):
-        for shape in self.shapes:
-            shape.body.DestroyFixture(shape)
-        self.shapes = []
-            
-        self.arena = arena
-        
-        self.display = True
-        
-        self.color = color
+        self.clearShapes(arena, color)
     
         body = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 34))
         box = body.CreatePolygonFixture(box = (1,2), density = 2, friction = 0.3)
@@ -58,6 +50,17 @@ class Player(pygame.sprite.Sprite):
         #world.CreateDistanceJoint(bodyA=body, bodyB=arm1, anchorA=b2Vec2(body.worldCenter.x, body.worldCenter.y - 0.5), anchorB = arm1.worldCenter, collideConnected=True)
         #world.CreateDistanceJoint(bodyA=body, bodyB=arm2, anchorA=b2Vec2(body.worldCenter.x, body.worldCenter.y - 0.5), anchorB = arm2.worldCenter, collideConnected=True)
          
+    def clearShapes(self, arena, color):
+        for shape in self.shapes:
+            shape.body.DestroyFixture(shape)
+        self.shapes = []
+            
+        self.arena = arena
+        
+        self.display = True
+        
+        self.color = color  
+      
     def update(self):
         self.shapes[0].body.awake = True
         self.shapes[0].body.linearVelocity.x = 0
@@ -68,3 +71,36 @@ class Player(pygame.sprite.Sprite):
             
     def jump(self):
         self.shapes[0].body.ApplyForce(force=(0,-250),point=(0,0),wake=True)
+                
+    def createGardener(self, arena, color):
+        self.clearShapes(arena, color)
+    
+        body = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 34))
+        box = body.CreatePolygonFixture(box = (1,2), density = 2, friction = 0.3)
+        self.shapes.append(box)
+        
+        arm1 = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM - 0.25, 31.5))
+        box = arm1.CreatePolygonFixture(box = (.2,1), density = 2, friction = 0.3)
+        self.shapes.append(box)
+        
+        arm2 = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM + 0.25, 31.5))
+        box = arm2.CreatePolygonFixture(box = (.2,1), density = 2, friction = 0.3)
+        self.shapes.append(box)
+        
+        world.CreateRevoluteJoint(bodyA=body, bodyB=arm1, anchor=b2Vec2((ARENA_WIDTH * (arena + 0.5)) / PPM - 0.25, 34), collideConnected=False, lowerAngle = -0.25*b2_pi, upperAngle = 0.25*b2_pi, enableLimit = True)
+        world.CreateRevoluteJoint(bodyA=body, bodyB=arm2, anchor=b2Vec2((ARENA_WIDTH * (arena + 0.5)) / PPM + 0.25, 34), collideConnected=True)
+        
+                
+    def createPlanter(self, arena, color):
+        self.clearShapes(arena, color)
+    
+        body = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 34))
+        box = body.CreatePolygonFixture(box = (1,2), density = 2, friction = 0.3)
+        self.shapes.append(box)
+        
+        arm1 = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM - 0.25, 33))
+        box = arm1.CreatePolygonFixture(box = (.4,.4), density = 2, friction = 0.3)
+        self.shapes.append(box)
+        
+        world.CreateRevoluteJoint(bodyA=body, bodyB=arm1, anchor=b2Vec2((ARENA_WIDTH * (arena + 0.5)) / PPM - 0.25, 33.5), collideConnected=True, lowerAngle = -0.25*b2_pi, upperAngle = 0.25*b2_pi, enableLimit = True)
+       # world.CreateRevoluteJoint(bodyA=body, bodyB=arm2, anchor=b2Vec2((ARENA_WIDTH * (arena + 0.5)) / PPM + 0.25, 33.5), collideConnected=True)
