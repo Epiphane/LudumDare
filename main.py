@@ -44,12 +44,21 @@ def init():
     ground = world.CreateStaticBody(
         position = (200, 37.5),
         shapes = b2PolygonShape(box = (800,1))
+        userData = "ground"
     )
     
     ceiling = world.CreateStaticBody(
         position = (200, -1),
-        shapes = b2PolygonShape(box = (400,1))
+        shapes = b2PolygonShape(box = (400,1)),
+        userData = "ceiling"
     )
+    
+    landMineTest = world.CreateStaticBody(
+                position = (225,37.5),
+                fixtures = b2FixtureDef(
+                    shape = b2CircleShape(radius=2),
+                    isSensor = True),
+                userData = "land mine")
     
     body = world.CreateDynamicBody(position = (200, 10))
     box = body.CreatePolygonFixture(box = (5,5), density = 1, friction = 0.3)
@@ -71,6 +80,9 @@ def init():
     
     arena = SoccerArena()
     arena.startGame(currentArena)
+    
+    # Initialize the contact handler
+    contactHandler = ContactHandler()
 
     
 # -----------------------------------------------------------------------|

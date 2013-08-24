@@ -15,7 +15,7 @@ def DrawCircle(center, radius, color = (0,0,0)):
     """ Draw a wireframe polygon given the screen vertices with the specified color."""
     if not center or not radius:
         return
-
+        
     pygame.draw.circle(screen, color, (int((center.x + camera.panx) * PPM), int(center.y * PPM)), int(radius*PPM))
             
 class Camera():

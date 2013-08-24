@@ -42,3 +42,39 @@ def vertices(shapeIn):
     
     return result
     
+class ContactHandler(b2ContactListener):
+    """Extends the contact listener and can override the sexy, sexy event handling
+    methods with its own jazz."""
+    
+    def __init__(self):
+        # The nonsense that's required to extend classes in Python
+        super(ContactHandler, self).__init__()
+        
+        # Tell the world that this is who gets contact events
+        world.contactListener = self
+        
+    def __del__(self):
+        pass
+        
+    def checkContact(self, contact, desiredName):
+        """Checks to see if one of the fixtures named by "contact" is a 
+        "desiredName." Returns (desiredFixture, otherFixture) if there's a match"""
+        if contact.fixtureA.body.userData == desiredName:
+            return (contact.fixtureA, contact.fixtureB)
+        if contact.fixtureB.body.userData == desiredName:
+            return (contact.fixtureB, contact.fixtureA)
+            
+        return None
+        
+    def BeginContact(self, contact):
+        
+        blowUp = self.checkContact(contact, "land mine")
+        if blowUp is not None:
+            # mass > 0 implies it's not a "Static" object
+            if blowUp[1].massData.mass > 0:
+                # Destroy the land mine and apply a HUGE force to the other guy
+                # Since you can't call DestroyFixture while the physics is iterating,
+                # flag it for destruction by setting userData to "kill me"
+                #blowUp[0].body.userData = "kill me"
+                blowUp[1].body.ApplyForce(force=(50000, 0), point=(0, 0), wake=True)
+                
