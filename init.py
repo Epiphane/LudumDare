@@ -25,7 +25,7 @@ BALL_DENSITY = 4
 BALL_CHANGE_DENSITY = 10
 CHAR_DENSITY = 25
 BALL_FRICTION = 0.9
-CHAR_FRICTION = 100000
+CHAR_FRICTION = 1
 CHAR_DENSITY = 5
 BALL_FRICTION = 0.95
 
@@ -96,13 +96,13 @@ class ContactHandler(b2ContactListener):
     def BeginContact(self, contact):
     
         blowUp = self.checkContact(contact, "bomb")
-        if blowUp is not None and blowUp[1].body.userData != "ceiling":
+        if blowUp is not None and blowUp[1].body.userData != "cieling":
             # Since you can't call DestroyFixture while the physics is iterating,
             # flag it for destruction by setting userData to "kill me"
             blowUp[0].body.userData = "kill me"
             for shape in arena.shapes + [arena.player1.shapes[0], arena.player2.shapes[0]]:
                 # See how far everyone is from the 'splosion
-                distResult = b2Distance(shapeA = shape.fixtures[0].shape, shapeB = blowUp[0].shape, transformA = shape.fixtures[0].body.transform, transformB = blowUp[0].body.transform)
+                distResult = b2Distance(shapeA = shape.shape, shapeB = blowUp[0].shape, transformA = shape.body.transform, transformB = blowUp[0].body.transform)
                 pointA, pointB, distance, dummy = distResult
                 
                 # mass > 0 implies it's not a "Static" object
@@ -112,8 +112,8 @@ class ContactHandler(b2ContactListener):
                     
                     print xComp, yComp
                     
-                    shape.linearVelocity.x = xComp
-                    shape.linearVelocity.y = yComp
+                    shape.body.linearVelocity.x = xComp
+                    shape.body.linearVelocity.y = yComp
             
             offsetX, offsetY = arena.camera.getOffset_in_px()
             explos = Explosion(blowUp[0].body.position.x * PPM - offsetX, 37 * PPM - offsetY)

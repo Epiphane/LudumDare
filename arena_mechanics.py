@@ -42,7 +42,7 @@ class Arena():
         self.toInit = False
         self.pauseTime = 0
         
-        self.createCrowd(2, 27)
+        self.createCrowd()
   
     def startGame(self, middle_x, delay=0):
         global char1, char2
@@ -96,28 +96,19 @@ class Arena():
         self.ball.color = pygame.color.Color(128,128,128)
         self.shapes.append(self.ball)
         
-    def createCrowd(self, minx, maxx):
-        numCrowd = int(math.ceil(random.random() * 10) + 10)
-        width = maxx - minx
-        
-        for i in range(numCrowd):
-            block = self.world.CreateDynamicBody(
-                position = (random.random() * width, 30),
-                fixtures = b2FixtureDef(
-                    shape = b2PolygonShape(box = (1,2)),
-                    density=CHAR_DENSITY,
-                    restitution=0,
-                    friction = CHAR_FRICTION,
-                    filter = b2Filter(
-                        categoryBits = 0x0010,
-                        maskBits = 0xFFFF ^ 0x0010
-                    )
-                ),
-                userData = "crowd"
+    def createCrowd(self):
+        block = self.world.CreateDynamicBody(
+            position = (2, 30),
+            fixtures = b2FixtureDef(
+                shape = b2PolygonShape(box = (1,2)),
+                density=CHAR_DENSITY,
+                restitution=0,
+                friction = CHAR_FRICTION),
+            userData = "crowd"
             )
-            block.color = pygame.color.Color(int(random.random()*255),int(random.random()*255),int(random.random()*255))
-            self.shapes.append(block)
-            self.crowd.append(block)
+        block.color = pygame.color.Color(0,0,0)
+        self.shapes.append(block)
+        self.crowd.append(block)
         
     def initWalls(self):
         ground = self.world.CreateStaticBody(
@@ -262,16 +253,18 @@ class Arena():
         #    print("fraction", self.player1.shapes[0].friction)                    
         #else:                                    
         #    self.player1.shapes[0].friction = 0.3
-                                                 
-        if self.player2possession > 0 and self.player2possession > self.player1possession:
-            self.player1.shapes[0].friction = 10
-        else:
-            self.player2.shapes[0].friction = 0.3
+        #                                         
+        #if self.player2possession > 0 and self.player2possession > self.player1possession:
+        #    self.player1.shapes[0].friction = 10
+        #else: 
+        #    self.player2.shapes[0].friction = 0.3
         
         # Decrement the possession timers
         self.player1possession -= 1
+        if self.player1possession < 0: self.player1possession = 0
         self.player2possession -= 1
-                        
+        if self.player2possession < 0: self.player2possession = 0
+        
         # Update a "tick" in physics land
         self.world.Step(TIME_STEP*2, 10, 10)
         
@@ -300,15 +293,9 @@ class Arena():
                 if shape.userData == "goal left" or shape.userData == "goal right":
                     DrawImage(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), shape.userData)
                 else:
-                    if hasattr(shape, "color"):
-                        DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0), shape.color)        
-                    else:
-                        DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0))        
+                    DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0))
             else:
-                if hasattr(shape, "color"):
-                    DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0), shape.color)        
-                else:
-                    DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0))        
+                DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0))        
             
         # Draw arrows if the player is off screen
         self.playerOffCamera()
@@ -445,11 +432,11 @@ class Arena():
                 ef.finish()
         
     def randomEvent(self):
-        randomEvents = [ [self.bombDrop, self.bombDrop_revert]]
-                         #[self.changeBall, self.changeBall_revert],
-                         #[self.nogravity, self.nogravity_revert],
-                         #[self.slowmo, self.slowmo_revert],
-                         #[self.fastmo, self.fastmo_revert] ]
+        randomEvents = [ [self.bombDrop, self.bombDrop_revert],
+                         [self.changeBall, self.changeBall_revert],
+                         [self.nogravity, self.nogravity_revert],
+                         [self.slowmo, self.slowmo_revert],
+                         [self.fastmo, self.fastmo_revert] ]
                          
         while len(self.modifications) > 0:
             mod = self.modifications[0]
