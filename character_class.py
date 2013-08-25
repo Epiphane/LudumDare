@@ -340,9 +340,9 @@ class SmithWickers(Player):
 
 class CrowdMember(Player):
     def __init__(self, direction, start_x, color, arena):
-        Player.__init__(self, direction, start_x, (0, 0, 0), color, arena)
+        Player.__init__(self, direction, start_x, (0, 0, 0), color, arena, 0)
         
-    def materialize(self, start_x, arena):
+    def materialize(self, start_x, arena, playerNum):
         self.clearShapes()
             
         block = arena.world.CreateDynamicBody(
@@ -356,7 +356,7 @@ class CrowdMember(Player):
                     categoryBits = 0x0010,
                     maskBits = 0xFFFF ^ 0x0010
                 )),
-                userData = "player"
+                userData = "crowd member"
             )
         block.color = self.color_2
         self.shapes.append(block)

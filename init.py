@@ -96,7 +96,7 @@ class ContactHandler(b2ContactListener):
     def BeginContact(self, contact):
     
         blowUp = self.checkContact(contact, "bomb")
-        if blowUp is not None and blowUp[1].body.userData != "cieling":
+        if blowUp is not None and blowUp[1].body.userData != "ceiling":
             # Since you can't call DestroyFixture while the physics is iterating,
             # flag it for destruction by setting userData to "kill me"
             blowUp[0].body.userData = "kill me"
