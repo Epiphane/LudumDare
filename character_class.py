@@ -167,7 +167,8 @@ class Lars(Player):
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (1,2)),
                 density=10,
-                restitution=0)
+                restitution=0),
+                userData = "player"
             )
         self.shapes.append(block.fixtures[0])
         
@@ -191,7 +192,8 @@ class Pate(Player):
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (0.8,2)),
                 density=10,
-                restitution=0)
+                restitution=0),
+                userData = "player"
             )
         self.shapes.append(block.fixtures[0])
         
@@ -215,15 +217,17 @@ class Buster(Player):
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (1,1.8)),
                 density=10,
-                restitution=0)
+                restitution=0),
+                userData = "player"
             )
-        self.shapes.append(block.fixtures[0])
         
         foot = block.CreateFixture(
                 shape = b2PolygonShape(vertices = [(-1.6,-2.1),(1.6,-2.1),(1.6,2.1),(-1.6,2.1)]),
                 isSensor=True
             )
         self.foot = block.fixtures[1]
+        
+        self.shapes.append(block.fixtures[0])
         
         self.dead = False
 
@@ -239,7 +243,8 @@ class EricStrohm(Player):
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (1,2)),
                 density=10,
-                restitution=0)
+                restitution=0),
+                userData = "player"
             )
         self.shapes.append(block.fixtures[0])
         
@@ -291,7 +296,8 @@ class SmithWickers(Player):
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = size),
                 density=10,
-                restitution=0)
+                restitution=0),
+                userData = "player"
             )
         self.shapes.append(block.fixtures[0])
         
@@ -306,7 +312,8 @@ class SmithWickers(Player):
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = size),
                 density=10,
-                restitution=0)
+                restitution=0),
+                userData = "player"
             )
         self.shapes.append(block2.fixtures[0])
         

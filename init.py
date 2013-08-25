@@ -24,7 +24,7 @@ CAMERA_SPEEDUP_SPEED = 3
 BALL_DENSITY = 10
 BALL_CHANGE_DENSITY = 10
 CHAR_DENSITY = 5
-BALL_FRICTION = 0.9
+BALL_FRICTION = 0.95
 
 
 
@@ -93,7 +93,7 @@ class ContactHandler(b2ContactListener):
     def BeginContact(self, contact):
     
         blowUp = self.checkContact(contact, "bomb")
-        if blowUp is not None:
+        if blowUp is not None and blowUp[1].body.userData != "cieling":
             # Since you can't call DestroyFixture while the physics is iterating,
             # flag it for destruction by setting userData to "kill me"
             blowUp[0].body.userData = "kill me"
@@ -139,12 +139,16 @@ class ContactHandler(b2ContactListener):
         if kick is not None:
             # Punt the ball a little ways kick[1] is ball, kick[0] is player.
             if kick[1].body.userData is not None and kick[1].body.userData == "ball":
-                p = kick[1].body.GetWorldPoint(localPoint = (0,0))
-                if kick[0].body.position.x < kick[1].body.position.x:
-                    # kick right
-                    kick[1].body.linearVelocity.y += 10
-                    kick[1].body.linearVelocity.x =  150
-                else:
-                    # kick left
-                    kick[1].body.linearVelocity.y += 10
-                    kick[1].body.linearVelocity.x =  -150
+                print(len(kick[0].body.contacts))
+                if len(kick[0].body.contacts) < 3:
+                    p = kick[1].body.GetWorldPoint(localPoint = (0,0))
+                    if kick[0].body.position.x < kick[1].body.position.x:
+                        # kick right
+                        kick[1].body.linearVelocity.y -= 100
+                        kick[1].body.linearVelocity.x =  200
+                        print("kick right")
+                    else:
+                        # kick left
+                        kick[1].body.linearVelocity.y -= 100
+                        kick[1].body.linearVelocity.x =  -350
+                        print("kick left")

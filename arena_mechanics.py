@@ -22,7 +22,7 @@ class Arena():
     
         # Init physics "world", defining gravity. doSleep means that if an object
         # comes to rest, it can "sleep" and be ignored by the physics engine for a bit.
-        self.world = b2World(gravity=(0, 25), doSleep = True)
+        self.world = b2World(gravity=(0, 25), doSleep = False)
         
         # Initialize the contact handler
         self.world.contactListener = ContactHandler()
