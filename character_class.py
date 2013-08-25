@@ -1,6 +1,8 @@
 
 class Player(pygame.sprite.Sprite):
         
+    playerNum = 0
+        
     def __init__(self, direction, start_x, color, color_2, arena):
         self.input = {"up": False, "down": False, "left": False, "right": False}
         self.direction = direction
@@ -14,10 +16,9 @@ class Player(pygame.sprite.Sprite):
         self.moving = None
         
         self.dead = False
+        self.materialize(start_x, arena, 0)
         
-        self.materialize(start_x, arena)
-        
-    def materialize(self, start_x, arena):
+    def materialize(self, start_x, arena, playerNum):
         while len(self.shapes) > 0:
             shape = self.shapes[0]
             arena.world.DestroyBody(shape.body)
@@ -29,7 +30,7 @@ class Player(pygame.sprite.Sprite):
                 shape = b2PolygonShape(box = (1,2)),
                 density=10,
                 restitution=0),
-            userData = "player"
+            userData = "player" + str(playerNum)
             )
         self.shapes.append(block.fixtures[0])
         
@@ -159,7 +160,7 @@ class Lars(Player):
     def __init__(self, direction, start_x, arena):
         Player.__init__(self, direction, start_x, (0, 0, 0), (255, 255, 0), arena)
         
-    def materialize(self, start_x, arena):
+    def materialize(self, start_x, arena, playerNum):
         self.clearShapes()
             
         block = arena.world.CreateDynamicBody(
@@ -168,7 +169,7 @@ class Lars(Player):
                 shape = b2PolygonShape(box = (1,2)),
                 density=10,
                 restitution=0),
-                userData = "player"
+                userData = "player" + str(playerNum)
             )
         self.shapes.append(block.fixtures[0])
         

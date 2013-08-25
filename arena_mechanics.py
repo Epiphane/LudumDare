@@ -48,8 +48,8 @@ class Arena():
         self.pauseTime = delay
         
         if hasattr(self,'player2'):
-            self.player1.materialize(middle_x - SCREEN_WIDTH_M / 4, self)
-            self.player2.materialize(middle_x + SCREEN_WIDTH_M / 4, self)
+            self.player1.materialize(middle_x - SCREEN_WIDTH_M / 4, self, 2)
+            self.player2.materialize(middle_x + SCREEN_WIDTH_M / 4, self, 1)
         else:
             if char1 == "Lars":
                 self.player1 = Lars(1, middle_x - SCREEN_WIDTH_M / 4, self)
@@ -171,6 +171,15 @@ class Arena():
         
         screen.blit(arrowImg, (arrowX, arrowY))
         
+    # Lets the arena know that a player has touched the ball recently
+    def gotPossession(self, playerFixture):
+        if playerFixture:
+            print("Player 1 touched ball!")
+        elif playerFixture is self.player2.shapes[0]:
+            print("Player 2 touched ball!")
+        else:
+            print("wat")
+        
     def update(self, dt):
         if self.toInit is not False:
             self.startGame(self.toInit[0], self.toInit[1] - dt)
@@ -210,6 +219,9 @@ class Arena():
                 del self.effects[i]
         
         self.ball.linearVelocity.x *= BALL_FRICTION
+        
+        # Check the "possession" status of each character and limit speed as necessary.
+        
                         
         # Update a "tick" in physics land
         self.world.Step(TIME_STEP*2, 10, 10)

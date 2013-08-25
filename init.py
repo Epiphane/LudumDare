@@ -135,8 +135,16 @@ class ContactHandler(b2ContactListener):
                     arena.player2.dead = True
                     arena.toInit = (STAGE_WIDTH_M * 2 / 3, 2000)
                     
-        kick = self.checkContact(contact, "player")
+        kick = self.checkContact(contact, "player1")
+        if kick is None:
+            kick = self.checkContact(contact, "player2")
+            
+        hmm = self.checkContact(contact, "player")
+        if hmm is not None:
+            print "problematic..."
+            
         if kick is not None:
+            print("kick'd")
             # Punt the ball a little ways kick[1] is ball, kick[0] is player.
             if kick[1].body.userData is not None and kick[1].body.userData == "ball":
                 print(len(kick[0].body.contacts))
@@ -152,3 +160,8 @@ class ContactHandler(b2ContactListener):
                         kick[1].body.linearVelocity.y -= 100
                         kick[1].body.linearVelocity.x =  -350
                         print("kick left")
+                        
+            # If the player has touched the ball recently, they're considered
+            # "in possession," and have their run speed limited slightly,
+            # giving a chance for the chaser to catch up
+            arena.gotPossession(kick[0])
