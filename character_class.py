@@ -1,9 +1,7 @@
 
 class Player(pygame.sprite.Sprite):
         
-    playerNum = 0
-        
-    def __init__(self, direction, start_x, color, color_2, arena):
+    def __init__(self, direction, start_x, color, color_2, arena, playerNum):
         self.input = {"up": False, "down": False, "left": False, "right": False}
         self.direction = direction
         self.color = color
@@ -16,7 +14,7 @@ class Player(pygame.sprite.Sprite):
         self.moving = None
         
         self.dead = False
-        self.materialize(start_x, arena, 0)
+        self.materialize(start_x, arena, 0, playerNum)
         
     def materialize(self, start_x, arena, playerNum):
         while len(self.shapes) > 0:
@@ -157,8 +155,8 @@ class Player(pygame.sprite.Sprite):
                 self.shapes[0].body.angularVelocity = -5.4 * self.direction
 
 class Lars(Player):
-    def __init__(self, direction, start_x, arena):
-        Player.__init__(self, direction, start_x, (0, 0, 0), (255, 255, 0), arena)
+    def __init__(self, direction, start_x, arena, playerNum):
+        Player.__init__(self, direction, start_x, (0, 0, 0), (255, 255, 0), arena, playerNum)
         
     def materialize(self, start_x, arena, playerNum):
         self.clearShapes()
@@ -171,6 +169,8 @@ class Lars(Player):
                 restitution=0),
                 userData = "player" + str(playerNum)
             )
+            
+        print "userdata: ", block.userData
         self.shapes.append(block.fixtures[0])
         
         foot = block.CreateFixture(
