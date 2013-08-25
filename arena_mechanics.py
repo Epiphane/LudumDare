@@ -248,14 +248,14 @@ class Arena():
         self.ball.linearVelocity.x *= BALL_FRICTION
         
         # Check the "possession" status of each character and change friction as necessary
-        if self.player1possession > 0 and self.player1possession > self.player2possession:
-            self.player1.shapes[0].friction = 0.9
-            print("fraction")                    
-        else:                                    
-            self.player1.shapes[0].friction = 0.3
+        #if self.player1possession > 0 and self.player1possession > self.player2possession:
+        #    self.player1.shapes[0].friction = 10
+        #    print("fraction", self.player1.shapes[0].friction)                    
+        #else:                                    
+        #    self.player1.shapes[0].friction = 0.3
                                                  
         if self.player2possession > 0 and self.player2possession > self.player1possession:
-            self.player1.shapes[0].friction = 0.9
+            self.player1.shapes[0].friction = 10
         else:
             self.player2.shapes[0].friction = 0.3
         
