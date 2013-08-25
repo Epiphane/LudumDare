@@ -58,8 +58,8 @@ def titleInput(event):
                     # Positive match! Rejoice!
                     if button[0] == "play":
                         global arena, prepare            # Arena for minigame
-                        prepare = PrepareForBattle()
-                        gameState = "Prepare"
+                        initCharSelect()
+                        gameState = "CharSelect"
                     elif button[0] == "opt":
                         gameState = "Options"
                     elif button[0] == "quit":
