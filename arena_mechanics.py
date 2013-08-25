@@ -14,6 +14,7 @@ class Arena():
         self.drawRed = 0
         self.bignum = 10
         self.shapes = []
+        self.crowd = []
         
         self.modifications = []
     
@@ -90,7 +91,7 @@ class Arena():
             userData="ball")
             
         self.ball.color = pygame.color.Color(128,128,128)
-        self.shapes.append(self.ball.fixtures[0])
+        self.shapes.append(self.ball)
         
     def createCrowd(self):
         block = self.world.CreateDynamicBody(
@@ -103,7 +104,8 @@ class Arena():
             userData = "crowd"
             )
         block.color = pygame.color.Color(0,0,0)
-        self.shapes.append(block.fixtures[0])
+        self.shapes.append(block)
+        self.crowd.append(block)
         
     def initWalls(self):
         ground = self.world.CreateStaticBody(
@@ -112,51 +114,51 @@ class Arena():
             userData = "ground"
         )
         ground.color = pygame.color.Color(0,128,0)
-        self.shapes.append(ground.fixtures[0])
+        self.shapes.append(ground)
         
         ceiling = self.world.CreateStaticBody(
             position = (0, -1),
             shapes = b2PolygonShape(box = (STAGE_WIDTH_M,1)),
             userData = "ceiling"
         )
-        self.shapes.append(ceiling.fixtures[0])
+        self.shapes.append(ceiling)
         
         leftWall = self.world.CreateStaticBody(
             position = (25, 0),
             shapes = b2PolygonShape(box = (1,37.5)),
             userData = "left wall"
         )
-        #self.shapes.append(leftWall.fixtures[0])
+        #self.shapes.append(leftWall)
         
         rightWall = self.world.CreateStaticBody(
             position = (225, 0),
             shapes = b2PolygonShape(box = (1,37.5)),
             userData = "right wall"
         )
-        #self.shapes.append(rightWall.fixtures[0])
+        #self.shapes.append(rightWall)
         
         goal_left = self.world.CreateStaticBody(
             position = (223, 37),
             shapes = b2PolygonShape(box = (2,8))
         )
         goal_left.fixtures[0].sensor = True
-        goal_left.fixtures[0].userData = "goal left"
-        self.shapes.append(goal_left.fixtures[0])
+        goal_left.userData = "goal left"
+        self.shapes.append(goal_left)
         
         goal_right = self.world.CreateStaticBody(
             position = (29, 37),
             shapes = b2PolygonShape(box = (2,8))
         )
         goal_right.fixtures[0].sensor = True
-        goal_right.fixtures[0].userData = "goal right"
-        self.shapes.append(goal_right.fixtures[0])
+        goal_right.userData = "goal right"
+        self.shapes.append(goal_right)
         
     # Detects if the player is off camera and draws an arrow to them
     def playerOffCamera(self):
         # A player is off camera if all 4 of their vertices don't intersect with the screen.
         SCREEN_RECT.left = self.camera.centerX_in_meters * PPM - SCREEN_WIDTH_PX / 2
         offsetX, offsetY = self.camera.getOffset_in_px()
-        verts = vertices(self.player1.shapes[0])
+        verts = vertices(self.player1.shapes[0].fixtures[0])
         inside = False
         for vert in verts:
             inside = inside or SCREEN_RECT.collidepoint( (vert.x, vert.y) )
@@ -164,7 +166,7 @@ class Arena():
         if not inside:
             self.drawArrow(self.player1)
             
-        verts = vertices(self.player2.shapes[0])
+        verts = vertices(self.player2.shapes[0].fixtures[0])
         inside = False
         for vert in verts:
             inside = inside or SCREEN_RECT.collidepoint( (vert.x, vert.y) )
@@ -174,7 +176,7 @@ class Arena():
             
     # Draw an arrow to the lost, lonely player.        
     def drawArrow(self, player):
-        position = player.shapes[0].body.position
+        position = player.shapes[0].position
         arrowX, arrowY = 0, 0
         
         # Identify the x and y to draw the arrow in
@@ -221,8 +223,8 @@ class Arena():
         
         # Murder things that need murdering
         for i, shape in enumerate(self.shapes):
-            if shape.body.userData == "kill me":
-                shape.body.DestroyFixture(shape)
+            if shape.userData == "kill me":
+                shape.DestroyFixture(shape)
                 del self.shapes[i]
         
         for i, ef in enumerate(self.effects):
@@ -251,19 +253,19 @@ class Arena():
         self.player2.draw(screen, offsetX, offsetY)
         
         for shape in self.shapes:
-            if isinstance(shape.shape, b2CircleShape):
-                pos = (int(shape.body.position.x * PPM - offsetX), int(shape.body.position.y * PPM + offsetY))
-                if shape.body.userData == "ball":
-                    DrawCircle(pos, shape.shape.radius, self.ball.color)
+            if isinstance(shape.fixtures[0].shape, b2CircleShape):
+                pos = (int(shape.position.x * PPM - offsetX), int(shape.position.y * PPM + offsetY))
+                if shape.userData == "ball":
+                    DrawCircle(pos, shape.fixtures[0].shape.radius, shape.color)
                 else:
-                    DrawCircle(pos, shape.shape.radius, (0,0,0))
-            elif hasattr(shape, "userData") and shape.userData is not None:
-                if shape.userData.index("goal") == 0:
-                    DrawImage(vertices_with_offset(shape, offsetX, offsetY), shape.userData)
+                    DrawCircle(pos, shape.fixtures[0].shape.radius, (0,0,0))
+            elif shape.userData is not None:
+                if shape.userData == "goal left" or shape.userData == "goal right":
+                    DrawImage(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), shape.userData)
                 else:
-                    DrawPolygon(vertices_with_offset(shape, offsetX, offsetY), (0,0,0))
+                    DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0))
             else:
-                DrawPolygon(vertices_with_offset(shape, offsetX, offsetY), (0,0,0))        
+                DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0))        
             
         # Draw arrows if the player is off screen
         self.playerOffCamera()
@@ -327,11 +329,11 @@ class Arena():
                 restitution=0.5,
                 friction = 50),
             userData="ball rock")
-        self.shapes.append(self.ball.fixtures[0])
+        self.shapes.append(self.ball)
     
     def changeBall_revert(self):
         print "Changeball reverted"
-        self.shapes.remove(self.ball.fixtures[0])
+        self.shapes.remove(self.ball)
         position = self.ball.position
         self.world.DestroyBody(self.ball)
         
@@ -344,7 +346,7 @@ class Arena():
             userData="ball")
             
         self.ball.color = pygame.color.Color(0,0,0)
-        self.shapes.append(self.ball.fixtures[0])
+        self.shapes.append(self.ball)
      
     def nogravity(self):
         BALL_FRICTION = 1
@@ -381,9 +383,10 @@ class Arena():
         TIME_STEP /= 2
         
     def cleanUp(self):
+        self.crowd = []
         while len(self.shapes) > 0:
             shape = self.shapes[0]
-            self.world.DestroyBody(shape.body)
+            self.world.DestroyBody(shape)
             self.shapes.remove(shape)
         
     def bombDrop(self):
