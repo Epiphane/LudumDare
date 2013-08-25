@@ -16,6 +16,9 @@ class Arena():
         self.shapes = []
         self.crowd = []
         
+        self.player1possession = 0
+        self.player2possession = 0
+        
         self.modifications = []
     
         # Initialize effects queue
@@ -52,34 +55,34 @@ class Arena():
         self.pauseTime = delay
         
         if hasattr(self,'player2'):
-            self.player1.materialize(middle_x - SCREEN_WIDTH_M / 4, self)
-            self.player2.materialize(middle_x + SCREEN_WIDTH_M / 4, self)
+            self.player1.materialize(middle_x - SCREEN_WIDTH_M / 4, self, 2)
+            self.player2.materialize(middle_x + SCREEN_WIDTH_M / 4, self, 1)
         else:
             if char1 == "Lars":
-                self.player1 = Lars(1, middle_x - SCREEN_WIDTH_M / 4, self)
+                self.player1 = Lars(1, middle_x - SCREEN_WIDTH_M / 4, self, 1)
             elif char1 == "Buster":
-                self.player1 = Buster(1, middle_x - SCREEN_WIDTH_M / 4, self)
+                self.player1 = Buster(1, middle_x - SCREEN_WIDTH_M / 4, self, 1)
             elif char1 == "SmithWickers":
-                self.player1 = SmithWickers(1, middle_x - SCREEN_WIDTH_M / 4, self)
+                self.player1 = SmithWickers(1, middle_x - SCREEN_WIDTH_M / 4, self, 1)
             elif char1 == "Pate":
-                self.player1 = Pate(1, middle_x - SCREEN_WIDTH_M / 4, self)
+                self.player1 = Pate(1, middle_x - SCREEN_WIDTH_M / 4, self, 1)
             elif char1 == "EricStrohm":
-                self.player1 = EricStrohm(1, middle_x - SCREEN_WIDTH_M / 4, self)
+                self.player1 = EricStrohm(1, middle_x - SCREEN_WIDTH_M / 4, self, 1)
             else: # char1 == "Ted":
-                self.player1 = Ted(1, middle_x - SCREEN_WIDTH_M / 4, self)
+                self.player1 = Ted(1, middle_x - SCREEN_WIDTH_M / 4, self, 1)
                 
             if char2 == "Lars":
-                self.player2 = Lars(-1, middle_x + SCREEN_WIDTH_M / 4, self)
+                self.player2 = Lars(-1, middle_x + SCREEN_WIDTH_M / 4, self, 2)
             elif char2 == "Buster":
-                self.player2 = Buster(-1, middle_x + SCREEN_WIDTH_M / 4, self)
+                self.player2 = Buster(-1, middle_x + SCREEN_WIDTH_M / 4, self, 2)
             elif char2 == "SmithWickers":
-                self.player2 = SmithWickers(-1, middle_x + SCREEN_WIDTH_M / 4, self)
+                self.player2 = SmithWickers(-1, middle_x + SCREEN_WIDTH_M / 4, self, 2)
             elif char2 == "Ted":
-                self.player2 = Ted(-1, middle_x + SCREEN_WIDTH_M / 4, self)
+                self.player2 = Ted(-1, middle_x + SCREEN_WIDTH_M / 4, self, 2)
             elif char2 == "EricStrohm":
-                self.player2 = EricStrohm(-1, middle_x + SCREEN_WIDTH_M / 4, self)
+                self.player2 = EricStrohm(-1, middle_x + SCREEN_WIDTH_M / 4, self, 2)
             else: # char2 == "Pate":
-                self.player2 = Pate(-1, middle_x + SCREEN_WIDTH_M / 4, self)
+                self.player2 = Pate(-1, middle_x + SCREEN_WIDTH_M / 4, self, 2)
         
         if self.ball is not None: self.world.DestroyBody(self.ball)
         
@@ -197,6 +200,15 @@ class Arena():
         
         screen.blit(arrowImg, (arrowX, arrowY))
         
+    # Lets the arena know that a player has touched the ball recently
+    def gotPossession(self, playerFixture):
+        if playerFixture.body.userData == "player1":
+            self.player1possession = 50
+        elif playerFixture.body.userData == "player2":
+            self.player2possession = 50
+        else:
+            print("wat")
+        
     def update(self, dt):
         self.camera.update(self.ball)
         
@@ -241,7 +253,25 @@ class Arena():
                 del self.effects[i]
         
         self.ball.linearVelocity.x *= BALL_FRICTION
-                        
+        
+        # Check the "possession" status of each character and change friction as necessary
+        #if self.player1possession > 0 and self.player1possession > self.player2possession:
+        #    self.player1.shapes[0].friction = 10
+        #    print("fraction", self.player1.shapes[0].friction)                    
+        #else:                                    
+        #    self.player1.shapes[0].friction = 0.3
+        #                                         
+        #if self.player2possession > 0 and self.player2possession > self.player1possession:
+        #    self.player1.shapes[0].friction = 10
+        #else: 
+        #    self.player2.shapes[0].friction = 0.3
+        
+        # Decrement the possession timers
+        self.player1possession -= 1
+        if self.player1possession < 0: self.player1possession = 0
+        self.player2possession -= 1
+        if self.player2possession < 0: self.player2possession = 0
+        
         # Update a "tick" in physics land
         self.world.Step(TIME_STEP*2, 10, 10)
         
@@ -272,15 +302,9 @@ class Arena():
                 if shape.userData == "goal left" or shape.userData == "goal right":
                     DrawImage(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), shape.userData)
                 else:
-                    if hasattr(shape, "color"):
-                        DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0), shape.color)        
-                    else:
-                        DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0))        
+                    DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0))
             else:
-                if hasattr(shape, "color"):
-                    DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0), shape.color)        
-                else:
-                    DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0))        
+                DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0))        
             
         # Draw arrows if the player is off screen
         self.playerOffCamera()
@@ -417,11 +441,11 @@ class Arena():
                 ef.finish()
         
     def randomEvent(self):
-        randomEvents = [ [self.bombDrop, self.bombDrop_revert]]
-                         #[self.changeBall, self.changeBall_revert],
-                         #[self.nogravity, self.nogravity_revert],
-                         #[self.slowmo, self.slowmo_revert],
-                         #[self.fastmo, self.fastmo_revert] ]
+        randomEvents = [ [self.bombDrop, self.bombDrop_revert],
+                         [self.changeBall, self.changeBall_revert],
+                         [self.nogravity, self.nogravity_revert],
+                         [self.slowmo, self.slowmo_revert],
+                         [self.fastmo, self.fastmo_revert] ]
                          
         while len(self.modifications) > 0:
             mod = self.modifications[0]

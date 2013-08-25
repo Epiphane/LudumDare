@@ -1,7 +1,7 @@
 
 class Player(pygame.sprite.Sprite):
         
-    def __init__(self, direction, start_x, color, color_2, arena):
+    def __init__(self, direction, start_x, color, color_2, arena, playerNum):
         self.input = {"up": False, "down": False, "left": False, "right": False}
         self.direction = direction
         self.color = color
@@ -14,10 +14,9 @@ class Player(pygame.sprite.Sprite):
         self.moving = None
         
         self.dead = False
+        self.materialize(start_x, arena, playerNum)
         
-        self.materialize(start_x, arena)
-        
-    def materialize(self, start_x, arena):
+    def materialize(self, start_x, arena, playerNum):
         while len(self.shapes) > 0:
             shape = self.shapes[0]
             arena.world.DestroyBody(shape)
@@ -30,7 +29,7 @@ class Player(pygame.sprite.Sprite):
                 density=CHAR_DENSITY,
                 friction=CHAR_FRICTION,
                 restitution=0),
-            userData = "player"
+            userData = "player" + str(playerNum)
             )
         self.shapes.append(block)
         
@@ -158,10 +157,10 @@ class Player(pygame.sprite.Sprite):
                 self.shapes[0].angularVelocity = -5.4 * self.direction
 
 class Lars(Player):
-    def __init__(self, direction, start_x, arena):
-        Player.__init__(self, direction, start_x, (0, 0, 0), (255, 255, 0), arena)
+    def __init__(self, direction, start_x, arena, playerNum):
+        Player.__init__(self, direction, start_x, (0, 0, 0), (255, 255, 0), arena, playerNum)
         
-    def materialize(self, start_x, arena):
+    def materialize(self, start_x, arena, playerNum):
         self.clearShapes()
             
         block = arena.world.CreateDynamicBody(
@@ -171,7 +170,7 @@ class Lars(Player):
                 density=CHAR_DENSITY,
                 friction=CHAR_FRICTION,
                 restitution=0),
-                userData = "player"
+                userData = "player" + str(playerNum)
             )
         self.shapes.append(block)
         
@@ -184,10 +183,10 @@ class Lars(Player):
         self.dead = False
 
 class Pate(Player):
-    def __init__(self, direction, start_x, arena):
-        Player.__init__(self, direction, start_x, (0, 0, 0), (0, 255, 255), arena)
+    def __init__(self, direction, start_x, arena, playerNum):
+        Player.__init__(self, direction, start_x, (0, 0, 0), (0, 255, 255), arena, playerNum)
         
-    def materialize(self, start_x, arena):
+    def materialize(self, start_x, arena, playerNum):
         self.clearShapes()
             
         block = arena.world.CreateDynamicBody(
@@ -197,7 +196,7 @@ class Pate(Player):
                 density=CHAR_DENSITY,
                 friction = CHAR_FRICTION,
                 restitution=0),
-                userData = "player"
+                userData = "player" + str(playerNum)
             )
         self.shapes.append(block)
         
@@ -215,10 +214,10 @@ class Pate(Player):
             self.shapes[0].angularVelocity = 8.1
 
 class Buster(Player):
-    def __init__(self, direction, start_x, arena):
-        Player.__init__(self, direction, start_x, (0, 0, 0), (153, 255, 0), arena)
+    def __init__(self, direction, start_x, arena, playerNum):
+        Player.__init__(self, direction, start_x, (0, 0, 0), (153, 255, 0), arena, playerNum)
         
-    def materialize(self, start_x, arena):
+    def materialize(self, start_x, arena, playerNum):
         self.clearShapes()
             
         block = arena.world.CreateDynamicBody(
@@ -228,7 +227,7 @@ class Buster(Player):
                 density=CHAR_DENSITY,
                 friction = CHAR_FRICTION,
                 restitution=0),
-                userData = "player"
+                userData = "player" + str(playerNum)
             )
         
         foot = block.CreateFixture(
@@ -242,13 +241,13 @@ class Buster(Player):
         self.dead = False
 
 class EricStrohm(Player):
-    def __init__(self, direction, start_x, arena):
-        Player.__init__(self, direction, start_x, (0, 0, 0), (30, 30, 30), arena)
+    def __init__(self, direction, start_x, arena, playerNum):
+        Player.__init__(self, direction, start_x, (0, 0, 0), (30, 30, 30), arena, playerNum)
         
         self.speed = 12
         self.airspeed = 20
         
-    def materialize(self, start_x, arena):
+    def materialize(self, start_x, arena, playerNum):
         self.clearShapes()
             
         block = arena.world.CreateDynamicBody(
@@ -258,7 +257,7 @@ class EricStrohm(Player):
                 density=CHAR_DENSITY,
                 friction = CHAR_FRICTION,
                 restitution=0),
-                userData = "player"
+                userData = "player" + str(playerNum)
             )
         self.shapes.append(block)
         
@@ -271,10 +270,10 @@ class EricStrohm(Player):
         self.dead = False
 
 class Ted(Player):
-    def __init__(self, direction, start_x, arena):
-        Player.__init__(self, direction, start_x, (0, 0, 0), (255, 0, 0), arena)
+    def __init__(self, direction, start_x, arena, playerNum):
+        Player.__init__(self, direction, start_x, (0, 0, 0), (255, 0, 0), arena, playerNum)
         
-    def materialize(self, start_x, arena):
+    def materialize(self, start_x, arena, playerNum):
         self.clearShapes()
             
         block = arena.world.CreateDynamicBody(
@@ -284,7 +283,7 @@ class Ted(Player):
                 density=CHAR_DENSITY,
                 friction = CHAR_FRICTION,
                 restitution=0),
-            userData = "character"
+            userData = "character" + str(playerNum)
             )
         self.shapes.append(block)
         
@@ -297,13 +296,13 @@ class Ted(Player):
         self.dead = False
 
 class SmithWickers(Player):
-    def __init__(self, direction, start_x, arena):
-        Player.__init__(self, direction, start_x, (0, 0, 0), (255, 0, 255), arena)
+    def __init__(self, direction, start_x, arena, playerNum):
+        Player.__init__(self, direction, start_x, (0, 0, 0), (255, 0, 255), arena, playerNum)
         
         self.alt_color =  pygame.color.Color(255, 102, 0)
         self.alt_color_2 =  pygame.color.Color(102, 51, 102)
         
-    def materialize(self, start_x, arena):
+    def materialize(self, start_x, arena, playerNum):
         self.clearShapes()
             
         size = (0.7, 1.8)
@@ -314,7 +313,7 @@ class SmithWickers(Player):
                 density=CHAR_DENSITY,
                 friction = CHAR_FRICTION,
                 restitution=0),
-                userData = "player"
+                userData = "player" + str(playerNum)
             )
         self.shapes.append(block)
         
@@ -331,7 +330,7 @@ class SmithWickers(Player):
                 density=CHAR_DENSITY,
                 friction=CHAR_FRICTION,
                 restitution=0),
-                userData = "player"
+                userData = "player" + str(playerNum)
             )
         self.shapes.append(block2)
         
