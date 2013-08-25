@@ -71,14 +71,14 @@ class Arena():
             elif char2 == "EricStrohm":
                 self.player2 = EricStrohm(-1, middle_x + SCREEN_WIDTH_M / 4, self)
             else: # char2 == "Pate":
-                self.player2 = Pate(-1, middle_x - SCREEN_WIDTH_M / 4, self)
+                self.player2 = Pate(-1, middle_x + SCREEN_WIDTH_M / 4, self)
         
         if self.ball is not None: self.world.DestroyBody(self.ball)
         
         self.ball = self.world.CreateDynamicBody(position = (middle_x,27),
             fixtures = b2FixtureDef(
                 shape = b2CircleShape(radius=1.3),
-                density=5,
+                density=1,
                 restitution=0.5,
                 friction = 50),
             userData="ball")
@@ -268,11 +268,13 @@ class Arena():
             self.player2.jump(self.world.gravity)
         if event.key == K_DOWN:
             self.player2.input["down"] = (event.type is pygame.KEYDOWN)
+            self.player2.dive()
         if event.key is K_w:
             self.player1.input["up"] = (event.type is pygame.KEYDOWN)
             self.player1.jump(self.world.gravity)
         if event.key is K_s:
             self.player1.input["down"] = (event.type is pygame.KEYDOWN)
+            self.player1.dive()
             
     def changeBall(self):
         print "Changeball triggered"
@@ -304,7 +306,7 @@ class Arena():
         self.ball = self.world.CreateDynamicBody(position = position,
             fixtures = b2FixtureDef(
                 shape = b2CircleShape(radius=1.3),
-                density=5,
+                density=1,
                 restitution=0.5,
                 friction = 0.5),
             userData="ball")
@@ -362,11 +364,11 @@ class Arena():
                 ef.finish()
         
     def randomEvent(self):
-        randomEvents = [ #[self.bombDrop, self.bombDrop_revert],
-                         #[self.changeBall, self.changeBall_revert],
-                         [self.nogravity, self.nogravity_revert]]
-                         #[self.slowmo, self.slowmo_revert],
-                         #[self.fastmo, self.fastmo_revert] ]
+        randomEvents = [ [self.bombDrop, self.bombDrop_revert],
+                         [self.changeBall, self.changeBall_revert],
+                         [self.nogravity, self.nogravity_revert],
+                         [self.slowmo, self.slowmo_revert],
+                         [self.fastmo, self.fastmo_revert] ]
                          
         while len(self.modifications) > 0:
             mod = self.modifications[0]
