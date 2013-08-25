@@ -22,6 +22,7 @@ class BombDrop():
             finalRect = pygame.Rect(left, top, (right - left), (bottom - top))
             imgRot = pygame.transform.rotate(images["bomb"][0], rotAngle)
             screen.blit(imgRot, finalRect)
+            screen.blit(images["bomb"][0], (0,0))
             
     def update(self):
         # Iterate the cooldown on bombs. If it's been long enough, drop another one!
