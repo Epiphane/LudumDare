@@ -52,7 +52,7 @@ class Arena():
                 shape = b2CircleShape(radius=1),
                 density=10,
                 restitution=0.5,
-                friction = 0.5),
+                friction = 5),
             userData="ball")
         
         self.shapes.append(self.ball.fixtures[0])
@@ -87,16 +87,16 @@ class Arena():
         self.shapes.append(rightWall.fixtures[0])
         
         goal_left = self.world.CreateStaticBody(
-            position = (200, 37),
-            shapes = b2PolygonShape(box = (5,8))
+            position = (198, 37),
+            shapes = b2PolygonShape(box = (2,8))
         )
         goal_left.fixtures[0].sensor = True
         goal_left.fixtures[0].userData = "goal left"
         self.shapes.append(goal_left.fixtures[0])
         
         goal_right = self.world.CreateStaticBody(
-            position = (6, 37),
-            shapes = b2PolygonShape(box = (5,8))
+            position = (4, 37),
+            shapes = b2PolygonShape(box = (2,8))
         )
         goal_right.fixtures[0].sensor = True
         goal_right.fixtures[0].userData = "goal right"
@@ -137,6 +137,9 @@ class Arena():
         self.world.ClearForces()
                 
     def draw(self, screen):
+        
+        self.camera.draw(screen)
+        
         self.drawTimer(screen)
         
         offsetX, offsetY = self.camera.getOffset_in_px()
@@ -193,7 +196,7 @@ class Arena():
             self.player1.jump(self.world.gravity)
         if event.key is K_s:
             self.player1.input["down"] = (event.type is pygame.KEYDOWN)
-        
+            
     def changeBall(self):
         print "Changeball triggered"
         self.shapes.remove(self.ball.fixtures[0])
@@ -209,9 +212,9 @@ class Arena():
                                                 (1   ,-0.33),
                                                 (1   ,0.33),
                                                 (-0.33 ,1  )]),
-                density=1,
+                density=10,
                 restitution=0.5,
-                friction = 0.5),
+                friction = 5),
             userData="ball")
         self.shapes.append(self.ball.fixtures[0])
     
@@ -256,12 +259,12 @@ class Arena():
     def fastmo(self):
         print "fast mo!"
         global TIME_STEP
-        TIME_STEP *= 4
+        TIME_STEP *= 2
      
     def fastmo_revert(self):
         print "fast mo reverted"
         global TIME_STEP
-        TIME_STEP /= 4
+        TIME_STEP /= 2
         
     def cleanUp(self):
         while len(self.shapes) > 0:
