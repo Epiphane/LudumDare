@@ -9,9 +9,9 @@ def DrawPolygon(vertices, color = (0,0,0), color_2 = None):
     if len(vertices) == 2:
         pygame.draw.aaline(screen, color, vertices[0], vertices)
     else:
-        pygame.draw.polygon(screen, color, vertices, 1)
         if color_2 is not None:
             pygame.draw.polygon(screen, color_2, vertices, 0)
+        pygame.draw.polygon(screen, color, vertices, 2)
 
 def DrawCircle(center, radius, color = (0,0,0)):
     """ Draw a wireframe polygon given the screen vertices with the specified color."""
