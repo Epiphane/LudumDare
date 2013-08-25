@@ -52,7 +52,7 @@ class Arena():
             self.player2.materialize(middle_x + SCREEN_WIDTH_M / 4, self, 1)
         else:
             if char1 == "Lars":
-                self.player1 = Lars(1, middle_x - SCREEN_WIDTH_M / 4, self)
+                self.player1 = Lars(1, middle_x - SCREEN_WIDTH_M / 4, self, 1)
             elif char1 == "Buster":
                 self.player1 = Buster(1, middle_x - SCREEN_WIDTH_M / 4, self)
             elif char1 == "SmithWickers":
@@ -65,7 +65,7 @@ class Arena():
                 self.player1 = Ted(1, middle_x - SCREEN_WIDTH_M / 4, self)
                 
             if char2 == "Lars":
-                self.player2 = Lars(-1, middle_x + SCREEN_WIDTH_M / 4, self)
+                self.player2 = Lars(-1, middle_x + SCREEN_WIDTH_M / 4, self, 2)
             elif char2 == "Buster":
                 self.player2 = Buster(-1, middle_x + SCREEN_WIDTH_M / 4, self)
             elif char2 == "SmithWickers":
