@@ -4,13 +4,13 @@ import Box2D
 import time
 from pygame.locals import *
 
-STAGE_WIDTH_PX = 3200
-STAGE_WIDTH_M = 200
-SCREEN_WIDTH_PX = 800
-SCREEN_WIDTH_M = 50
-SCREEN_HEIGHT_PX = 600
-SCREEN_HEIGHT_M = 37.5
 PPM = 16
+STAGE_WIDTH_PX = 4000
+STAGE_WIDTH_M = STAGE_WIDTH_PX / PPM
+SCREEN_WIDTH_PX = 1400
+SCREEN_WIDTH_M = SCREEN_WIDTH_PX / PPM
+SCREEN_HEIGHT_PX = 600
+SCREEN_HEIGHT_M = SCREEN_HEIGHT_PX / PPM
 
 SCREEN_RECT = pygame.Rect(0, 0, SCREEN_WIDTH_PX, SCREEN_HEIGHT_PX)
 
@@ -21,10 +21,11 @@ CAMERA_PILLOW_SPACE_M = 10
 CAMERA_SPEEDUP_SPEED = 3
 
 ##### VARIABLES FOR GAME BALANCE ######
-BALL_DENSITY = 10
+BALL_DENSITY = 4
 BALL_CHANGE_DENSITY = 10
-CHAR_DENSITY = 5
+CHAR_DENSITY = 25
 BALL_FRICTION = 0.9
+CHAR_FRICTION = 1
 
 
 
@@ -133,4 +134,12 @@ class ContactHandler(b2ContactListener):
                     arena.player2.dead = True
                     arena.toInit = (STAGE_WIDTH_M * 2 / 3, 2000)
                     
-        kick = self.checkContact(contact, "foot")
+        collide = self.checkContact(contact, "character")
+        if collide is not None:
+            if collide[1].body.userData is not None and collide[1].body.userData == "character":
+                #is he diving?
+                if collide[0].body.linearVelocity.y >= 25 or collide[1].body.linearVelocity.y >= 25:
+                    collide[1].body.linearVelocity.y = -25
+                    collide[1].body.angularVelocity = -5
+                    collide[0].body.linearVelocity.y = -25
+                    collide[0].body.angularVelocity = 5

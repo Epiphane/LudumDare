@@ -37,6 +37,8 @@ class Arena():
         
         self.toInit = False
         self.pauseTime = 0
+        
+        self.createCrowd()
   
     def startGame(self, middle_x, delay=0):
         global char1, char2
@@ -86,40 +88,55 @@ class Arena():
                 restitution=0.5,
                 friction = 50),
             userData="ball")
-        
+            
+        self.ball.color = pygame.color.Color(128,128,128)
         self.shapes.append(self.ball.fixtures[0])
+        
+    def createCrowd(self):
+        block = self.world.CreateDynamicBody(
+            position = (2, 30),
+            fixtures = b2FixtureDef(
+                shape = b2PolygonShape(box = (1,2)),
+                density=CHAR_DENSITY,
+                restitution=0,
+                friction = CHAR_FRICTION),
+            userData = "crowd"
+            )
+        block.color = pygame.color.Color(0,0,0)
+        self.shapes.append(block.fixtures[0])
         
     def initWalls(self):
         ground = self.world.CreateStaticBody(
-            position = (200, 37.5),
-            shapes = b2PolygonShape(box = (800,1)),
+            position = (0, 37.5),
+            shapes = b2PolygonShape(box = (STAGE_WIDTH_M,1)),
             userData = "ground"
         )
+        ground.color = pygame.color.Color(0,128,0)
         self.shapes.append(ground.fixtures[0])
         
         ceiling = self.world.CreateStaticBody(
-            position = (200, -1),
-            shapes = b2PolygonShape(box = (800,1)),
+            position = (0, -1),
+            shapes = b2PolygonShape(box = (STAGE_WIDTH_M,1)),
             userData = "ceiling"
         )
         self.shapes.append(ceiling.fixtures[0])
         
         leftWall = self.world.CreateStaticBody(
-            position = (0, 0),
+            position = (25, 0),
             shapes = b2PolygonShape(box = (1,37.5)),
             userData = "left wall"
         )
-        self.shapes.append(leftWall.fixtures[0])
+        #self.shapes.append(leftWall.fixtures[0])
         
         rightWall = self.world.CreateStaticBody(
-            position = (200, 0),
+            position = (225, 0),
             shapes = b2PolygonShape(box = (1,37.5)),
             userData = "right wall"
         )
-        self.shapes.append(rightWall.fixtures[0])
+        #self.shapes.append(rightWall.fixtures[0])
         
         goal_left = self.world.CreateStaticBody(
-            position = (198, 37),
+            position = (223, 37),
             shapes = b2PolygonShape(box = (2,8))
         )
         goal_left.fixtures[0].sensor = True
@@ -127,7 +144,7 @@ class Arena():
         self.shapes.append(goal_left.fixtures[0])
         
         goal_right = self.world.CreateStaticBody(
-            position = (4, 37),
+            position = (29, 37),
             shapes = b2PolygonShape(box = (2,8))
         )
         goal_right.fixtures[0].sensor = True
@@ -172,6 +189,8 @@ class Arena():
         screen.blit(arrowImg, (arrowX, arrowY))
         
     def update(self, dt):
+        self.camera.update(self.ball)
+        
         if self.toInit is not False:
             self.startGame(self.toInit[0], self.toInit[1] - dt)
                         
@@ -181,10 +200,13 @@ class Arena():
             # Reset forces for the next frame
             self.world.ClearForces()
             
-            
+            if(self.player1.dead):
+                self.player1.dead = False
+                self.player1.destroy()
+            if(self.player2.dead):
+                self.player2.dead = False
+                self.player2.destroy()
             return
-        
-        self.camera.update(self.ball)
     
         self.timeRemaining -= dt
         oldbignum = self.bignum
@@ -231,7 +253,10 @@ class Arena():
         for shape in self.shapes:
             if isinstance(shape.shape, b2CircleShape):
                 pos = (int(shape.body.position.x * PPM - offsetX), int(shape.body.position.y * PPM + offsetY))
-                DrawCircle(pos, shape.shape.radius, (0,0,0))
+                if shape.body.userData == "ball":
+                    DrawCircle(pos, shape.shape.radius, self.ball.color)
+                else:
+                    DrawCircle(pos, shape.shape.radius, (0,0,0))
             elif hasattr(shape, "userData") and shape.userData is not None:
                 if shape.userData.index("goal") == 0:
                     DrawImage(vertices_with_offset(shape, offsetX, offsetY), shape.userData)
@@ -252,14 +277,14 @@ class Arena():
         if(self.drawRed > 0):
             self.drawRed -= 2
         
-        if(self.bignum == 10): screen.blit(text, (290,0))
-        else: screen.blit(text, (330,0))
-        screen.blit(text_sm, (400,0))
+        if(self.bignum == 10): screen.blit(text, (SCREEN_WIDTH_PX / 2 - 1100,0))
+        else: screen.blit(text, (SCREEN_WIDTH_PX / 2 - 70,0))
+        screen.blit(text_sm, (SCREEN_WIDTH_PX / 2,0))
         
         text_l = time_font_lg.render(str(self.score[0]), True, (0,0,0))
         text_r = time_font_lg.render(str(self.score[1]), True, (0,0,0))
         screen.blit(text_l, (0,0))
-        screen.blit(text_r, (740,0))
+        screen.blit(text_r, (SCREEN_WIDTH_PX - 60,0))
 
     def doAction(self, event):
         if event.key is K_a:
@@ -301,7 +326,7 @@ class Arena():
                 density=10,
                 restitution=0.5,
                 friction = 50),
-            userData="ball")
+            userData="ball rock")
         self.shapes.append(self.ball.fixtures[0])
     
     def changeBall_revert(self):
@@ -321,10 +346,12 @@ class Arena():
         self.shapes.append(self.ball.fixtures[0])
      
     def nogravity(self):
+        BALL_FRICTION = 1
         print "no gravity!"
         self.world.gravity = (0,0)
      
     def nogravity_revert(self):
+        BALL_FRICTION = 0.9
         print "no gravity reverted"
         self.world.gravity = (0,25)
      
@@ -355,7 +382,7 @@ class Arena():
     def cleanUp(self):
         while len(self.shapes) > 0:
             shape = self.shapes[0]
-            aelf.world.DestroyBody(shape.body)
+            self.world.DestroyBody(shape.body)
             self.shapes.remove(shape)
         
     def bombDrop(self):
@@ -371,11 +398,11 @@ class Arena():
                 ef.finish()
         
     def randomEvent(self):
-        randomEvents = [ [self.bombDrop, self.bombDrop_revert],
-                         [self.changeBall, self.changeBall_revert],
-                         [self.nogravity, self.nogravity_revert],
-                         [self.slowmo, self.slowmo_revert],
-                         [self.fastmo, self.fastmo_revert] ]
+        randomEvents = [ [self.bombDrop, self.bombDrop_revert]]
+                         #[self.changeBall, self.changeBall_revert],
+                         #[self.nogravity, self.nogravity_revert],
+                         #[self.slowmo, self.slowmo_revert],
+                         #[self.fastmo, self.fastmo_revert] ]
                          
         while len(self.modifications) > 0:
             mod = self.modifications[0]
@@ -401,8 +428,8 @@ class PrepareForBattle(Arena):
         self.drawTimer(screen)
         
         text = (time_font_lg.render("PREPARE", True, (0, 70, 0)), time_font_lg.render("YOURSELF", True, (0, 70, 0)))
-        screen.blit(text[0], (190,180))
-        screen.blit(text[1], (180,260))
+        screen.blit(text[0], (SCREEN_WIDTH_PX / 2 - 210,180))
+        screen.blit(text[1], (SCREEN_WIDTH_PX / 2 - 220,260))
         
         
     def drawTimer(self, screen):
@@ -414,9 +441,8 @@ class PrepareForBattle(Arena):
         if(self.drawRed > 0):
             self.drawRed -= 2
         
-        if(self.bignum == 10): screen.blit(text, (290,0))
-        else: screen.blit(text, (330,0))
-        screen.blit(text_sm, (400,0))
+        screen.blit(text, (SCREEN_WIDTH_PX / 2 - 70,0))
+        screen.blit(text_sm, (SCREEN_WIDTH_PX / 2,0))
         
     def update(self, dt):
         self.timeRemaining -= dt

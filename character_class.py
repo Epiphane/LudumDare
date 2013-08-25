@@ -27,7 +27,7 @@ class Player(pygame.sprite.Sprite):
             position = (start_x, 30),
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (1,2)),
-                density=10,
+                density=CHAR_DENSITY,
                 restitution=0)
             )
         self.shapes.append(block.fixtures[0])
@@ -41,10 +41,8 @@ class Player(pygame.sprite.Sprite):
         self.dead = False
         
     def draw(self, screen, offsetX, offsetY):
-        if len(self.shapes) > 0:
-            DrawPolygon(vertices_with_offset(self.shapes[0], offsetX, offsetY), self.color, self.color_2)
-        if len(self.shapes) > 1:
-            DrawPolygon(vertices_with_offset(self.shapes[1], offsetX, offsetY), self.alt_color, self.alt_color_2)
+        for shape in self.shapes:
+            DrawPolygon(vertices_with_offset(shape, offsetX, offsetY), self.color, self.color_2)
     
     def destroy(self):
         destructionShapes = []
@@ -57,16 +55,20 @@ class Player(pygame.sprite.Sprite):
                 for v in result:
                     body = arena.world.CreateDynamicBody(position = v)
                     shape = body.CreatePolygonFixture(box = (.2,.2), density = 1, isSensor = True)
+                    body.linearVelocity.y = -15
+                    body.linearVelocity.x = random.random() * 6 - 3
                     destructionShapes.append(shape)
                 
         # Grab the old vertices from the shape
         olds = self.shapes[0].shape.vertices
-        for i in range(10):
+        for i in range(20):
             # Convert them (with magic) using the body.transform thing
             result = [(self.shapes[0].body.transform*v) for v in olds]
             for v in result:
                 body = arena.world.CreateDynamicBody(position = (v.x + random.random()*4 - 2, v.y + random.random()*4-2))
                 shape = body.CreatePolygonFixture(box = (.2,.2), density = 1, isSensor = True)
+                body.linearVelocity.y = -15
+                body.linearVelocity.x = random.random() * 16 - 8
                 destructionShapes.append(shape)
                 
         for shape in self.shapes:
@@ -77,7 +79,7 @@ class Player(pygame.sprite.Sprite):
         self.clearShapes(arena, color)
     
         body = arena.world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 34))
-        box = body.CreatePolygonFixture(box = (1,2), density = 2, friction = 0.3)
+        box = body.CreatePolygonFixture(box = (1,2), density = CHAR_DENSITY, friction = 0.3)
         self.shapes.append(box)
          
     def clearShapes(self):
@@ -165,8 +167,9 @@ class Lars(Player):
             position = (start_x, 30),
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (1,2)),
-                density=10,
-                restitution=0)
+                density=CHAR_DENSITY,
+                restitution=0,
+                friction = CHAR_FRICTION)
             )
         self.shapes.append(block.fixtures[0])
         
@@ -189,8 +192,10 @@ class Pate(Player):
             position = (start_x, 30),
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (0.8,2)),
-                density=10,
-                restitution=0)
+                density=CHAR_DENSITY,
+                restitution=0,
+                friction = CHAR_FRICTION),
+            userData = "character"
             )
         self.shapes.append(block.fixtures[0])
         
@@ -201,6 +206,11 @@ class Pate(Player):
         self.foot = block.fixtures[1]
         
         self.dead = False
+            
+    def jump(self):
+        if len(self.foot.body.contacts) > 0:
+            self.shapes[0].body.linearVelocity.y = -15
+            self.shapes[0].body.angularVelocity = 8.1
 
 class Buster(Player):
     def __init__(self, direction, start_x, arena):
@@ -213,8 +223,10 @@ class Buster(Player):
             position = (start_x, 30),
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (1,1.8)),
-                density=10,
-                restitution=0)
+                density=CHAR_DENSITY,
+                restitution=0,
+                friction = CHAR_FRICTION),
+            userData = "character"
             )
         self.shapes.append(block.fixtures[0])
         
@@ -230,6 +242,9 @@ class EricStrohm(Player):
     def __init__(self, direction, start_x, arena):
         Player.__init__(self, direction, start_x, (0, 0, 0), (30, 30, 30), arena)
         
+        self.speed = 12
+        self.airspeed = 20
+        
     def materialize(self, start_x, arena):
         self.clearShapes()
             
@@ -237,8 +252,10 @@ class EricStrohm(Player):
             position = (start_x, 30),
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (1,2)),
-                density=10,
-                restitution=0)
+                density=CHAR_DENSITY,
+                restitution=0,
+                friction = CHAR_FRICTION),
+            userData = "character"
             )
         self.shapes.append(block.fixtures[0])
         
@@ -261,8 +278,10 @@ class Ted(Player):
             position = (start_x, 30),
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (1.4,1.5)),
-                density=10,
-                restitution=0)
+                density=CHAR_DENSITY,
+                restitution=0,
+                friction = CHAR_FRICTION),
+            userData = "character"
             )
         self.shapes.append(block.fixtures[0])
         
@@ -289,8 +308,10 @@ class SmithWickers(Player):
             position = (start_x, 30),
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = size),
-                density=10,
-                restitution=0)
+                density=CHAR_DENSITY,
+                restitution=0,
+                friction = CHAR_FRICTION),
+            userData = "character"
             )
         self.shapes.append(block.fixtures[0])
         
@@ -304,8 +325,9 @@ class SmithWickers(Player):
             position = (start_x - 3, 30),
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = size),
-                density=10,
-                restitution=0)
+                density=CHAR_DENSITY,
+                restitution=0),
+            userData = "character"
             )
         self.shapes.append(block2.fixtures[0])
         
