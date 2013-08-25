@@ -6,10 +6,10 @@ def changeArena(arenaNum):
     camera.panCam(arenaNum)
     camera.delay = 200
 
+char1 = "Lars"
+char2 = "Buster"
 class Arena():
-    def __init__(self, char1, char2):
-        
-    
+    def __init__(self):
         self.timeRemaining = 10000 # 10 seconds
         self.drawRed = 0
         self.bignum = 10
@@ -39,6 +39,7 @@ class Arena():
         self.pauseTime = 0
   
     def startGame(self, middle_x, delay=0):
+        global char1, char2
         self.toInit = False
         self.pauseTime = delay
         
@@ -46,15 +47,38 @@ class Arena():
             self.player1.materialize(middle_x - SCREEN_WIDTH_M / 4, self)
             self.player2.materialize(middle_x + SCREEN_WIDTH_M / 4, self)
         else:
-            self.player1 = Player(1, middle_x - SCREEN_WIDTH_M / 4, (255,128,128),(255,200,200),  self)
-            self.player2 = Player(-1, middle_x + SCREEN_WIDTH_M / 4, (128,128,255), (200,200,255), self)
+            if char1 == "Lars":
+                self.player1 = Lars(1, middle_x - SCREEN_WIDTH_M / 4, self)
+            elif char1 == "Buster":
+                self.player1 = Buster(1, middle_x - SCREEN_WIDTH_M / 4, self)
+            elif char1 == "SmithWickers":
+                self.player1 = SmithWickers(1, middle_x - SCREEN_WIDTH_M / 4, self)
+            elif char1 == "Pate":
+                self.player1 = Pate(1, middle_x - SCREEN_WIDTH_M / 4, self)
+            elif char1 == "EricStrohm":
+                self.player1 = EricStrohm(1, middle_x - SCREEN_WIDTH_M / 4, self)
+            else: # char1 == "Ted":
+                self.player1 = Ted(1, middle_x - SCREEN_WIDTH_M / 4, self)
+                
+            if char2 == "Lars":
+                self.player2 = Lars(-1, middle_x + SCREEN_WIDTH_M / 4, self)
+            elif char2 == "Buster":
+                self.player2 = Buster(-1, middle_x + SCREEN_WIDTH_M / 4, self)
+            elif char2 == "SmithWickers":
+                self.player2 = SmithWickers(-1, middle_x + SCREEN_WIDTH_M / 4, self)
+            elif char2 == "Ted":
+                self.player2 = Ted(-1, middle_x + SCREEN_WIDTH_M / 4, self)
+            elif char2 == "EricStrohm":
+                self.player2 = EricStrohm(-1, middle_x + SCREEN_WIDTH_M / 4, self)
+            else: # char2 == "Pate":
+                self.player2 = Pate(-1, middle_x + SCREEN_WIDTH_M / 4, self)
         
         if self.ball is not None: self.world.DestroyBody(self.ball)
         
         self.ball = self.world.CreateDynamicBody(position = (middle_x,27),
             fixtures = b2FixtureDef(
                 shape = b2CircleShape(radius=1.3),
-                density=5,
+                density=1,
                 restitution=0.5,
                 friction = 50),
             userData="ball")
@@ -160,8 +184,8 @@ class Arena():
             self.randomEvent()
             self.timeRemaining = 10000
             
-        self.player1.update(self.world.gravity == (0,0))
-        self.player2.update(self.world.gravity == (0,0))
+        self.player1.update(self.world.gravity == b2Vec2(0,0))
+        self.player2.update(self.world.gravity == b2Vec2(0,0))
         
         # Murder things that need murdering
         for i, shape in enumerate(self.shapes):
@@ -244,11 +268,13 @@ class Arena():
             self.player2.jump(self.world.gravity)
         if event.key == K_DOWN:
             self.player2.input["down"] = (event.type is pygame.KEYDOWN)
+            self.player2.dive()
         if event.key is K_w:
             self.player1.input["up"] = (event.type is pygame.KEYDOWN)
             self.player1.jump(self.world.gravity)
         if event.key is K_s:
             self.player1.input["down"] = (event.type is pygame.KEYDOWN)
+            self.player1.dive()
             
     def changeBall(self):
         print "Changeball triggered"
@@ -280,7 +306,7 @@ class Arena():
         self.ball = self.world.CreateDynamicBody(position = position,
             fixtures = b2FixtureDef(
                 shape = b2CircleShape(radius=1.3),
-                density=5,
+                density=1,
                 restitution=0.5,
                 friction = 0.5),
             userData="ball")
