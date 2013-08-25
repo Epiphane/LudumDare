@@ -107,6 +107,7 @@ class Arena():
                 DrawCircle(pos, shape.shape.radius, (0,0,0))
             else:
                 DrawPolygon(vertices_with_offset(shape, offsetX, offsetY), (0,0,0))
+                
     
     def drawTimer(self, screen):
         color = (self.drawRed,0,0)
@@ -134,15 +135,10 @@ class Arena():
             self.player2.jump()
         if event.key is K_w:
             self.player1.jump()
-        if event.key is K_s and self.player1.input["right"]:
-            self.player1.slideTackle("r")
-        if event.key is K_s and self.player1.input["left"]:
-            self.player1.slideTackle("l")
-        if event.key == K_DOWN and self.player2.input["right"]:
-            self.player2.slideTackle("r")
-        if event.key == K_DOWN and self.player2.input["left"]:
-            self.player2.slideTackle("l")
-            
+        if event.key is K_s:
+            self.player1.dive("r")
+        if event.key == K_DOWN:
+            self.player2.dive("r")
     def startGame(self, middle_x):
         self.ball = self.world.CreateDynamicBody(position = (middle_x,27),
             fixtures = b2FixtureDef(
@@ -172,17 +168,6 @@ class Arena():
         #player1.destroy()
         #player2.destroy()
         
-    def randomEvent(self):
-        while len(self.modifications) > 0:
-            mod = self.modifications[0]
-            if(mod == "changeBall"): self.changeBall_revert()
-            del self.modifications[0]
-        event = math.floor(random.random())
-        
-        if(event == 0):
-            self.changeBall()
-            self.modifications.append("changeBall")
-        
     def changeBall(self):
         self.oldBall = self.ball
         self.shapes.remove(self.ball.fixtures[0])
@@ -199,6 +184,31 @@ class Arena():
         self.oldBall.position = self.ball.position
         self.ball = self.oldBall
         self.shapes.append(self.ball.fixtures[0])
+        
+    def bombDrop(self):
+        bombs = BombDrop()
+        effects.append(bombs)
+        
+    def bombDrop_revert(self):
+        # Find the bomb drop and PUT A STOP TO THE MADNESS
+        for ef in effects:
+            if ef.__class__.__name__ == "BombDrop":
+                ef.finish()
+        
+    def randomEvent(self):
+        randomEvents = [ [self.bombDrop, self.bombDrop_revert] ]
+        
+        while len(self.modifications) > 0:
+            mod = self.modifications[0]
+            mod[1]()
+            del self.modifications[0]
+            
+        event = math.floor(random.random() * len(randomEvents))
+        
+        # Grab the function from the list of events and run it
+        mod = randomEvents[int(event)]
+        mod[0]()
+        self.modifications.append(mod)
         
             
 class PrepareForBattle(Arena):

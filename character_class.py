@@ -92,13 +92,33 @@ class Player(pygame.sprite.Sprite):
     def jump(self):
         if len(self.foot.body.contacts) > 0:
             self.shapes[0].body.linearVelocity.y = -15
-            
             self.shapes[0].body.angularVelocity = 5.4
+                
+    def dive(self):
+        if self.shapes[0].body.linearVelocity.x > 0:
+            self.dive("l")
+        else:
+            self.dive("r")
+                
+    def dive(self, dir):
+        if len(self.foot.body.contacts) == 0:
+            self.shapes[0].body.linearVelocity.y = 15
+            self.shapes[0].body.linearVelocity.x *= 2
+            if dir == "l":
+                if self.shapes[0].body.angle < math.pi / 4:
+                    self.shapes[0].angularVelocity = 0.5
+                else:
+                    self.shapes[0].angularVelocity = -0.5
+            if dir == "r":
+                if self.shapes[0].body.angle < - math.pi / 4:
+                    self.shapes[0].angularVelocity = 0.5
+                else:
+                    self.shapes[0].angularVelocity = -0.5
             
     def slideTackle(self, dir):
         if dir == "r":
             print("slide tackle right")
-            self.shapes[0].body.ApplyForce(force=(1000,0), point=(2,2), wake=True)
+            #self.shapes[0].body.ApplyForce(force=(100000,0), point=(self.shapes[0].body.GetWorldPoint(localPoint = (0, 1))), wake=True)
         if dir == "l":
             print("slide tackle left")
             self.shapes[0].body.ApplyForce(force=(-1000,0), point=(2,2), wake=True)

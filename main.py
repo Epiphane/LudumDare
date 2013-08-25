@@ -35,6 +35,8 @@ def init():
     global effects          # Sort of like AwesomeRogue!
     global images           # Dict of all the images we have to draw
     
+    effects = []
+    
     time_font_sm = pygame.font.Font("fonts/ka1.ttf", 30)
     time_font_lg = pygame.font.Font("fonts/ka1.ttf", 60)
     
@@ -44,6 +46,7 @@ def init():
     # Load some images
     images = {}
     images["goal"] = load_image("GOOOAL.png")
+    images["bomb"] = load_image("da bomb.png")
     
     # Make sure alpha will properly render
     for key in images:
@@ -78,4 +81,11 @@ while 1:
         arena.update(dt)
         arena.draw(screen)
                         
+    for i, ef in enumerate(effects):
+        ef.update()
+        ef.draw(screen)
+        if ef.done:
+            del effects[i]
+            
     pygame.display.flip()
+    
