@@ -6,6 +6,8 @@ class Player(pygame.sprite.Sprite):
         self.shapes = []
         self.arena = arena
         
+        self.dead = False
+        
     def __init__(self, direction, start_x, color, arena):
         self.input = {"up": False, "down": False, "left": False, "right": False}
         self.direction = direction
@@ -13,9 +15,16 @@ class Player(pygame.sprite.Sprite):
         self.shapes = []
         self.arena = arena
         
+        self.dead = False
+        
         self.materialize(start_x, arena)
         
     def materialize(self, start_x, arena):
+        while len(self.shapes) > 0:
+            shape = self.shapes[0]
+            arena.world.DestroyBody(shape.body)
+            self.shapes.remove(shape)
+            
         block = arena.world.CreateDynamicBody(
             position = (start_x, 30),
             fixtures = b2FixtureDef(
@@ -30,6 +39,8 @@ class Player(pygame.sprite.Sprite):
             )
         self.foot = block.fixtures[1]
         
+        self.dead = False
+        
     def draw(self, screen, offsetX, offsetY):
         if len(self.shapes) > 0:
             DrawPolygon(vertices_with_offset(self.shapes[0], offsetX, offsetY), self.color)
@@ -43,7 +54,7 @@ class Player(pygame.sprite.Sprite):
                 # Convert them (with magic) using the body.transform thing
                 result = [(self.shapes[i].body.transform*v) for v in olds]
                 for v in result:
-                    body = world.CreateDynamicBody(position = v)
+                    body = arena.world.CreateDynamicBody(position = v)
                     shape = body.CreatePolygonFixture(box = (.2,.2), density = 1, isSensor = True)
                     destructionShapes.append(shape)
                 
@@ -53,7 +64,7 @@ class Player(pygame.sprite.Sprite):
             # Convert them (with magic) using the body.transform thing
             result = [(self.shapes[0].body.transform*v) for v in olds]
             for v in result:
-                body = world.CreateDynamicBody(position = (v.x + random.random()*4 - 2, v.y + random.random()*4-2))
+                body = arena.world.CreateDynamicBody(position = (v.x + random.random()*4 - 2, v.y + random.random()*4-2))
                 shape = body.CreatePolygonFixture(box = (.2,.2), density = 1, isSensor = True)
                 destructionShapes.append(shape)
                 
@@ -64,7 +75,7 @@ class Player(pygame.sprite.Sprite):
     def create(self, color):
         self.clearShapes(arena, color)
     
-        body = world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 34))
+        body = arena.world.CreateDynamicBody(position = ((ARENA_WIDTH * (arena + 0.5)) / PPM, 34))
         box = body.CreatePolygonFixture(box = (1,2), density = 2, friction = 0.3)
         self.shapes.append(box)
          
@@ -79,15 +90,36 @@ class Player(pygame.sprite.Sprite):
         
         self.color = color  
       
-    def update(self):
-        self.shapes[0].body.awake = True
-        self.shapes[0].body.linearVelocity.x = 0
-        if self.input["left"]:
-            self.shapes[0].body.linearVelocity.x -= 10
-        if self.input["right"]:
-            self.shapes[0].body.linearVelocity.x += 10
+    def update(self, nogravity = False):
+        if(self.dead):
+            self.destroy()
+            return
             
-    def jump(self):
-        if len(self.foot.body.contacts) > 0:
-            self.shapes[0].body.linearVelocity.y = -15
-            self.shapes[0].body.angularVelocity = 5.4
+        self.shapes[0].body.awake = True
+        if nogravity:
+            if self.input["up"]:
+                self.shapes[0].body.linearVelocity.y -= 3
+            if self.input["down"]:
+                self.shapes[0].body.linearVelocity.y += 3
+            if self.input["left"]:
+                self.shapes[0].body.linearVelocity.x -= 4
+            if self.input["right"]:
+                self.shapes[0].body.linearVelocity.x += 4
+                
+            if self.shapes[0].body.linearVelocity.y > 20: self.shapes[0].body.linearVelocity.y = 20
+            if self.shapes[0].body.linearVelocity.y < -20: self.shapes[0].body.linearVelocity.y = -20
+            if self.shapes[0].body.linearVelocity.x > 20: self.shapes[0].body.linearVelocity.x = 20
+            if self.shapes[0].body.linearVelocity.x < -20: self.shapes[0].body.linearVelocity.x = -20
+        else:
+            self.shapes[0].body.linearVelocity.x = 0
+            if self.input["left"]:
+                self.shapes[0].body.linearVelocity.x -= 10
+            if self.input["right"]:
+                self.shapes[0].body.linearVelocity.x += 10
+            
+    def jump(self, gravity):
+        if gravity == (0,0): pass
+        else:
+            if len(self.foot.body.contacts) > 0:
+                self.shapes[0].body.linearVelocity.y = -15 * gravity[1] / 25
+                self.shapes[0].body.angularVelocity = -5.4 * self.direction

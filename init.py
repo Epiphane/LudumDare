@@ -82,15 +82,21 @@ class ContactHandler(b2ContactListener):
         
     def BeginContact(self, contact):
     
-        blowUp = self.checkContact(contact, "land mine")
-        if blowUp is not None:
+        goalLeft = self.checkContact(contact, "ball")
+        if goalLeft is not None:
             # mass > 0 implies it's not a "Static" object
-            if blowUp[1].massData.mass > 0:
-                # Destroy the land mine and apply a HUGE force to the other guy
-                # Since you can't call DestroyFixture while the physics is iterating,
-                # flag it for destruction by setting userData to "kill me"
-                blowUp[0].body.userData = "kill me"
-                blowUp[1].body.ApplyForce(force=(50000, 0), point=(0, 0), wake=True)
-                explos = Explosion(blowUp[0].body.position.x * PPM,
-                                    blowUp[0].body.position.y * PPM)
-                effects.append(explos)  
+            if goalLeft[1].body.userData is not None or goalLeft[1].userData is not None:
+                if goalLeft[1].userData == "goal left":
+                    arena.score[0] += 1
+                    if arena.score[0] >= 10:
+                        winGame(1)
+                    arena.player1.dead = True
+                    arena.player2.dead = True
+                    arena.toInit = (STAGE_WIDTH_M / 3, 2000)
+                if goalLeft[1].userData == "goal right":
+                    arena.score[1] += 1
+                    if arena.score[1] >= 10:
+                        winGame(2)
+                    arena.player1.dead = True
+                    arena.player2.dead = True
+                    arena.toInit = (STAGE_WIDTH_M * 2 / 3, 2000)

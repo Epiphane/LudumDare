@@ -22,6 +22,7 @@ exec(open('effects.py'))
 exec(open('ui_class.py'))
 exec(open('arena_mechanics.py'))
 exec(open('camera.py'))
+exec(open('gameOver.py'))
 exec(open('character_class.py'))
 
 
@@ -43,7 +44,8 @@ def init():
     
     # Load some images
     images = {}
-    images["goal"] = load_image("GOOOAL.png")
+    images["goal left"] = load_image("GOOOAL.png", (255,255,255))
+    images["goal right"] = [pygame.transform.flip(images["goal left"][0], True, False), images["goal left"][1]]
     
     # Make sure alpha will properly render
     for key in images:

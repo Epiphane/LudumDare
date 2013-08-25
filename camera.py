@@ -17,6 +17,9 @@ def DrawCircle(center, radius, color = (0,0,0)):
         
     pygame.draw.circle(screen, color, center, int(radius*PPM))
             
+def DrawImage(vertices, userData):
+    screen.blit(images[userData][0], (vertices[0], vertices[1]))
+           
 class Camera():
     def __init__(self, centerX_in_meters):
         self.background = Back("background")
