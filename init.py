@@ -95,3 +95,22 @@ class ContactHandler(b2ContactListener):
                 explos = Explosion(blowUp[0].body.position.x * PPM,
                                    blowUp[0].body.position.y * PPM)
                 effects.append(explos)  
+        
+        goalLeft = self.checkContact(contact, "ball")
+        if goalLeft is not None:
+            # mass > 0 implies it's not a "Static" object
+            if goalLeft[1].body.userData is not None or goalLeft[1].userData is not None:
+                if goalLeft[1].userData == "goal left":
+                    arena.score[0] += 1
+                    if arena.score[0] >= 10:
+                        winGame(1)
+                    arena.player1.dead = True
+                    arena.player2.dead = True
+                    arena.toInit = (STAGE_WIDTH_M / 3, 2000)
+                if goalLeft[1].userData == "goal right":
+                    arena.score[1] += 1
+                    if arena.score[1] >= 10:
+                        winGame(2)
+                    arena.player1.dead = True
+                    arena.player2.dead = True
+                    arena.toInit = (STAGE_WIDTH_M * 2 / 3, 2000)
