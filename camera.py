@@ -39,7 +39,8 @@ class Camera():
         return offsetX_in_meters * PPM, offsetY_in_meters * PPM
         
     def draw(self, screen):
-        screen.blit(self.background.image, (self.panx * PPM, 0))
+        offsetX_in_meters = self.centerX_in_meters - SCREEN_WIDTH_M / 2
+        screen.blit(self.background.image, (-1 * offsetX_in_meters * PPM, 0))
         
     def update(self, ball):
         self.centerX_in_meters = ball.position.x
