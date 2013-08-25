@@ -343,6 +343,7 @@ class Arena():
                 friction = 0.5),
             userData="ball")
             
+        self.ball.color = pygame.color.Color(0,0,0)
         self.shapes.append(self.ball.fixtures[0])
      
     def nogravity(self):
