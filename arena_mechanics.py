@@ -7,7 +7,9 @@ def changeArena(arenaNum):
     camera.delay = 200
 
 class Arena():
-    def __init__(self):
+    def __init__(self, char1, char2):
+        
+    
         self.timeRemaining = 10000 # 10 seconds
         self.drawRed = 0
         self.bignum = 10
@@ -359,9 +361,6 @@ class PrepareForBattle(Arena):
     def __init__(self):
         self.timeRemaining = 3000
         self.bignum = 3
-        
-        global arena
-        arena = Arena()
         
     def draw(self, screen):
         arena.draw(screen, False)

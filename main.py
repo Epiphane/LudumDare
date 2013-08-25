@@ -24,6 +24,7 @@ exec(open('arena_mechanics.py'))
 exec(open('camera.py'))
 exec(open('gameOver.py'))
 exec(open('character_class.py'))
+exec(open('character_select.py'))
 
 
 def init():
@@ -73,6 +74,8 @@ while 1:
     for event in pygame.event.get():
         if gameState == "Title":
             titleInput(event)
+        if gameState == "CharSelect":
+            charSelectInput(event)
         if gameState == "GameOver":
             gameOverInput(event)
         if event.type is pygame.QUIT: sys.exit()
@@ -84,6 +87,8 @@ while 1:
     
     if gameState == "Title":
         drawTitle(screen)
+    if gameState == "CharSelect":
+        drawCharSelect(screen)
     if gameState == "Prepare":
         prepare.update(dt)
         prepare.draw(screen)
