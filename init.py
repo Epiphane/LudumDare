@@ -141,26 +141,13 @@ class ContactHandler(b2ContactListener):
         kick = self.checkContact(contact, "player1")
         if kick is None:
             kick = self.checkContact(contact, "player2")
-            
-        hmm = self.checkContact(contact, "player")
-        if hmm is not None:
-            print "problematic..."
-            
         if kick is not None:
             # Punt the ball a little ways kick[1] is ball, kick[0] is player.
             if kick[1].body.userData == "ball":
                 if len(kick[0].body.contacts) < 3:
                     p = kick[1].body.GetWorldPoint(localPoint = (0,0))
-                    if kick[0].body.position.x < kick[1].body.position.x:
-                        # kick right
-                        kick[1].body.linearVelocity.y -= 100
-                        kick[1].body.linearVelocity.x =  200
-                        print("kick right")
-                    else:
-                        # kick left
-                        kick[1].body.linearVelocity.y -= 100
-                        kick[1].body.linearVelocity.x =  -350
-                        print("kick left")
+                    kick[1].body.linearVelocity.y -= 100
+                    kick[1].body.linearVelocity.x = kick[0].body.linearVelocity.x * 10
                         
             # If the player has touched the ball recently, they're considered
             # "in possession," and have their run speed limited slightly,
