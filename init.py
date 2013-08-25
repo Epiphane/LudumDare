@@ -138,17 +138,6 @@ class ContactHandler(b2ContactListener):
                     arena.player2.dead = True
                     arena.toInit = (STAGE_WIDTH_M * 2 / 3, 2000)
                     
-<<<<<<< HEAD
-        collide = self.checkContact(contact, "character")
-        if collide is not None:
-            if collide[1].body.userData is not None and collide[1].body.userData == "character":
-                #is he diving?
-                if collide[0].body.linearVelocity.y >= 25 or collide[1].body.linearVelocity.y >= 25:
-                    collide[1].body.linearVelocity.y = -25
-                    collide[1].body.angularVelocity = -5
-                    collide[0].body.linearVelocity.y = -25
-                    collide[0].body.angularVelocity = 5
-=======
         kick = self.checkContact(contact, "player")
         if kick is not None:
             # Punt the ball a little ways kick[1] is ball, kick[0] is player.
@@ -166,4 +155,3 @@ class ContactHandler(b2ContactListener):
                         kick[1].body.linearVelocity.y -= 100
                         kick[1].body.linearVelocity.x =  -350
                         print("kick left")
->>>>>>> 64d09bdd9ab4f7a496aa7e6c45d1cf155c2f5a59
