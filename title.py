@@ -54,7 +54,6 @@ def titleInput(event):
         for i, button in enumerate(buttons):
             if images[button[0] + "-des"][1].collidepoint(mousePos):
                 buttons[i][1] = 1
-                print lastButtonClicked, button[0]
                 if lastButtonClicked == button[0]:
                     # Positive match! Rejoice!
                     if button[0] == "play":

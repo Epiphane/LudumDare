@@ -32,7 +32,7 @@ def init():
     global currentArena        # Midpoint
     global gameState            # duh
     global world            # the Box2D world
-    global arena            # Arena for minigame
+    global arena, prepare            # Arena for minigame
     global effects          # Sort of like AwesomeRogue!
     global images           # Dict of all the images we have to draw
     
@@ -42,6 +42,7 @@ def init():
     time_font_lg = pygame.font.Font("fonts/ka1.ttf", 60)
     
     arena = Arena()
+    #prepare = PrepareForBattle()
     gameState = "Title"
     
     # Load some images
@@ -70,6 +71,8 @@ while 1:
     for event in pygame.event.get():
         if gameState == "Title":
             titleInput(event)
+        if gameState == "GameOver":
+            gameOverInput(event)
         if event.type is pygame.QUIT: sys.exit()
         if hasattr(event, 'key'):
             if event.key is K_ESCAPE: 
@@ -79,9 +82,14 @@ while 1:
     
     if gameState == "Title":
         drawTitle(screen)
+    #if gameState == "Prepare":
+        #prepare.update(dt)
+        #prepare.draw(screen)
     if gameState == "Arena":
         arena.update(dt)
         arena.draw(screen)
+    if gameState == "GameOver":
+        drawGameOver(screen)
       
     for i, ef in enumerate(effects):
         ef.update()
@@ -90,4 +98,3 @@ while 1:
             del effects[i]
             
     pygame.display.flip()
-    
