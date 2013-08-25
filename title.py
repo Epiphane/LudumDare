@@ -7,6 +7,7 @@ buttons = [ ["play",0], ["opt",0], ["quit",0]]
 states =  ["des",  "sel", "cli" ]
 
 global lastButtonClicked
+angle = 0
 lastButtonClicked = ""
 
 def initTitle():
@@ -68,7 +69,11 @@ def titleInput(event):
 def drawTitle(screen):
     # TODO: put an image here?
     screen.fill(pygame.Color("white"))
-        
+    global angle
+    angle += 1
+    
     for button in buttons:
         imageName = button[0] + "-" + states[button[1]]
-        screen.blit(images[imageName][0], images[imageName][1])
+    
+        rotImg = pygame.transform.rotate(images[imageName][0], angle)
+        screen.blit(rotImg, images[imageName][1])

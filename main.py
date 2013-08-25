@@ -36,6 +36,8 @@ def init():
     global effects          # Sort of like AwesomeRogue!
     global images           # Dict of all the images we have to draw
     
+    effects = []
+    
     time_font_sm = pygame.font.Font("fonts/ka1.ttf", 30)
     time_font_lg = pygame.font.Font("fonts/ka1.ttf", 60)
     
@@ -45,6 +47,7 @@ def init():
     
     # Load some images
     images = {}
+    images["bomb"] = load_image("da bomb.png")
     images["goal left"] = load_image("GOOOAL.png", (255,255,255))
     images["goal right"] = [pygame.transform.flip(images["goal left"][0], True, False), images["goal left"][1]]
     
@@ -87,5 +90,11 @@ while 1:
         arena.draw(screen)
     if gameState == "GameOver":
         drawGameOver(screen)
-                        
+      
+    for i, ef in enumerate(effects):
+        ef.update()
+        ef.draw(screen)
+        if ef.done:
+            del effects[i]
+            
     pygame.display.flip()

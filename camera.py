@@ -2,6 +2,7 @@
 def DrawPolygon(vertices, color = (0,0,0), color_2 = None):
     """ Draw a wireframe polygon given the screen vertices with the specified color."""
     if not vertices:
+        print("no vertices, brotha")
         return
         
 

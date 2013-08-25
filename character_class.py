@@ -1,3 +1,4 @@
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, direction, color, color_2, arena):
         self.input = {"up": False, "down": False, "left": False, "right": False}
@@ -98,6 +99,39 @@ class Player(pygame.sprite.Sprite):
             return
             
         self.shapes[0].body.awake = True
+        self.shapes[0].body.linearVelocity.x = 0
+        if self.input["left"]:
+            self.shapes[0].body.linearVelocity.x -= 10
+        if self.input["right"]:
+            self.shapes[0].body.linearVelocity.x += 10
+        
+            
+    def jump(self):
+        if len(self.foot.body.contacts) > 0:
+            self.shapes[0].body.linearVelocity.y = -15
+            self.shapes[0].body.angularVelocity = 5.4
+                
+    def dive(self):
+        if self.shapes[0].body.linearVelocity.x > 0:
+            self.dive("l")
+        else:
+            self.dive("r")
+                
+    def dive(self, dir):
+        if len(self.foot.body.contacts) == 0:
+            self.shapes[0].body.linearVelocity.y = 15
+            self.shapes[0].body.linearVelocity.x *= 2
+            if dir == "l":
+                if self.shapes[0].body.angle < math.pi / 4:
+                    self.shapes[0].angularVelocity = 0.5
+                else:
+                    self.shapes[0].angularVelocity = -0.5
+            if dir == "r":
+                if self.shapes[0].body.angle < - math.pi / 4:
+                    self.shapes[0].angularVelocity = 0.5
+                else:
+                    self.shapes[0].angularVelocity = -0.5
+                    
         if nogravity:
             if self.input["up"]:
                 self.shapes[0].body.linearVelocity.y -= 3
