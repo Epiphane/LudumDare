@@ -22,7 +22,7 @@ class Arena():
     
         # Init physics "world", defining gravity. doSleep means that if an object
         # comes to rest, it can "sleep" and be ignored by the physics engine for a bit.
-        self.world = b2World(gravity=(0, 25), doSleep = True)
+        self.world = b2World(gravity=(0, 25), doSleep = False)
         
         # Initialize the contact handler
         self.world.contactListener = ContactHandler()
@@ -398,11 +398,11 @@ class Arena():
                 ef.finish()
         
     def randomEvent(self):
-        randomEvents = [ [self.bombDrop, self.bombDrop_revert]]
-                         #[self.changeBall, self.changeBall_revert],
-                         #[self.nogravity, self.nogravity_revert],
-                         #[self.slowmo, self.slowmo_revert],
-                         #[self.fastmo, self.fastmo_revert] ]
+        randomEvents = [ [self.bombDrop, self.bombDrop_revert],
+                         [self.changeBall, self.changeBall_revert],
+                         [self.nogravity, self.nogravity_revert],
+                         [self.slowmo, self.slowmo_revert],
+                         [self.fastmo, self.fastmo_revert] ]
                          
         while len(self.modifications) > 0:
             mod = self.modifications[0]

@@ -26,6 +26,8 @@ BALL_CHANGE_DENSITY = 10
 CHAR_DENSITY = 25
 BALL_FRICTION = 0.9
 CHAR_FRICTION = 1
+CHAR_DENSITY = 5
+BALL_FRICTION = 0.95
 
 
 
@@ -94,7 +96,7 @@ class ContactHandler(b2ContactListener):
     def BeginContact(self, contact):
     
         blowUp = self.checkContact(contact, "bomb")
-        if blowUp is not None:
+        if blowUp is not None and blowUp[1].body.userData != "cieling":
             # Since you can't call DestroyFixture while the physics is iterating,
             # flag it for destruction by setting userData to "kill me"
             blowUp[0].body.userData = "kill me"
@@ -107,6 +109,8 @@ class ContactHandler(b2ContactListener):
                 if distance < 6 and shape.massData.mass > 0.1:
                     xComp = int(random.random() * -5000 + 2500)
                     yComp = int(random.random() * -5000 + 2500)
+                    
+                    print xComp, yComp
                     
                     shape.body.linearVelocity.x = xComp
                     shape.body.linearVelocity.y = yComp
@@ -134,6 +138,7 @@ class ContactHandler(b2ContactListener):
                     arena.player2.dead = True
                     arena.toInit = (STAGE_WIDTH_M * 2 / 3, 2000)
                     
+<<<<<<< HEAD
         collide = self.checkContact(contact, "character")
         if collide is not None:
             if collide[1].body.userData is not None and collide[1].body.userData == "character":
@@ -143,3 +148,22 @@ class ContactHandler(b2ContactListener):
                     collide[1].body.angularVelocity = -5
                     collide[0].body.linearVelocity.y = -25
                     collide[0].body.angularVelocity = 5
+=======
+        kick = self.checkContact(contact, "player")
+        if kick is not None:
+            # Punt the ball a little ways kick[1] is ball, kick[0] is player.
+            if kick[1].body.userData is not None and kick[1].body.userData == "ball":
+                print(len(kick[0].body.contacts))
+                if len(kick[0].body.contacts) < 3:
+                    p = kick[1].body.GetWorldPoint(localPoint = (0,0))
+                    if kick[0].body.position.x < kick[1].body.position.x:
+                        # kick right
+                        kick[1].body.linearVelocity.y -= 100
+                        kick[1].body.linearVelocity.x =  200
+                        print("kick right")
+                    else:
+                        # kick left
+                        kick[1].body.linearVelocity.y -= 100
+                        kick[1].body.linearVelocity.x =  -350
+                        print("kick left")
+>>>>>>> 64d09bdd9ab4f7a496aa7e6c45d1cf155c2f5a59

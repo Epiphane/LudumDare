@@ -28,7 +28,9 @@ class Player(pygame.sprite.Sprite):
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (1,2)),
                 density=CHAR_DENSITY,
-                restitution=0)
+                friction=CHAR_FRICTION,
+                restitution=0),
+            userData = "player"
             )
         self.shapes.append(block.fixtures[0])
         
@@ -168,8 +170,9 @@ class Lars(Player):
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (1,2)),
                 density=CHAR_DENSITY,
-                restitution=0,
-                friction = CHAR_FRICTION)
+                friction=CHAR_FRICTION,
+                restitution=0),
+                userData = "player"
             )
         self.shapes.append(block.fixtures[0])
         
@@ -193,9 +196,9 @@ class Pate(Player):
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (0.8,2)),
                 density=CHAR_DENSITY,
-                restitution=0,
-                friction = CHAR_FRICTION),
-            userData = "character"
+                friction = CHAR_FRICTION,
+                restitution=0),
+                userData = "player"
             )
         self.shapes.append(block.fixtures[0])
         
@@ -224,17 +227,18 @@ class Buster(Player):
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (1,1.8)),
                 density=CHAR_DENSITY,
-                restitution=0,
-                friction = CHAR_FRICTION),
-            userData = "character"
+                friction = CHAR_FRICTION,
+                restitution=0),
+                userData = "player"
             )
-        self.shapes.append(block.fixtures[0])
         
         foot = block.CreateFixture(
                 shape = b2PolygonShape(vertices = [(-1.6,-2.1),(1.6,-2.1),(1.6,2.1),(-1.6,2.1)]),
                 isSensor=True
             )
         self.foot = block.fixtures[1]
+        
+        self.shapes.append(block.fixtures[0])
         
         self.dead = False
 
@@ -253,9 +257,9 @@ class EricStrohm(Player):
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (1,2)),
                 density=CHAR_DENSITY,
-                restitution=0,
-                friction = CHAR_FRICTION),
-            userData = "character"
+                friction = CHAR_FRICTION,
+                restitution=0),
+                userData = "player"
             )
         self.shapes.append(block.fixtures[0])
         
@@ -279,8 +283,8 @@ class Ted(Player):
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (1.4,1.5)),
                 density=CHAR_DENSITY,
-                restitution=0,
-                friction = CHAR_FRICTION),
+                friction = CHAR_FRICTION,
+                restitution=0),
             userData = "character"
             )
         self.shapes.append(block.fixtures[0])
@@ -309,9 +313,9 @@ class SmithWickers(Player):
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = size),
                 density=CHAR_DENSITY,
-                restitution=0,
-                friction = CHAR_FRICTION),
-            userData = "character"
+                friction = CHAR_FRICTION,
+                restitution=0),
+                userData = "player"
             )
         self.shapes.append(block.fixtures[0])
         
@@ -326,8 +330,9 @@ class SmithWickers(Player):
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = size),
                 density=CHAR_DENSITY,
+                friction=CHAR_FRICTION,
                 restitution=0),
-            userData = "character"
+                userData = "player"
             )
         self.shapes.append(block2.fixtures[0])
         
