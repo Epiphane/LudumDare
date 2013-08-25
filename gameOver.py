@@ -31,32 +31,30 @@ def gameOverInput(event):
     
     # Is it just a mousemove?
     if event.type == pygame.MOUSEMOTION:
-        for i, button in enumerate(buttons):
+        for i, button in enumerate(game_over_buttons):
             if images[button[0] + "-des"][1].collidepoint(mousePos):
                 # Tell the button to highlight
-                buttons[i][1] = 1
+                game_over_buttons[i][1] = 1
             else:
                 # Deselect button
-                buttons[i][1] = 0
+                game_over_buttons[i][1] = 0
     
     # Is it a new mouseclick?
     if event.type == pygame.MOUSEBUTTONDOWN:
-        for i, button in enumerate(buttons):
+        for i, button in enumerate(game_over_buttons):
             if images[button[0] + "-des"][1].collidepoint(mousePos):
                 lastButtonClicked = button[0]
-                buttons[i][1] = 2
+                game_over_buttons[i][1] = 2
                 
     # Is it a mouse up?
     if event.type == pygame.MOUSEBUTTONUP:
-        for i, button in enumerate(buttons):
+        for i, button in enumerate(game_over_buttons):
             if images[button[0] + "-des"][1].collidepoint(mousePos):
-                buttons[i][1] = 1
+                game_over_buttons[i][1] = 1
                 if lastButtonClicked == button[0]:
                     # Positive match! Rejoice!
-                    if button[0] == "play":
-                        gameState = "Arena"
-                    elif button[0] == "opt":
-                        gameState = "Options"
+                    if button[0] == "menu":
+                        gameState = "Title"
                     elif button[0] == "quit":
                         sys.exit()
                 else:
@@ -67,6 +65,6 @@ def drawGameOver(screen):
     # TODO: put an image here?
     screen.fill(pygame.Color("white"))
         
-    for button in buttons:
+    for button in game_over_buttons:
         imageName = button[0] + "-" + states[button[1]]
         screen.blit(images[imageName][0], images[imageName][1])

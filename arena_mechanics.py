@@ -145,11 +145,12 @@ class Arena():
         # Reset forces for the next frame
         self.world.ClearForces()
                 
-    def draw(self, screen):
+    def draw(self, screen, showTimer = True):
         
         self.camera.draw(screen)
         
-        self.drawTimer(screen)
+        if showTimer:
+            self.drawTimer(screen)
         
         offsetX, offsetY = self.camera.getOffset_in_px()
         self.player1.draw(screen, offsetX, offsetY)
@@ -313,22 +314,41 @@ class Arena():
         self.modifications.append(mod)
             
 class PrepareForBattle(Arena):
-    def initGame(self, minx, maxx):
+    def __init__(self):
         self.timeRemaining = 3000
         self.bignum = 3
         
-    def update(self, dt):
-        if self.toInit is not False: self.startGame(self.toInit[0], self.toInit[1])
-        
-        self.camera.update(self.ball)
-        
-        if self.pauseTime > 0:
-            self.pauseTime -= dt
-            return
+        global arena
+        arena = Arena()
         
     def draw(self, screen):
+        arena.draw(screen, False)
+        
         self.drawTimer(screen)
         
         text = (time_font_lg.render("PREPARE", True, (0, 70, 0)), time_font_lg.render("YOURSELF", True, (0, 70, 0)))
         screen.blit(text[0], (190,180))
         screen.blit(text[1], (180,260))
+        
+        
+    def drawTimer(self, screen):
+        color = (self.drawRed,0,0)
+        
+        text = time_font_lg.render(str(self.bignum), True, color)
+        text_sm = time_font_sm.render(str(self.timeRemaining % 1000), True, color)
+        
+        if(self.drawRed > 0):
+            self.drawRed -= 2
+        
+        if(self.bignum == 10): screen.blit(text, (290,0))
+        else: screen.blit(text, (330,0))
+        screen.blit(text_sm, (400,0))
+        
+    def update(self, dt):
+        self.timeRemaining -= dt
+        oldbignum = self.bignum
+        self.bignum = math.trunc(self.timeRemaining / 1000)
+        if self.bignum != oldbignum and self.bignum < 4: self.drawRed = 128
+        if(self.timeRemaining <= 0):
+            global arena, gameState
+            gameState = "Arena"

@@ -41,7 +41,7 @@ def init():
     time_font_sm = pygame.font.Font("fonts/ka1.ttf", 30)
     time_font_lg = pygame.font.Font("fonts/ka1.ttf", 60)
     
-    arena = Arena()
+    #arena = Arena()
     #prepare = PrepareForBattle()
     gameState = "Title"
     
@@ -82,9 +82,9 @@ while 1:
     
     if gameState == "Title":
         drawTitle(screen)
-    #if gameState == "Prepare":
-        #prepare.update(dt)
-        #prepare.draw(screen)
+    if gameState == "Prepare":
+        prepare.update(dt)
+        prepare.draw(screen)
     if gameState == "Arena":
         arena.update(dt)
         arena.draw(screen)

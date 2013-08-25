@@ -57,7 +57,9 @@ def titleInput(event):
                 if lastButtonClicked == button[0]:
                     # Positive match! Rejoice!
                     if button[0] == "play":
-                        gameState = "Arena"
+                        global arena, prepare            # Arena for minigame
+                        prepare = PrepareForBattle()
+                        gameState = "Prepare"
                     elif button[0] == "opt":
                         gameState = "Options"
                     elif button[0] == "quit":
@@ -69,8 +71,6 @@ def titleInput(event):
 def drawTitle(screen):
     # TODO: put an image here?
     screen.fill(pygame.Color("white"))
-    global angle
-    angle += 1
     
     for button in buttons:
         imageName = button[0] + "-" + states[button[1]]
