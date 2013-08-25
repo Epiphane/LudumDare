@@ -107,6 +107,8 @@ class ContactHandler(b2ContactListener):
                     xComp = int(random.random() * -5000 + 2500)
                     yComp = int(random.random() * -5000 + 2500)
                     
+                    print xComp, yComp
+                    
                     shape.body.linearVelocity.x = xComp
                     shape.body.linearVelocity.y = yComp
             
@@ -133,4 +135,16 @@ class ContactHandler(b2ContactListener):
                     arena.player2.dead = True
                     arena.toInit = (STAGE_WIDTH_M * 2 / 3, 2000)
                     
-        kick = self.checkContact(contact, "foot")
+        kick = self.checkContact(contact, "player")
+        if kick is not None:
+            # Punt the ball a little ways kick[1] is ball, kick[0] is player.
+            if kick[1].body.userData is not None and kick[1].body.userData == "ball":
+                p = kick[1].body.GetWorldPoint(localPoint = (0,0))
+                if kick[0].body.position.x < kick[1].body.position.x:
+                    # kick right
+                    kick[1].body.linearVelocity.y += 10
+                    kick[1].body.linearVelocity.x =  150
+                else:
+                    # kick left
+                    kick[1].body.linearVelocity.y += 10
+                    kick[1].body.linearVelocity.x =  -150

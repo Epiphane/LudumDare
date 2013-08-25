@@ -33,7 +33,8 @@ class Player(pygame.sprite.Sprite):
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (1,2)),
                 density=10,
-                restitution=0)
+                restitution=0),
+            userData = "player"
             )
         self.shapes.append(block.fixtures[0])
         
