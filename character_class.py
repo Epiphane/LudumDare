@@ -51,7 +51,7 @@ class Player(pygame.sprite.Sprite):
         if len(self.shapes) > 1:
             for i in range(1,len(self.shapes)):
                 # Grab the old vertices from the shape
-                olds = self.shapes[i].shape.vertices
+                olds = self.shapes[i].fixtures[0].shape.vertices
                 # Convert them (with magic) using the body.transform thing
                 result = [(self.shapes[i].transform*v) for v in olds]
                 for v in result:
@@ -338,3 +338,43 @@ class SmithWickers(Player):
         arena.world.CreateDistanceJoint(bodyA = block, bodyB = block2, anchorA = block.worldCenter, anchorB = block2.worldCenter, collideConnected = True)
         
         self.dead = False
+
+class CrowdMember(Player):
+    def __init__(self, direction, start_x, color, arena):
+        Player.__init__(self, direction, start_x, (0, 0, 0), color, arena)
+        
+    def materialize(self, start_x, arena):
+        self.clearShapes()
+            
+        block = arena.world.CreateDynamicBody(
+            position = (start_x, 30),
+            fixtures = b2FixtureDef(
+                shape = b2PolygonShape(box = (1,2)),
+                density=CHAR_DENSITY,
+                friction=CHAR_FRICTION,
+                restitution=0,
+                filter = b2Filter(
+                    categoryBits = 0x0010,
+                    maskBits = 0xFFFF ^ 0x0010
+                )),
+                userData = "player"
+            )
+        block.color = self.color_2
+        self.shapes.append(block)
+        
+        foot = block.CreateFixture(
+                shape = b2PolygonShape(vertices = [(-1.6,-2.1),(1.6,-2.1),(1.6,2.1),(-1.6,2.1)]),
+                isSensor=True
+            )
+        self.foot = block.fixtures[1]
+        
+        self.dead = False
+            
+    def jump(self):
+        if len(self.foot.body.contacts) > 0:
+            self.shapes[0].linearVelocity.y = -15
+            
+    def jumpBackUp(self):
+        if len(self.foot.body.contacts) > 0:
+            self.shapes[0].linearVelocity.y = -15
+            self.shapes[0].angularVelocity = 8.1

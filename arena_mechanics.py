@@ -40,6 +40,7 @@ class Arena():
         self.pauseTime = 0
         
         self.createCrowd(2, 27)
+        self.createCrowd(227, 248)
   
     def startGame(self, middle_x, delay=0):
         global char1, char2
@@ -98,23 +99,7 @@ class Arena():
         width = maxx - minx
         
         for i in range(numCrowd):
-            block = self.world.CreateDynamicBody(
-                position = (random.random() * width, 30),
-                fixtures = b2FixtureDef(
-                    shape = b2PolygonShape(box = (1,2)),
-                    density=CHAR_DENSITY,
-                    restitution=0,
-                    friction = CHAR_FRICTION,
-                    filter = b2Filter(
-                        categoryBits = 0x0010,
-                        maskBits = 0xFFFF ^ 0x0010
-                    )
-                ),
-                userData = "crowd"
-            )
-            block.color = pygame.color.Color(int(random.random()*255),int(random.random()*255),int(random.random()*255))
-            self.shapes.append(block)
-            self.crowd.append(block)
+            self.crowd.append(CrowdMember(0, random.random() * width, (int(random.random()*255),int(random.random()*255),int(random.random()*255)), self).shapes[0])
         
     def initWalls(self):
         ground = self.world.CreateStaticBody(
@@ -145,6 +130,19 @@ class Arena():
             userData = "right wall"
         )
         #self.shapes.append(rightWall)
+        
+        leftWall = self.world.CreateStaticBody(
+            position = (0, 0),
+            shapes = b2PolygonShape(box = (1,37.5)),
+            userData = "left wall"
+        )
+        #self.shapes.append(leftWall)
+        
+        rightWall = self.world.CreateStaticBody(
+            position = (250, 0),
+            shapes = b2PolygonShape(box = (1,37.5)),
+            userData = "right wall"
+        )
         
         goal_left = self.world.CreateStaticBody(
             position = (223, 37),
@@ -260,6 +258,8 @@ class Arena():
         offsetX, offsetY = self.camera.getOffset_in_px()
         self.player1.draw(screen, offsetX, offsetY)
         self.player2.draw(screen, offsetX, offsetY)
+        for member in self.crowd:
+            DrawPolygon(vertices_with_offset(member.fixtures[0], offsetX, offsetY), (0,0,0), member.color)
         
         for shape in self.shapes:
             if isinstance(shape.fixtures[0].shape, b2CircleShape):

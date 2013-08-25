@@ -100,7 +100,7 @@ class ContactHandler(b2ContactListener):
             # Since you can't call DestroyFixture while the physics is iterating,
             # flag it for destruction by setting userData to "kill me"
             blowUp[0].body.userData = "kill me"
-            for shape in arena.shapes + [arena.player1.shapes[0], arena.player2.shapes[0]]:
+            for shape in arena.shapes + [arena.player1.shapes[0], arena.player2.shapes[0]] + arena.crowd:
                 # See how far everyone is from the 'splosion
                 distResult = b2Distance(shapeA = shape.fixtures[0].shape, shapeB = blowUp[0].shape, transformA = shape.fixtures[0].body.transform, transformB = blowUp[0].body.transform)
                 pointA, pointB, distance, dummy = distResult
@@ -110,10 +110,10 @@ class ContactHandler(b2ContactListener):
                     xComp = int(random.random() * -5000 + 2500)
                     yComp = int(random.random() * -5000 + 2500)
                     
-                    print xComp, yComp
-                    
                     shape.linearVelocity.x = xComp
                     shape.linearVelocity.y = yComp
+                    shape.angularVelocity = random.random() * 5 + 5
+                    shape.awake = True
             
             offsetX, offsetY = arena.camera.getOffset_in_px()
             explos = Explosion(blowUp[0].body.position.x * PPM - offsetX, 37 * PPM - offsetY)
