@@ -42,7 +42,7 @@ class Camera():
         
     def draw(self, screen):
         offsetX_in_meters = self.centerX_in_meters - SCREEN_WIDTH_M / 2
-        screen.blit(self.background.image, (-1 * offsetX_in_meters * PPM, 0))
+        screen.blit(self.background.image, (-1 * offsetX_in_meters * PPM - 200, 0))
         
     def update(self, ball):
         if abs(ball.position.x - self.centerX_in_meters) > CAMERA_PILLOW_SPACE_M:
@@ -57,5 +57,14 @@ class Camera():
             
         self.centerX_in_px += self.dx
         self.centerX_in_meters = self.centerX_in_px / PPM
+        
+        if self.centerX_in_meters < SCREEN_WIDTH_M / 2:
+            self.dx = 0
+            self.centerX_in_meters = SCREEN_WIDTH_M / 2
+            self.centerX_in_px = self.centerX_in_meters * PPM
+        if self.centerX_in_meters > STAGE_WIDTH_M - SCREEN_WIDTH_M / 2:
+            self.dx = 0
+            self.centerX_in_meters = STAGE_WIDTH_M - SCREEN_WIDTH_M / 2
+            self.centerX_in_px = self.centerX_in_meters * PPM
             
     def stop(self): pass

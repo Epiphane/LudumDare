@@ -3,6 +3,7 @@ def winGame(winner):
     gameState = "GameOver"
     gameWinner = winner
     
+    arena.cleanUp()
     initGameOver()
 
 game_over_buttons = [ ["menu",0], ["quit",0]]
