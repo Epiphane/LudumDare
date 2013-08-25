@@ -340,7 +340,9 @@ class SmithWickers(Player):
 
 class CrowdMember(Player):
     def __init__(self, direction, start_x, color, arena):
-        Player.__init__(self, direction, start_x, (0, 0, 0), color, arena)
+        Player.__init__(self, direction, start_x, (0, 0, 0), color, arena, 0)
+        
+        self.timeToJump = random.random() * 10000 + 1000
         
     def materialize(self, start_x, arena):
         self.clearShapes()

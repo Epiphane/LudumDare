@@ -102,7 +102,8 @@ class Arena():
         width = maxx - minx
         
         for i in range(numCrowd):
-            self.crowd.append(CrowdMember(0, random.random() * width, (int(random.random()*255),int(random.random()*255),int(random.random()*255)), self).shapes[0])
+            self.crowd.append(CrowdMember(0, random.random() * width, (int(random.random()*255),int(random.random()*255),int(random.random()*255)), self))
+            self.shapes.append(CrowdMember(0, random.random() * width, (int(random.random()*255),int(random.random()*255),int(random.random()*255)), self).shapes[0])
         
     def initWalls(self):
         ground = self.world.CreateStaticBody(
@@ -288,8 +289,8 @@ class Arena():
         offsetX, offsetY = self.camera.getOffset_in_px()
         self.player1.draw(screen, offsetX, offsetY)
         self.player2.draw(screen, offsetX, offsetY)
-        for member in self.crowd:
-            DrawPolygon(vertices_with_offset(member.fixtures[0], offsetX, offsetY), (0,0,0), member.color)
+        for member in self.crowd: pass
+            #DrawPolygon(vertices_with_offset(member.fixtures[0], offsetX, offsetY), (0,0,0), member.color)
         
         for shape in self.shapes:
             if isinstance(shape.fixtures[0].shape, b2CircleShape):

@@ -100,7 +100,7 @@ class ContactHandler(b2ContactListener):
             # Since you can't call DestroyFixture while the physics is iterating,
             # flag it for destruction by setting userData to "kill me"
             blowUp[0].body.userData = "kill me"
-            for shape in arena.shapes + [arena.player1.shapes[0], arena.player2.shapes[0]] + arena.crowd:
+            for shape in arena.shapes + [arena.player1.shapes[0], arena.player2.shapes[0]]:
                 # See how far everyone is from the 'splosion
                 distResult = b2Distance(shapeA = shape.shape, shapeB = blowUp[0].shape, transformA = shape.body.transform, transformB = blowUp[0].body.transform)
                 pointA, pointB, distance, dummy = distResult
