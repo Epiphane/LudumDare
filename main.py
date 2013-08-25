@@ -46,7 +46,7 @@ def init():
     
     # Load some images
     images = {}
-    images["bomb"] = load_image("da bomb.png")
+    images["bomb"] = load_image("bomb.png", (255, 255, 255))
     images["goal left"] = load_image("GOOOAL.png", (255,255,255))
     images["goal right"] = [pygame.transform.flip(images["goal left"][0], True, False), images["goal left"][1]]
     

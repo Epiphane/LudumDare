@@ -280,9 +280,9 @@ class Arena():
     def bombDrop_revert(self):
         print "bomb droppin reversion!"
         # Find the bomb drop and PUT A STOP TO THE MADNESS
-        #for ef in effects:
-         #   if ef.__class__.__name__ == "BombDrop":
-        #        ef.finish()
+        for ef in effects:
+            if ef.__class__.__name__ == "BombDrop":
+                ef.finish()
         
     def randomEvent(self):
         randomEvents = [ [self.bombDrop, self.bombDrop_revert],

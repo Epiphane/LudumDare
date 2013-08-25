@@ -4,11 +4,10 @@ class BombDrop():
     bombs = []
     def draw(self, screen):
         # Draw the bombas
-        for bomb in self.bombs:
+        for i,bomb in enumerate(self.bombs):
             rotAngle = bomb.body.angle
             offsetX, offsetY = arena.camera.getOffset_in_px()
             verts = vertices_with_offset(bomb, offsetX, offsetY)
-            #DrawPolygon(verts, (0,0,0))
             # The "vertices" method will return a rotated square of vertices.
             # As it turns out, if we grab the leftmost, topmost, rightmost and
             # bottommost values from these vertices, we end up with the right
@@ -20,9 +19,12 @@ class BombDrop():
             top = min(yvals)
             bottom = max(yvals)
             finalRect = pygame.Rect(left, top, (right - left), (bottom - top))
-            imgRot = pygame.transform.rotate(images["bomb"][0], rotAngle)
+            imgRot = pygame.Surface.convert_alpha(pygame.transform.rotate(images["bomb"][0], rotAngle))
             screen.blit(imgRot, finalRect)
-            screen.blit(images["bomb"][0], (20,20))
+            if bomb.body.userData == "kill me":
+                bomb.body.DestroyFixture(bomb)
+                del self.bombs[i]
+            DrawPolygon(verts, (0,0,0))
             
     def update(self):
         # Iterate the cooldown on bombs. If it's been long enough, drop another one!
@@ -37,14 +39,14 @@ class BombDrop():
             
             newBomb = arena.world.CreateDynamicBody(
                 userData = "bomb",
-                position = (bombX, bombY),
-                fixtures = b2FixtureDef(density = 5.0, shape = b2CircleShape(radius = 2),
+                position = (bombX, 10),
+                fixtures = b2FixtureDef(density = 5.0, shape = b2PolygonShape(box = (1,1)),
                     isSensor = True))
                     
             # Start with a li'l spin
-            newBomb.angularVelocity = 5 - random.random() * 10
-                    
-            arena.shapes.append(newBomb.fixtures[0])
+            newBomb.angularVelocity = 5 - random.random() * 20
+            
+            self.bombs.append(newBomb.fixtures[0])
             
     def finish(self):
         self.done = True

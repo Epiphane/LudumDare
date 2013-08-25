@@ -84,17 +84,27 @@ class ContactHandler(b2ContactListener):
     
         blowUp = self.checkContact(contact, "bomb")
         if blowUp is not None:
-            # mass > 0 implies it's not a "Static" object
-            if blowUp[1].massData.mass == 0:
-                # Destroy the land mine and apply a HUGE force to the other guy
-                # Since you can't call DestroyFixture while the physics is iterating,
-                # flag it for destruction by setting userData to "kill me"
-                blowUp[0].body.userData = "kill me"
-                blowUp[1].body.ApplyForce(force=(50000, 0), point=(0, 0), wake=True)
+            # Since you can't call DestroyFixture while the physics is iterating,
+            # flag it for destruction by setting userData to "kill me"
+            blowUp[0].body.userData = "kill me"
+            for shape in arena.shapes + [arena.player1.shapes[0], arena.player2.shapes[0]]:
+                # See how far everyone is from the 'splosion
+                distResult = b2Distance(shapeA = shape.shape, shapeB = blowUp[0].shape, transformA = shape.body.transform, transformB = blowUp[0].body.transform)
+                pointA, pointB, distance, dummy = distResult
                 
-                explos = Explosion(blowUp[0].body.position.x * PPM,
-                                   blowUp[0].body.position.y * PPM)
-                effects.append(explos)  
+                # mass > 0 implies it's not a "Static" object
+                if distance < 6 and shape.massData.mass > 0.1:
+                    xComp = int(random.random() * -5000 + 2500)
+                    yComp = int(random.random() * -5000 + 2500)
+                    
+                    shape.body.linearVelocity.x = xComp
+                    shape.body.linearVelocity.y = yComp
+                    
+            blowUp[1].body.ApplyForce(force=(50000, 0), point=(0, 0), wake=True)
+            
+            offsetX, offsetY = arena.camera.getOffset_in_px()
+            explos = Explosion(blowUp[0].body.position.x * PPM - offsetX, 37 * PPM - offsetY)
+            effects.append(explos)  
         
         goalLeft = self.checkContact(contact, "ball")
         if goalLeft is not None:
