@@ -1,17 +1,19 @@
 class Player(pygame.sprite.Sprite):
-    def __init__(self, direction, color, arena):
+    def __init__(self, direction, color, color_2, arena):
         self.input = {"up": False, "down": False, "left": False, "right": False}
         self.direction = direction
         self.color = color
+        self.color_2 = color_2
         self.shapes = []
         self.arena = arena
         
         self.dead = False
         
-    def __init__(self, direction, start_x, color, arena):
+    def __init__(self, direction, start_x, color, color_2, arena):
         self.input = {"up": False, "down": False, "left": False, "right": False}
         self.direction = direction
         self.color = color
+        self.color_2 = color_2
         self.shapes = []
         self.arena = arena
         
@@ -43,7 +45,7 @@ class Player(pygame.sprite.Sprite):
         
     def draw(self, screen, offsetX, offsetY):
         if len(self.shapes) > 0:
-            DrawPolygon(vertices_with_offset(self.shapes[0], offsetX, offsetY), self.color)
+            DrawPolygon(vertices_with_offset(self.shapes[0], offsetX, offsetY), self.color, self.color_2)
     
     def destroy(self):
         destructionShapes = []
@@ -112,10 +114,13 @@ class Player(pygame.sprite.Sprite):
             if self.shapes[0].body.linearVelocity.x < -20: self.shapes[0].body.linearVelocity.x = -20
         else:
             self.shapes[0].body.linearVelocity.x = 0
+            
+            if len(self.foot.body.contacts) > 0: maxspeed = 10
+            else: maxspeed = 12
             if self.input["left"]:
-                self.shapes[0].body.linearVelocity.x -= 10
+                self.shapes[0].body.linearVelocity.x -= maxspeed
             if self.input["right"]:
-                self.shapes[0].body.linearVelocity.x += 10
+                self.shapes[0].body.linearVelocity.x += maxspeed
             
     def jump(self, gravity):
         if gravity == (0,0): pass

@@ -1,5 +1,5 @@
 
-def DrawPolygon(vertices, color = (0,0,0)):
+def DrawPolygon(vertices, color = (0,0,0), color_2 = None):
     """ Draw a wireframe polygon given the screen vertices with the specified color."""
     if not vertices:
         return
@@ -9,6 +9,8 @@ def DrawPolygon(vertices, color = (0,0,0)):
         pygame.draw.aaline(screen, color, vertices[0], vertices)
     else:
         pygame.draw.polygon(screen, color, vertices, 1)
+        if color_2 is not None:
+            pygame.draw.polygon(screen, color_2, vertices, 0)
 
 def DrawCircle(center, radius, color = (0,0,0)):
     """ Draw a wireframe polygon given the screen vertices with the specified color."""
@@ -27,7 +29,6 @@ class Camera():
         self.centerX_in_px = centerX_in_meters * PPM
         
         self.dx = 0
-        self.panning = False
     
     def getOffset_in_meters(self):
         offsetX_in_meters = self.centerX_in_meters - SCREEN_WIDTH_M / 2
@@ -43,19 +44,14 @@ class Camera():
         screen.blit(self.background.image, (-1 * offsetX_in_meters * PPM, 0))
         
     def update(self, ball):
-        self.centerX_in_meters = ball.position.x
-        self.centerX_in_px = self.centerX_in_meters * PPM
-        return
-        
         if abs(ball.position.x - self.centerX_in_meters) > CAMERA_PILLOW_SPACE_M:
-            self.panning = True
             if abs(self.dx) + CAMERA_SPEEDUP_SPEED <= CAMERA_MAX_PAN_SPEED_PX:
                 if ball.position.x - self.centerX_in_meters > 0:
                     self.dx += CAMERA_SPEEDUP_SPEED
                 else:
                     self.dx -= CAMERA_SPEEDUP_SPEED
             
-        if abs(ball.position.x - self.centerX_in_meters) <= CAMERA_MAX_PAN_SPEED_M and self.panning:
+        if abs(ball.position.x - self.centerX_in_meters) <= CAMERA_MAX_PAN_SPEED_M:
             self.dx = (ball.position.x - self.centerX_in_meters) * PPM
             
         self.centerX_in_px += self.dx

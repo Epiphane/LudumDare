@@ -88,14 +88,14 @@ class ContactHandler(b2ContactListener):
             if goalLeft[1].body.userData is not None or goalLeft[1].userData is not None:
                 if goalLeft[1].userData == "goal left":
                     arena.score[0] += 1
-                    if arena.score[0] >= 10:
+                    if arena.score[0] >= 1:
                         winGame(1)
                     arena.player1.dead = True
                     arena.player2.dead = True
                     arena.toInit = (STAGE_WIDTH_M / 3, 2000)
                 if goalLeft[1].userData == "goal right":
                     arena.score[1] += 1
-                    if arena.score[1] >= 10:
+                    if arena.score[1] >= 1:
                         winGame(2)
                     arena.player1.dead = True
                     arena.player2.dead = True

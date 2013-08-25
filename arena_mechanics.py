@@ -34,25 +34,27 @@ class Arena():
         self.score = [0,0]
         
         self.toInit = False
+        self.pauseTime = 0
   
     def startGame(self, middle_x, delay=0):
         self.toInit = False
+        self.pauseTime = delay
         
         if hasattr(self,'player2'):
             self.player1.materialize(middle_x - SCREEN_WIDTH_M / 4, self)
             self.player2.materialize(middle_x + SCREEN_WIDTH_M / 4, self)
         else:
-            self.player1 = Player(1, middle_x - SCREEN_WIDTH_M / 4, (255,0,0), self)
-            self.player2 = Player(-1, middle_x + SCREEN_WIDTH_M / 4, (0,0,255), self)
+            self.player1 = Player(1, middle_x - SCREEN_WIDTH_M / 4, (255,128,128),(255,200,200),  self)
+            self.player2 = Player(-1, middle_x + SCREEN_WIDTH_M / 4, (128,128,255), (200,200,255), self)
         
         if self.ball is not None: self.world.DestroyBody(self.ball)
         
         self.ball = self.world.CreateDynamicBody(position = (middle_x,27),
             fixtures = b2FixtureDef(
-                shape = b2CircleShape(radius=1),
+                shape = b2CircleShape(radius=1.3),
                 density=10,
                 restitution=0.5,
-                friction = 5),
+                friction = 50),
             userData="ball")
         
         self.shapes.append(self.ball.fixtures[0])
@@ -104,6 +106,12 @@ class Arena():
         
     def update(self, dt):
         if self.toInit is not False: self.startGame(self.toInit[0], self.toInit[1])
+        
+        self.camera.update(self.ball)
+        
+        if self.pauseTime > 0:
+            self.pauseTime -= dt
+            return
     
         self.timeRemaining -= dt
         oldbignum = self.bignum
@@ -116,8 +124,6 @@ class Arena():
         self.player1.update(self.world.gravity == (0,0))
         self.player2.update(self.world.gravity == (0,0))
         
-        self.camera.update(self.ball)
-        
         # Murder things that need murdering
         for i, shape in enumerate(self.shapes):
             if shape.body.userData == "kill me":
@@ -129,6 +135,9 @@ class Arena():
             ef.draw(screen)
             if ef.done:
                 del self.effects[i]
+                        
+        if self.ball.linearVelocity.x > 5: self.ball.linearVelocity.x = 5
+        if self.ball.linearVelocity.x < -5: self.ball.linearVelocity.x = -5
                         
         # Update a "tick" in physics land
         self.world.Step(TIME_STEP*2, 10, 10)
@@ -236,7 +245,7 @@ class Arena():
                                                 (-0.33 ,1  )]),
                 density=10,
                 restitution=0.5,
-                friction = 5),
+                friction = 50),
             userData="ball")
         self.shapes.append(self.ball.fixtures[0])
     
@@ -247,7 +256,7 @@ class Arena():
         
         self.ball = self.world.CreateDynamicBody(position = position,
             fixtures = b2FixtureDef(
-                shape = b2CircleShape(radius=1),
+                shape = b2CircleShape(radius=1.3),
                 density=10,
                 restitution=0.5,
                 friction = 0.5),
@@ -292,11 +301,14 @@ class PrepareForBattle(Arena):
         self.timeRemaining = 3000
         self.bignum = 3
         
-    def startGame(self, arena):
-        self.paused = False
-        player1.display = False
-        player2.display = False
-        self.initGame((ARENA_WIDTH * (arena - 0.5)) / PPM, (ARENA_WIDTH * (arena + 1.5)) / PPM)
+    def update(self, dt):
+        if self.toInit is not False: self.startGame(self.toInit[0], self.toInit[1])
+        
+        self.camera.update(self.ball)
+        
+        if self.pauseTime > 0:
+            self.pauseTime -= dt
+            return
         
     def draw(self, screen):
         self.drawTimer(screen)
@@ -304,7 +316,3 @@ class PrepareForBattle(Arena):
         text = (time_font_lg.render("PREPARE", True, (0, 70, 0)), time_font_lg.render("YOURSELF", True, (0, 70, 0)))
         screen.blit(text[0], (190,180))
         screen.blit(text[1], (180,260))
-        
-    def endMinigame(self):
-        changePlayers = False
-        return -1

@@ -1,15 +1,17 @@
 def winGame(winner):
+    global gameWinner, gameState
     gameState = "GameOver"
-    global gameWinner
     gameWinner = winner
+    
+    initGameOver()
 
 game_over_buttons = [ ["menu",0], ["quit",0]]
 
-def initTitle():
+def initGameOver():
     # Load all the menu buttons
     buttonY = SCREEN_HEIGHT_PX/2 - BTN_HEIGHT/2 - BTN_STEP
     buttonX = SCREEN_WIDTH_PX/2  - BTN_WIDTH/2
-    for button in buttons:
+    for button in game_over_buttons:
         for state in states:
             imageName = button[0] + "-" + state
             images[imageName] = load_image(imageName + ".png")
@@ -20,7 +22,7 @@ def initTitle():
         
         buttonY += BTN_STEP
             
-def titleInput(event):
+def gameOverInput(event):
     # Grab mouse coords
     mousePos = pygame.mouse.get_pos()
         
@@ -49,7 +51,6 @@ def titleInput(event):
         for i, button in enumerate(buttons):
             if images[button[0] + "-des"][1].collidepoint(mousePos):
                 buttons[i][1] = 1
-                print lastButtonClicked, button[0]
                 if lastButtonClicked == button[0]:
                     # Positive match! Rejoice!
                     if button[0] == "play":
@@ -62,7 +63,7 @@ def titleInput(event):
                     # Make sure we wipe the last button clicked
                     lastButtonClicked = ""
     
-def drawTitle(screen):
+def drawGameOver(screen):
     # TODO: put an image here?
     screen.fill(pygame.Color("white"))
         
