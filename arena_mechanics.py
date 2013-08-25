@@ -6,10 +6,10 @@ def changeArena(arenaNum):
     camera.panCam(arenaNum)
     camera.delay = 200
 
+char1 = "Lars"
+char2 = "Buster"
 class Arena():
-    def __init__(self, char1, char2):
-        
-    
+    def __init__(self):
         self.timeRemaining = 10000 # 10 seconds
         self.drawRed = 0
         self.bignum = 10
@@ -39,6 +39,7 @@ class Arena():
         self.pauseTime = 0
   
     def startGame(self, middle_x, delay=0):
+        global char1, char2
         self.toInit = False
         self.pauseTime = delay
         
@@ -46,8 +47,31 @@ class Arena():
             self.player1.materialize(middle_x - SCREEN_WIDTH_M / 4, self)
             self.player2.materialize(middle_x + SCREEN_WIDTH_M / 4, self)
         else:
-            self.player1 = Player(1, middle_x - SCREEN_WIDTH_M / 4, (255,128,128),(255,200,200),  self)
-            self.player2 = Player(-1, middle_x + SCREEN_WIDTH_M / 4, (128,128,255), (200,200,255), self)
+            if char1 == "Lars":
+                self.player1 = Lars(1, middle_x - SCREEN_WIDTH_M / 4, self)
+            elif char1 == "Buster":
+                self.player1 = Buster(1, middle_x - SCREEN_WIDTH_M / 4, self)
+            elif char1 == "SmithWickers":
+                self.player1 = SmithWickers(1, middle_x - SCREEN_WIDTH_M / 4, self)
+            elif char1 == "Pate":
+                self.player1 = Pate(1, middle_x - SCREEN_WIDTH_M / 4, self)
+            elif char1 == "EricStrohm":
+                self.player1 = EricStrohm(1, middle_x - SCREEN_WIDTH_M / 4, self)
+            else: # char1 == "Ted":
+                self.player1 = Ted(1, middle_x - SCREEN_WIDTH_M / 4, self)
+                
+            if char2 == "Lars":
+                self.player2 = Lars(-1, middle_x + SCREEN_WIDTH_M / 4, self)
+            elif char2 == "Buster":
+                self.player2 = Buster(-1, middle_x + SCREEN_WIDTH_M / 4, self)
+            elif char2 == "SmithWickers":
+                self.player2 = SmithWickers(-1, middle_x + SCREEN_WIDTH_M / 4, self)
+            elif char2 == "Ted":
+                self.player2 = Ted(-1, middle_x + SCREEN_WIDTH_M / 4, self)
+            elif char2 == "EricStrohm":
+                self.player2 = EricStrohm(-1, middle_x + SCREEN_WIDTH_M / 4, self)
+            else: # char2 == "Pate":
+                self.player2 = Pate(-1, middle_x - SCREEN_WIDTH_M / 4, self)
         
         if self.ball is not None: self.world.DestroyBody(self.ball)
         
@@ -123,8 +147,8 @@ class Arena():
             self.randomEvent()
             self.timeRemaining = 10000
             
-        self.player1.update(self.world.gravity == (0,0))
-        self.player2.update(self.world.gravity == (0,0))
+        self.player1.update(self.world.gravity == b2Vec2(0,0))
+        self.player2.update(self.world.gravity == b2Vec2(0,0))
         
         # Murder things that need murdering
         for i, shape in enumerate(self.shapes):
@@ -297,11 +321,11 @@ class Arena():
                 ef.finish()
         
     def randomEvent(self):
-        randomEvents = [ [self.bombDrop, self.bombDrop_revert],
-                         [self.changeBall, self.changeBall_revert],
-                         [self.nogravity, self.nogravity_revert],
-                         [self.slowmo, self.slowmo_revert],
-                         [self.fastmo, self.fastmo_revert] ]
+        randomEvents = [ #[self.bombDrop, self.bombDrop_revert],
+                         #[self.changeBall, self.changeBall_revert],
+                         [self.nogravity, self.nogravity_revert]]
+                         #[self.slowmo, self.slowmo_revert],
+                         #[self.fastmo, self.fastmo_revert] ]
                          
         while len(self.modifications) > 0:
             mod = self.modifications[0]

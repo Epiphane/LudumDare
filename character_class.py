@@ -99,12 +99,29 @@ class Player(pygame.sprite.Sprite):
             return
             
         self.shapes[0].body.awake = True
-        self.shapes[0].body.linearVelocity.x = 0
-        if self.input["left"]:
-            self.shapes[0].body.linearVelocity.x -= 10
-        if self.input["right"]:
-            self.shapes[0].body.linearVelocity.x += 10
-        
+        if nogravity:
+            if self.input["up"]:
+                self.shapes[0].body.linearVelocity.y -= 3
+            if self.input["down"]:
+                self.shapes[0].body.linearVelocity.y += 3
+            if self.input["left"]:
+                self.shapes[0].body.linearVelocity.x -= 4
+            if self.input["right"]:
+                self.shapes[0].body.linearVelocity.x += 4
+                
+            if self.shapes[0].body.linearVelocity.y > 20: self.shapes[0].body.linearVelocity.y = 20
+            if self.shapes[0].body.linearVelocity.y < -20: self.shapes[0].body.linearVelocity.y = -20
+            if self.shapes[0].body.linearVelocity.x > 20: self.shapes[0].body.linearVelocity.x = 20
+            if self.shapes[0].body.linearVelocity.x < -20: self.shapes[0].body.linearVelocity.x = -20
+        else:
+            self.shapes[0].body.linearVelocity.x = 0
+            
+            if len(self.foot.body.contacts) > 0: maxspeed = 10
+            else: maxspeed = 12
+            if self.input["left"]:
+                self.shapes[0].body.linearVelocity.x -= maxspeed
+            if self.input["right"]:
+                self.shapes[0].body.linearVelocity.x += maxspeed
             
     def jump(self):
         if len(self.foot.body.contacts) > 0:
@@ -131,34 +148,34 @@ class Player(pygame.sprite.Sprite):
                     self.shapes[0].angularVelocity = 0.5
                 else:
                     self.shapes[0].angularVelocity = -0.5
-                    
-        if nogravity:
-            if self.input["up"]:
-                self.shapes[0].body.linearVelocity.y -= 3
-            if self.input["down"]:
-                self.shapes[0].body.linearVelocity.y += 3
-            if self.input["left"]:
-                self.shapes[0].body.linearVelocity.x -= 4
-            if self.input["right"]:
-                self.shapes[0].body.linearVelocity.x += 4
-                
-            if self.shapes[0].body.linearVelocity.y > 20: self.shapes[0].body.linearVelocity.y = 20
-            if self.shapes[0].body.linearVelocity.y < -20: self.shapes[0].body.linearVelocity.y = -20
-            if self.shapes[0].body.linearVelocity.x > 20: self.shapes[0].body.linearVelocity.x = 20
-            if self.shapes[0].body.linearVelocity.x < -20: self.shapes[0].body.linearVelocity.x = -20
-        else:
-            self.shapes[0].body.linearVelocity.x = 0
-            
-            if len(self.foot.body.contacts) > 0: maxspeed = 10
-            else: maxspeed = 12
-            if self.input["left"]:
-                self.shapes[0].body.linearVelocity.x -= maxspeed
-            if self.input["right"]:
-                self.shapes[0].body.linearVelocity.x += maxspeed
             
     def jump(self, gravity):
-        if gravity == (0,0): pass
+        if gravity == b2Vec2(0,0): pass
         else:
             if len(self.foot.body.contacts) > 0:
                 self.shapes[0].body.linearVelocity.y = -15 * gravity[1] / 25
                 self.shapes[0].body.angularVelocity = -5.4 * self.direction
+
+class Lars(Player):
+    def __init__(self, direction, start_x, arena):
+        Player.__init__(self, direction, start_x, (0, 0, 0), (255, 255, 0), arena)
+
+class Pate(Player):
+    def __init__(self, direction, start_x, arena):
+        Player.__init__(self, direction, start_x, (0, 0, 0), (0, 255, 255), arena)
+
+class Buster(Player):
+    def __init__(self, direction, start_x, arena):
+        Player.__init__(self, direction, start_x, (0, 0, 0), (153, 255, 0), arena)
+
+class EricStrohm(Player):
+    def __init__(self, direction, start_x, arena):
+        Player.__init__(self, direction, start_x, (0, 0, 0), (128, 128, 128), arena)
+
+class Ted(Player):
+    def __init__(self, direction, start_x, arena):
+        Player.__init__(self, direction, start_x, (0, 0, 0), (255, 0, 0), arena)
+
+class SmithWickers(Player):
+    def __init__(self, direction, start_x, arena):
+        Player.__init__(self, direction, start_x, (0, 0, 0), (255, 0, 255), arena)

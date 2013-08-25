@@ -40,11 +40,12 @@ def drawCharSelect(screen):
 def charSelectInput(event):
     global lastButtonClicked
     global gameState, p1choice, p2choice
-    global arena, prepare
+    global arena, prepare, char1, char2
     
     if hasattr(event, 'key') and event.type is pygame.KEYDOWN:
         if event.key == K_SPACE or event.key == K_RETURN:
-            arena = Arena(characters[p1choice], characters[p2choice])
+            char1, char2 = characters[p1choice], characters[p2choice]
+            arena = Arena()
             prepare = PrepareForBattle()
             gameState = "Prepare"
             
