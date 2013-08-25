@@ -40,6 +40,10 @@ class Arena():
   
     def startGame(self, middle_x, delay=0):
         global char1, char2
+        if delay > 0:
+            self.toInit = (middle_x, delay)
+            return
+            
         self.toInit = False
         self.pauseTime = delay
         
@@ -168,13 +172,19 @@ class Arena():
         screen.blit(arrowImg, (arrowX, arrowY))
         
     def update(self, dt):
-        if self.toInit is not False: self.startGame(self.toInit[0], self.toInit[1])
+        if self.toInit is not False:
+            self.startGame(self.toInit[0], self.toInit[1] - dt)
+                        
+            # Update a "tick" in physics land
+            self.world.Step(TIME_STEP*2, 10, 10)
+            
+            # Reset forces for the next frame
+            self.world.ClearForces()
+            
+            
+            return
         
         self.camera.update(self.ball)
-        
-        if self.pauseTime > 0:
-            self.pauseTime -= dt
-            return
     
         self.timeRemaining -= dt
         oldbignum = self.bignum
@@ -198,9 +208,6 @@ class Arena():
             ef.draw(screen)
             if ef.done:
                 del self.effects[i]
-                        
-        if self.ball.linearVelocity.x > 5: self.ball.linearVelocity.x = 5
-        if self.ball.linearVelocity.x < -5: self.ball.linearVelocity.x = -5
         
         self.ball.linearVelocity.x *= BALL_FRICTION
                         
