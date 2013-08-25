@@ -82,7 +82,7 @@ while 1:
     if gameState == "Arena":
         arena.update(dt)
         arena.draw(screen)
-                        
+      
     for i, ef in enumerate(effects):
         ef.update()
         ef.draw(screen)
