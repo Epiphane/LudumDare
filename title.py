@@ -74,6 +74,4 @@ def drawTitle(screen):
     
     for button in buttons:
         imageName = button[0] + "-" + states[button[1]]
-    
-        rotImg = pygame.transform.rotate(images[imageName][0], angle)
-        screen.blit(rotImg, images[imageName][1])
+        screen.blit(images[imageName][0], images[imageName][1])
