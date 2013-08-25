@@ -127,7 +127,19 @@ class Arena():
             
     # Draw an arrow to the lost, lonely player.        
     def drawArrow(self, player):
-        print("WHERE U AT")
+        position = player.shapes[0].body.position
+        arrowX, arrowY = 0, 0
+        
+        # Identify the x and y to draw the arrow in
+        arrowY = position.y * PPM - 70
+        if position.x < self.camera.centerX_in_meters:
+            arrowX = 5
+            arrowImg = pygame.transform.flip(images["red arrow"][0], True, False)
+        else:
+            arrowImg = images["red arrow"][0]
+            arrowX = SCREEN_WIDTH_PX - (5 + images["red arrow"][1].width)
+        
+        screen.blit(arrowImg, (arrowX, arrowY))
         
     def update(self, dt):
         if self.toInit is not False: self.startGame(self.toInit[0], self.toInit[1])
@@ -163,6 +175,8 @@ class Arena():
                         
         if self.ball.linearVelocity.x > 5: self.ball.linearVelocity.x = 5
         if self.ball.linearVelocity.x < -5: self.ball.linearVelocity.x = -5
+        
+        self.ball.linearVelocity.x *= BALL_FRICTION
                         
         # Update a "tick" in physics land
         self.world.Step(TIME_STEP*2, 10, 10)

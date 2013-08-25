@@ -23,6 +23,8 @@ CAMERA_SPEEDUP_SPEED = 3
 ##### VARIABLES FOR GAME BALANCE ######
 BALL_DENSITY = 10
 BALL_CHANGE_DENSITY = 10
+CHAR_DENSITY = 5
+BALL_FRICTION = 0.9
 
 
 
@@ -107,12 +109,10 @@ class ContactHandler(b2ContactListener):
                     
                     shape.body.linearVelocity.x = xComp
                     shape.body.linearVelocity.y = yComp
-                    
-            blowUp[1].body.ApplyForce(force=(50000, 0), point=(0, 0), wake=True)
             
             offsetX, offsetY = arena.camera.getOffset_in_px()
             explos = Explosion(blowUp[0].body.position.x * PPM - offsetX, 37 * PPM - offsetY)
-            effects.append(explos)  
+            effects.append(explos)
         
         goalLeft = self.checkContact(contact, "ball")
         if goalLeft is not None:
@@ -132,3 +132,5 @@ class ContactHandler(b2ContactListener):
                     arena.player1.dead = True
                     arena.player2.dead = True
                     arena.toInit = (STAGE_WIDTH_M * 2 / 3, 2000)
+                    
+        kick = self.checkContact(contact, "foot")

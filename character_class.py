@@ -36,8 +36,9 @@ class Player(pygame.sprite.Sprite):
                 restitution=0)
             )
         self.shapes.append(block.fixtures[0])
+        
         foot = block.CreateFixture(
-                shape = b2PolygonShape(vertices = [(-0.5,1.5),(-0.5,2.5),(0.5,2.5),(0.5,1.5)]),
+                shape = b2PolygonShape(vertices = [(-1.6,-2.1),(1.6,-2.1),(1.6,2.1),(-1.6,2.1)]),
                 isSensor=True
             )
         self.foot = block.fixtures[1]
