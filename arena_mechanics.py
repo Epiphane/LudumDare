@@ -183,7 +183,7 @@ class Arena():
             self.player2.input["left"] = (event.type is pygame.KEYDOWN)
         if event.key == K_RIGHT:
             self.player2.input["right"] = (event.type is pygame.KEYDOWN)
-        if event.key == K_UP:]
+        if event.key == K_UP:
             self.player2.input["up"] = (event.type is pygame.KEYDOWN)
             self.player2.jump(self.world.gravity)
         if event.key == K_DOWN:
@@ -194,30 +194,8 @@ class Arena():
         if event.key is K_s:
             self.player1.input["down"] = (event.type is pygame.KEYDOWN)
         
-    def randomEvent(self):
-        while len(self.modifications) > 0:
-            mod = self.modifications[0]
-            if(mod == "changeBall"): self.changeBall_revert()
-            elif(mod == "nogravity"): self.nogravity_revert()
-            elif(mod == "slowmo"): self.slowmo_revert()
-            del self.modifications[0]
-            
-        event = math.floor(random.random() * 4)
-        
-        if(event == 0):
-            self.changeBall()
-            self.modifications.append("changeBall")
-        elif(event == 1):
-            self.nogravity()
-            self.modifications.append("nogravity")
-        elif(event == 2):
-            self.slowmo()
-            self.modifications.append("slowmo")
-        elif(event == 3):
-            self.fastmo()
-            self.modifications.append("fastmo")
-        
     def changeBall(self):
+        print "Changeball triggered"
         self.shapes.remove(self.ball.fixtures[0])
         position = self.ball.position
         self.world.DestroyBody(self.ball)
@@ -238,6 +216,7 @@ class Arena():
         self.shapes.append(self.ball.fixtures[0])
     
     def changeBall_revert(self):
+        print "Changeball reverted"
         self.shapes.remove(self.ball.fixtures[0])
         position = self.ball.position
         self.world.DestroyBody(self.ball)
@@ -253,27 +232,34 @@ class Arena():
         self.shapes.append(self.ball.fixtures[0])
      
     def nogravity(self):
+        print "no gravity!"
         self.world.gravity = (0,0)
      
     def nogravity_revert(self):
+        print "no gravity reverted"
         self.world.gravity = (0,25)
      
     def reversegravity(self):
+        print "gravty reversed..."
         self.world.gravity = (0,-25)
      
     def slowmo(self):
+        print "slow mo!"
         global TIME_STEP
         TIME_STEP /= 4
      
     def slowmo_revert(self):
+        print "slow mo reverted"
         global TIME_STEP
         TIME_STEP *= 4
      
     def fastmo(self):
+        print "fast mo!"
         global TIME_STEP
         TIME_STEP *= 4
      
     def fastmo_revert(self):
+        print "fast mo reverted"
         global TIME_STEP
         TIME_STEP /= 4
         
@@ -284,18 +270,24 @@ class Arena():
             self.shapes.remove(shape)
         
     def bombDrop(self):
+        print "bomb droppin time!"
         bombs = BombDrop()
         effects.append(bombs)
         
     def bombDrop_revert(self):
+        print "bomb droppin reversion!"
         # Find the bomb drop and PUT A STOP TO THE MADNESS
-        for ef in effects:
-            if ef.__class__.__name__ == "BombDrop":
-                ef.finish()
+        #for ef in effects:
+         #   if ef.__class__.__name__ == "BombDrop":
+        #        ef.finish()
         
     def randomEvent(self):
-        randomEvents = [ [self.bombDrop, self.bombDrop_revert] ]
-        
+        randomEvents = [ [self.bombDrop, self.bombDrop_revert],
+                         [self.changeBall, self.changeBall_revert],
+                         [self.nogravity, self.nogravity_revert],
+                         [self.slowmo, self.slowmo_revert],
+                         [self.fastmo, self.fastmo_revert] ]
+                         
         while len(self.modifications) > 0:
             mod = self.modifications[0]
             mod[1]()
@@ -307,7 +299,6 @@ class Arena():
         mod = randomEvents[int(event)]
         mod[0]()
         self.modifications.append(mod)
-        
             
 class PrepareForBattle(Arena):
     def initGame(self, minx, maxx):

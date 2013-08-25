@@ -8,7 +8,7 @@ class BombDrop():
             rotAngle = bomb.body.angle
             offsetX, offsetY = arena.camera.getOffset_in_px()
             verts = vertices_with_offset(bomb, offsetX, offsetY)
-            DrawPolygon(verts, (0,0,0))
+            #DrawPolygon(verts, (0,0,0))
             # The "vertices" method will return a rotated square of vertices.
             # As it turns out, if we grab the leftmost, topmost, rightmost and
             # bottommost values from these vertices, we end up with the right
@@ -19,7 +19,6 @@ class BombDrop():
             right = max(xvals)
             top = min(yvals)
             bottom = max(yvals)
-            print left, right, top, bottom
             finalRect = pygame.Rect(left, top, (right - left), (bottom - top))
             imgRot = pygame.transform.rotate(images["bomb"][0], rotAngle)
             screen.blit(imgRot, finalRect)
@@ -33,7 +32,7 @@ class BombDrop():
             # Choose a random spot between 0 -> Stage Width meters
             bombX = int(random.random() * STAGE_WIDTH_M)
             # Choose a random spot in the upper half of the map to drop the bomb
-            bombY = int(random.random() * SCREEN_HEIGHT_M/2 - SCREEN_HEIGHT_M/2)
+            bombY = int(random.random() * SCREEN_HEIGHT_M/2 + SCREEN_HEIGHT_M)
             
             newBomb = arena.world.CreateDynamicBody(
                 userData = "bomb",
@@ -67,7 +66,6 @@ class Explosion:
         pygame.draw.circle(s, pygame.Color(237, 211, 17),
                             (self.x, self.y), self.size)
         
-        print self.x, self.y
         screen.blit(s, (0,0))
     def update(self):
         self.size += 6
