@@ -1,14 +1,5 @@
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, direction, color, color_2, arena):
-        self.input = {"up": False, "down": False, "left": False, "right": False}
-        self.direction = direction
-        self.color = color
-        self.color_2 = color_2
-        self.shapes = []
-        self.arena = arena
-        
-        self.dead = False
         
     def __init__(self, direction, start_x, color, color_2, arena):
         self.input = {"up": False, "down": False, "left": False, "right": False}
@@ -17,6 +8,10 @@ class Player(pygame.sprite.Sprite):
         self.color_2 = color_2
         self.shapes = []
         self.arena = arena
+        
+        self.speed = 10
+        self.airspeed = 14
+        self.moving = None
         
         self.dead = False
         
@@ -87,7 +82,7 @@ class Player(pygame.sprite.Sprite):
          
     def clearShapes(self):
         for shape in self.shapes:
-            world.DestroyBody(shape.body)
+            arena.world.DestroyBody(shape.body)
         self.shapes = []
       
     def update(self, nogravity = False):
@@ -111,14 +106,21 @@ class Player(pygame.sprite.Sprite):
             if self.shapes[0].body.linearVelocity.x > 20: self.shapes[0].body.linearVelocity.x = 20
             if self.shapes[0].body.linearVelocity.x < -20: self.shapes[0].body.linearVelocity.x = -20
         else:
-            self.shapes[0].body.linearVelocity.x = 0
+            if self.moving is not None: 
+                if self.moving == "l": 
+                    self.shapes[0].body.linearVelocity.x += self.speed
+                if self.moving == "r":
+                    self.shapes[0].body.linearVelocity.x -= self.speed
             
-            if len(self.foot.body.contacts) > 0: maxspeed = 10
-            else: maxspeed = 14
+            if len(self.foot.body.contacts) > 0: maxspeed = self.speed
+            else: maxspeed = self.speed + self.airspeed
             if self.input["left"]:
                 self.shapes[0].body.linearVelocity.x -= maxspeed
             if self.input["right"]:
                 self.shapes[0].body.linearVelocity.x += maxspeed
+                
+            if self.shapes[0].body.linearVelocity.x > 20: self.shapes[0].body.linearVelocity.x = 20
+            if self.shapes[0].body.linearVelocity.x < -20: self.shapes[0].body.linearVelocity.x = -20
             
     def jump(self):
         if len(self.foot.body.contacts) > 0:
