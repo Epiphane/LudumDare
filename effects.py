@@ -24,7 +24,6 @@ class BombDrop():
             if bomb.body.userData == "kill me":
                 bomb.body.DestroyFixture(bomb)
                 del self.bombs[i]
-            DrawPolygon(verts, (0,0,0))
             
     def update(self):
         # Iterate the cooldown on bombs. If it's been long enough, drop another one!
@@ -44,7 +43,7 @@ class BombDrop():
                     isSensor = True))
                     
             # Start with a li'l spin
-            newBomb.angularVelocity = 5 - random.random() * 20
+            newBomb.angularVelocity = 2 - random.random() * 4
             
             self.bombs.append(newBomb.fixtures[0])
             
