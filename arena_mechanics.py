@@ -52,7 +52,7 @@ class Arena():
         self.ball = self.world.CreateDynamicBody(position = (middle_x,27),
             fixtures = b2FixtureDef(
                 shape = b2CircleShape(radius=1.3),
-                density=10,
+                density=5,
                 restitution=0.5,
                 friction = 50),
             userData="ball")
@@ -103,6 +103,31 @@ class Arena():
         goal_right.fixtures[0].sensor = True
         goal_right.fixtures[0].userData = "goal right"
         self.shapes.append(goal_right.fixtures[0])
+        
+    # Detects if the player is off camera and draws an arrow to them
+    def playerOffCamera(self):
+        # A player is off camera if all 4 of their vertices don't intersect with the screen.
+        SCREEN_RECT.left = self.camera.centerX_in_meters * PPM - SCREEN_WIDTH_PX / 2
+        offsetX, offsetY = self.camera.getOffset_in_px()
+        verts = vertices(self.player1.shapes[0])
+        inside = False
+        for vert in verts:
+            inside = inside or SCREEN_RECT.collidepoint( (vert.x, vert.y) )
+            
+        if not inside:
+            self.drawArrow(self.player1)
+            
+        verts = vertices(self.player2.shapes[0])
+        inside = False
+        for vert in verts:
+            inside = inside or SCREEN_RECT.collidepoint( (vert.x, vert.y) )
+                
+        if not inside:
+            self.drawArrow(self.player2)
+            
+    # Draw an arrow to the lost, lonely player.        
+    def drawArrow(self, player):
+        print("WHERE U AT")
         
     def update(self, dt):
         if self.toInit is not False: self.startGame(self.toInit[0], self.toInit[1])
@@ -166,8 +191,10 @@ class Arena():
                 else:
                     DrawPolygon(vertices_with_offset(shape, offsetX, offsetY), (0,0,0))
             else:
-                DrawPolygon(vertices_with_offset(shape, offsetX, offsetY), (0,0,0))
-                
+                DrawPolygon(vertices_with_offset(shape, offsetX, offsetY), (0,0,0))        
+            
+        # Draw arrows if the player is off screen
+        self.playerOffCamera()
     
     def drawTimer(self, screen):
         color = (self.drawRed,0,0)
@@ -237,7 +264,7 @@ class Arena():
         self.ball = self.world.CreateDynamicBody(position = position,
             fixtures = b2FixtureDef(
                 shape = b2CircleShape(radius=1.3),
-                density=10,
+                density=5,
                 restitution=0.5,
                 friction = 0.5),
             userData="ball")
@@ -312,6 +339,7 @@ class Arena():
         mod = randomEvents[int(event)]
         mod[0]()
         self.modifications.append(mod)
+            
             
 class PrepareForBattle(Arena):
     def __init__(self):
