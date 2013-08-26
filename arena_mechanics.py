@@ -451,10 +451,10 @@ class Arena():
                 ef.finish()
         
     def randomEvent(self):
-        randomEvents = [ #[self.bombDrop, self.bombDrop_revert],
+        randomEvents = [ [self.bombDrop, self.bombDrop_revert],
                          [self.changeBall, self.changeBall_revert],
-                         [self.giantMode, self.giantMode_revert]]#,
-                         #[self.slowmo, self.slowmo_revert]]
+                         [self.giantMode, self.giantMode_revert],#]#,
+                         [self.slowmo, self.slowmo_revert]]
                          
         while len(self.modifications) > 0:
             mod = self.modifications[0]
