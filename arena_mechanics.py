@@ -351,7 +351,7 @@ class Arena():
             self.textAlpha -= 2.5
             
             text = time_font_giant.render(self.dispText, False, (0, 0, 0), (255,255,255, 0))
-            if self.dispText == "SLOWWMOOOOO!":
+            if self.dispText == "SLOW MO!":
                 surface = pygame.Surface((text.get_width()+30, text.get_height()))
                 surface.blit(text, (30,0))
                 text = time_font_giant.render(self.dispText, False, (0, 0, 0), (255,255,255, 0))
@@ -411,7 +411,7 @@ class Arena():
         self.shapes.append(self.ball)
         
         self.textAlpha = 255
-        self.dispText = "ROCK BALLSTER!"
+        self.dispText = "ROCK BALL!"
     
     def changeBall_revert(self):
         print "Changeball reverted"
@@ -436,7 +436,7 @@ class Arena():
         TIME_STEP /= 4
         
         self.textAlpha = 255
-        self.dispText = "SLOWWMOOOOO!"
+        self.dispText = "SLOW MO!"
      
     def slowmo_revert(self):
         print "slow mo reverted"
@@ -444,6 +444,9 @@ class Arena():
         TIME_STEP *= 4
         
     def giantMode(self):
+        self.textAlpha = 255
+        self.dispText = "GET BIG!"
+        
         self.player1.toExpand = True
         self.player2.toExpand = True
     
@@ -464,7 +467,7 @@ class Arena():
         effects.append(bombs)
         
         self.textAlpha = 255
-        self.dispText = "Bombs!"
+        self.dispText = "BOMBS!"
         
     def bombDrop_revert(self):
         print "bomb droppin reversion!"
