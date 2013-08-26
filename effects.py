@@ -5,6 +5,7 @@ class BombDrop():
     def draw(self, screen):
         # Draw the bombas
         for i,bomb in enumerate(self.bombs):
+            if bomb.body is None: return
             rotAngle = bomb.body.angle
             offsetX, offsetY = arena.camera.getOffset_in_px()
             verts = vertices_with_offset(bomb, offsetX, offsetY)
