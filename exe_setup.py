@@ -9,7 +9,7 @@ sys.argv.append("py2exe")
 
 SCRIPT_MAIN = 'main.py'
 text = open(SCRIPT_MAIN,'r')
-f = open("final.py","w")
+f = open("KickBox.py","w")
 text = text.readlines()
 def addfile(text,tofile):
     for line in text:
@@ -34,9 +34,9 @@ AUTHOR_NAME = 'Thomas Steinke & Elliot Fiske'
 AUTHOR_EMAIL = 'thomasteinke@gmail.com'
 AUTHOR_URL = "http://www.thomassteinke.net"
 PRODUCT_NAME = "Ludum Dare 27"
-SCRIPT_MAIN = 'final.py'
+SCRIPT_MAIN = 'Kickbox.py'
 VERSIONSTRING = PRODUCT_NAME + " ALPHA " + VERSION
-ICONFILE = 'favicon.ico'
+ICONFILE = "favicon.ico"
  
 # Remove the build tree on exit automatically
 REMOVE_BUILD_ON_EXIT = True
@@ -102,7 +102,7 @@ setup(windows=[
                              "includes": INCLUDE_STUFF,
                              "compressed": 1,
                              "ascii": 1,
-                             "bundle_files": 2,
+                             "bundle_files": 1,
                              "ignores": ['tcl','AppKit','Numeric','Foundation'],
                              "excludes": MODULE_EXCLUDES} },
           name = PRODUCT_NAME,

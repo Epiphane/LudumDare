@@ -8,7 +8,7 @@ from pgu import gui
 PPM = 16
 STAGE_WIDTH_PX = 4000
 STAGE_WIDTH_M = STAGE_WIDTH_PX / PPM
-SCREEN_WIDTH_PX = 1400
+SCREEN_WIDTH_PX = 1000
 SCREEN_WIDTH_M = SCREEN_WIDTH_PX / PPM
 SCREEN_HEIGHT_PX = 600
 SCREEN_HEIGHT_M = SCREEN_HEIGHT_PX / PPM
@@ -30,15 +30,13 @@ CHAR_FRICTION = 1
 CHAR_DENSITY = 5
 BALL_FRICTION = 0.95
 
-
-
 TARGET_FPS = 60
 TIME_STEP = 1.0/TARGET_FPS
 
 pygame.init()
 
 screen = pygame.display.set_mode((SCREEN_WIDTH_PX, SCREEN_HEIGHT_PX), DOUBLEBUF, 32)
-pygame.display.set_caption("LD 27")
+pygame.display.set_caption("LD 27: Kickbox")
 clock = pygame.time.Clock()
 
 def load_image(name, colorkey=None):

@@ -1,7 +1,7 @@
-Name "LD27Installer"
-OutFile "LD27_0.0.1.exe"
-InstallDir $PROGRAMFILES\LD27
-DirText "This will install LD27 on your computer. Choose a directory"
+Name "KickboxInstaller"
+OutFile "Kickbox_0.9.exe"
+InstallDir $PROGRAMFILES\Kickbox
+DirText "This will install Kickbox on your computer. Choose a directory"
 Section "" ;No components page, name is not important
 	SetOutPath $INSTDIR
 	CreateDirectory $INSTDIR\data
@@ -162,7 +162,6 @@ Section "" ;No components page, name is not important
 	SetOutPath $INSTDIR\music
 	SetOutPath $INSTDIR
 	File portmidi.dll
-	File python27.dll
 	File SDL.dll
 	File SDL_image.dll
 	File SDL_mixer.dll
@@ -318,7 +317,6 @@ Section "Uninstall"
 	Delete $INSTDIR\libvorbis-0.dll
 	Delete $INSTDIR\libvorbisfile-3.dll
 	Delete $INSTDIR\portmidi.dll
-	Delete $INSTDIR\python27.dll
 	Delete $INSTDIR\SDL.dll
 	Delete $INSTDIR\SDL_image.dll
 	Delete $INSTDIR\SDL_mixer.dll

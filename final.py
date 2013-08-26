@@ -26,7 +26,7 @@ from pgu import gui
 PPM = 16
 STAGE_WIDTH_PX = 4000
 STAGE_WIDTH_M = STAGE_WIDTH_PX / PPM
-SCREEN_WIDTH_PX = 1400
+SCREEN_WIDTH_PX = 1000
 SCREEN_WIDTH_M = SCREEN_WIDTH_PX / PPM
 SCREEN_HEIGHT_PX = 600
 SCREEN_HEIGHT_M = SCREEN_HEIGHT_PX / PPM
@@ -48,15 +48,13 @@ CHAR_FRICTION = 1
 CHAR_DENSITY = 5
 BALL_FRICTION = 0.95
 
-
-
 TARGET_FPS = 60
 TIME_STEP = 1.0/TARGET_FPS
 
 pygame.init()
 
 screen = pygame.display.set_mode((SCREEN_WIDTH_PX, SCREEN_HEIGHT_PX), DOUBLEBUF, 32)
-pygame.display.set_caption("LD 27")
+pygame.display.set_caption("LD 27: Kickbox")
 clock = pygame.time.Clock()
 
 def load_image(name, colorkey=None):
@@ -125,7 +123,7 @@ class ContactHandler(b2ContactListener):
                 pointA, pointB, distance, dummy = distResult
                 
                 # mass > 0 implies it's not a "Static" object
-                if distance < 6 and shape.massData.mass > 0.1:
+                if distance < 6 and shape.massData.mass > 0.1 and shape.userData != "particle":
                     xComp = int(random.random() * -5000 + 2500)
                     yComp = int(random.random() * -5000 + 2500)
                     print yComp
@@ -172,6 +170,7 @@ class ContactHandler(b2ContactListener):
             kick = self.checkContact(contact, "player2")
             
         if kick is not None:
+            
             # Punt the ball a little ways kick[1] is ball, kick[0] is player.
             if kick[1].body.userData == "ball":
                 if len(kick[0].body.contacts) < 3:
@@ -181,6 +180,10 @@ class ContactHandler(b2ContactListener):
                         kick[1].body.linearVelocity.y = kick[0].body.linearVelocity.y * 10
                     else:
                         kick[1].body.linearVelocity.y -= 100
+            if kick[1].body.userData == "player1" or kick[1].body.userData == "player2":
+                if kick[0].body.linearVelocity.y>= 25 or kick[1].body.linearVelocity.y >= 25:
+                    kick[0].body.linearVelocity.y = -25
+                    kick[1].body.linearVelocity.y = -25
                     
                     
                         
@@ -479,7 +482,7 @@ class Arena():
         
         if self.ball is not None: self.world.DestroyBody(self.ball)
         
-        self.ball = self.world.CreateDynamicBody(position = (middle_x,27),
+        self.ball = self.world.CreateDynamicBody(position = (middle_x,28),
             fixtures = b2FixtureDef(
                 shape = b2CircleShape(radius=1.3),
                 density=1,
@@ -489,6 +492,9 @@ class Arena():
             
         self.ball.color = pygame.color.Color(128,128,128)
         self.shapes.append(self.ball)
+        
+        self.textAlpha = 255
+        self.dispText = "Go!"
         
     def createCrowd(self, minx, maxx):
         numCrowd = int(math.ceil(random.random() * 10) + 10)
@@ -716,7 +722,7 @@ class Arena():
         color = (self.drawRed,0,0)
         
         text = time_font_lg.render(str(self.bignum), False, color)
-        text_sm = time_font_sm.render(str(self.timeRemaining % 1000), True, color)
+        text_sm = time_font_sm.render(str(self.timeRemaining % 1000), False, color)
         
         if(self.drawRed > 0):
             self.drawRed -= 2
@@ -725,10 +731,29 @@ class Arena():
         else: screen.blit(text, (SCREEN_WIDTH_PX / 2 - 70,0))
         screen.blit(text_sm, (SCREEN_WIDTH_PX / 2,0))
         
-        text_l = time_font_lg.render(str(self.score[0]), True, (0,0,0))
-        text_r = time_font_lg.render(str(self.score[1]), True, (0,0,0))
+        text_l = time_font_lg.render(str(self.score[0]), False, (0,0,0))
+        text_r = time_font_lg.render(str(self.score[1]), False, (0,0,0))
         screen.blit(text_l, (0,0))
         screen.blit(text_r, (SCREEN_WIDTH_PX - 60,0))
+        
+        if self.textAlpha > 0:
+            self.textAlpha -= 2.5
+            
+            text = time_font_giant.render(self.dispText, False, (0, 0, 0), (255,255,255, 0))
+            if self.dispText == "SLOWWMOOOOO!":
+                surface = pygame.Surface((text.get_width()+30, text.get_height()))
+                surface.blit(text, (30,0))
+                text = time_font_giant.render(self.dispText, False, (0, 0, 0), (255,255,255, 0))
+                surface.blit(text, (0,0))
+                surface.set_colorkey((255,255,255))
+                surface.set_alpha(self.textAlpha)
+                screen.blit(surface, (SCREEN_WIDTH_PX / 2 - text.get_width()/2,180))
+            else:
+                surface = pygame.Surface((text.get_width(), text.get_height()))
+                surface.blit(text, (0,0))
+                surface.set_colorkey((255,255,255))
+                surface.set_alpha(self.textAlpha)
+                screen.blit(surface, (SCREEN_WIDTH_PX / 2 - text.get_width()/2,180))
 
     def doAction(self, event):
         if event.key is K_a:
@@ -773,6 +798,9 @@ class Arena():
             userData="ball")
         self.ball.color = pygame.color.Color(128,128,128)
         self.shapes.append(self.ball)
+        
+        self.textAlpha = 255
+        self.dispText = "ROCK BALLSTER!"
     
     def changeBall_revert(self):
         print "Changeball reverted"
@@ -795,30 +823,22 @@ class Arena():
         print "slow mo!"
         global TIME_STEP
         TIME_STEP /= 4
+        
+        self.textAlpha = 255
+        self.dispText = "SLOWWMOOOOO!"
      
     def slowmo_revert(self):
         print "slow mo reverted"
         global TIME_STEP
         TIME_STEP *= 4
-     
-    def fastmo(self):
-        print "fast mo!"
-        global TIME_STEP
-        TIME_STEP *= 2
-     
-    def fastmo_revert(self):
-        print "fast mo reverted"
-        global TIME_STEP
-        TIME_STEP /= 2
         
     def giantMode(self):
-        self.player1.expand()
-        self.player2.expand()
+        self.player1.toExpand = True
+        self.player2.toExpand = True
     
     def giantMode_revert(self):
-        self.player1.expand(0.75)
-        self.player2.expand(0.75)
-        pass
+        self.player1.toNormalSize = True
+        self.player2.toNormalSize = True
         
     def cleanUp(self):
         self.crowd = []
@@ -831,6 +851,9 @@ class Arena():
         print "bomb droppin time!"
         bombs = BombDrop()
         effects.append(bombs)
+        
+        self.textAlpha = 255
+        self.dispText = "Bombs!"
         
     def bombDrop_revert(self):
         print "bomb droppin reversion!"
@@ -868,7 +891,7 @@ class PrepareForBattle(Arena):
         
         self.drawTimer(screen)
         
-        text = (time_font_lg.render("PREPARE", True, (0, 70, 0)), time_font_lg.render("YOURSELF", True, (0, 70, 0)))
+        text = (time_font_lg.render("PREPARE", False, (0, 0, 0)), time_font_lg.render("YOURSELF", False, (0, 0, 0)))
         screen.blit(text[0], (SCREEN_WIDTH_PX / 2 - 210,180))
         screen.blit(text[1], (SCREEN_WIDTH_PX / 2 - 220,260))
         
@@ -876,8 +899,8 @@ class PrepareForBattle(Arena):
     def drawTimer(self, screen):
         color = (self.drawRed,0,0)
         
-        text = time_font_lg.render(str(self.bignum), True, color)
-        text_sm = time_font_sm.render(str(self.timeRemaining % 1000), True, color)
+        text = time_font_lg.render(str(self.bignum), False, color)
+        text_sm = time_font_sm.render(str(self.timeRemaining % 1000), False, color)
         
         if(self.drawRed > 0):
             self.drawRed -= 2
@@ -894,6 +917,24 @@ class PrepareForBattle(Arena):
             global arena, gameState
             gameState = "Arena"
 
+    def doAction(self, event):
+        if event.key is K_a:
+            arena.player1.input["left"] = (event.type is pygame.KEYDOWN)
+        if event.key is K_d:
+            arena.player1.input["right"] = (event.type is pygame.KEYDOWN)
+        if event.key == K_LEFT:
+            arena.player2.input["left"] = (event.type is pygame.KEYDOWN)
+        if event.key == K_RIGHT:
+            arena.player2.input["right"] = (event.type is pygame.KEYDOWN)
+        if event.key == K_UP:
+            arena.player2.input["up"] = (event.type is pygame.KEYDOWN)
+        if event.key == K_DOWN:
+            arena.player2.input["down"] = (event.type is pygame.KEYDOWN)
+        if event.key is K_w:
+            arena.player1.input["up"] = (event.type is pygame.KEYDOWN)
+        if event.key is K_s:
+            arena.player1.input["down"] = (event.type is pygame.KEYDOWN)
+
 
 def DrawPolygon(vertices, color = (0,0,0), color_2 = None):
     """ Draw a wireframe polygon given the screen vertices with the specified color."""
@@ -909,12 +950,13 @@ def DrawPolygon(vertices, color = (0,0,0), color_2 = None):
             pygame.draw.polygon(screen, color_2, vertices, 0)
         pygame.draw.polygon(screen, color, vertices, 2)
 
-def DrawCircle(center, radius, color = (0,0,0)):
+def DrawCircle(center, radius, color = (0,0,0), color_2 = (0,0,0)):
     """ Draw a wireframe polygon given the screen vertices with the specified color."""
     if not center or not radius:
         return
         
     pygame.draw.circle(screen, color, center, int(radius*PPM))
+    pygame.draw.circle(screen, color_2, center, int(radius*PPM), 2)
             
 def DrawImage(vertices, userData):
     screen.blit(images[userData][0], (vertices[0], vertices[1]))
@@ -1046,6 +1088,13 @@ class Player(pygame.sprite.Sprite):
         self.shapes = []
         self.arena = arena
         
+        self.small = (0.5,1)
+        self.size = (1,2)
+        self.large = (2,4)
+        
+        self.toExpand = False
+        self.toNormalSize = False
+        
         self.speed = 10
         self.airspeed = 14
         self.moving = None
@@ -1054,33 +1103,35 @@ class Player(pygame.sprite.Sprite):
         self.materialize(start_x, arena, playerNum)
         
     def materialize(self, start_x, arena, playerNum):
-        while len(self.shapes) > 0:
-            shape = self.shapes[0]
-            arena.world.DestroyBody(shape)
-            self.shapes.remove(shape)
+        self.clearShapes(arena)
             
         block = arena.world.CreateDynamicBody(
             position = (start_x, 30),
             fixtures = b2FixtureDef(
-                shape = b2PolygonShape(box = (1,2)),
+                shape = b2PolygonShape(box = self.size),
                 density=CHAR_DENSITY,
                 friction=CHAR_FRICTION,
-                restitution=0),
-            userData = "player" + str(playerNum)
-            )
+                restitution=0
+            ),
+            userData = "player"+str(playerNum)
+        )
+        block.color = self.color_2
         self.shapes.append(block)
         
+        w = self.size[0]
+        h = self.size[1]
         foot = block.CreateFixture(
-                shape = b2PolygonShape(vertices = [(-1.6,-2.1),(1.6,-2.1),(1.6,2.1),(-1.6,2.1)]),
+                shape = b2PolygonShape(vertices = [(-1*w-.6,-1*h-.1),(w+.6,-1*h-.1),(w+.6,h+.1),(-1*w-.6,h+.1)]),
                 isSensor=True
             )
         self.foot = block.fixtures[1]
         
         self.dead = False
+        self.dx = 0
         
     def draw(self, screen, offsetX, offsetY):
         for shape in self.shapes:
-            DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), self.color, self.color_2)
+            DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0), shape.color)
     
     def destroy(self):
         destructionShapes = []
@@ -1091,8 +1142,9 @@ class Player(pygame.sprite.Sprite):
                 # Convert them (with magic) using the body.transform thing
                 result = [(self.shapes[i].transform*v) for v in olds]
                 for v in result:
-                    body = arena.world.CreateDynamicBody(position = v)
+                    body = arena.world.CreateDynamicBody(position = v, userData = "particle")
                     shape = body.CreatePolygonFixture(box = (.2,.2), density = 1, isSensor = True)
+                    body.color = self.shapes[i].color
                     body.linearVelocity.y = -15
                     body.linearVelocity.x = random.random() * 6 - 3
                     destructionShapes.append(body)
@@ -1103,8 +1155,9 @@ class Player(pygame.sprite.Sprite):
             # Convert them (with magic) using the body.transform thing
             result = [(self.shapes[0].transform*v) for v in olds]
             for v in result:
-                body = arena.world.CreateDynamicBody(position = (v.x + random.random()*4 - 2, v.y + random.random()*4-2))
+                body = arena.world.CreateDynamicBody(position = (v.x + random.random()*4 - 2, v.y + random.random()*4-2), userData = "particle")
                 shape = body.CreatePolygonFixture(box = (.2,.2), density = 1, isSensor = True)
+                body.color = self.shapes[0].color
                 body.linearVelocity.y = -15
                 body.linearVelocity.x = random.random() * 16 - 8
                 destructionShapes.append(body)
@@ -1119,12 +1172,22 @@ class Player(pygame.sprite.Sprite):
         box = body.CreatePolygonFixture(box = (1,2), density = CHAR_DENSITY, friction = 0.3)
         self.shapes.append(body)
          
-    def clearShapes(self):
-        for shape in self.shapes:
-            arena.world.DestroyBody(shape)
+    def clearShapes(self, a = None):
+        if a is not None:
+            for shape in self.shapes:
+                a.world.DestroyBody(shape)
+        else:
+            for shape in self.shapes:
+                arena.world.DestroyBody(shape)
         self.shapes = []
       
     def update(self, nogravity = False):
+        if self.toExpand:
+            self.expand()
+            self.toExpand = False
+        if self.toNormalSize:
+            self.normal()
+            self.toNormalSize = False
         if(self.dead):
             self.destroy()
             return
@@ -1151,7 +1214,7 @@ class Player(pygame.sprite.Sprite):
                 if self.moving == "r":
                     self.shapes[0].linearVelocity.x -= self.speed
             
-            if len(self.foot.body.contacts) > 0: maxspeed = self.speed
+            if len(self.shapes[0].contacts) > 0: maxspeed = self.speed
             else: maxspeed = self.speed + self.airspeed
             if self.input["left"]:
                 self.shapes[0].linearVelocity.x -= maxspeed
@@ -1162,7 +1225,7 @@ class Player(pygame.sprite.Sprite):
             if self.shapes[0].linearVelocity.x < -20: self.shapes[0].linearVelocity.x = -20
             
     def jump(self):
-        if len(self.foot.body.contacts) > 0:
+        if len(self.shapes[0].contacts) > 0:
             self.shapes[0].linearVelocity.y = -15
             self.shapes[0].angularVelocity = 5.4
                 
@@ -1172,7 +1235,7 @@ class Player(pygame.sprite.Sprite):
         else:
             dir = "r"
             
-        if len(self.foot.body.contacts) == 0:
+        if len(self.shapes[0].contacts) == 0:
             self.shapes[0].linearVelocity.y = 25
             self.shapes[0].linearVelocity.x *= 2
             if dir == "l":
@@ -1189,69 +1252,67 @@ class Player(pygame.sprite.Sprite):
     def jump(self, gravity):
         if gravity == b2Vec2(0,0): pass
         else:
-            if len(self.foot.body.contacts) > 0:
+            if len(self.shapes[0].contacts) > 0:
                 self.shapes[0].linearVelocity.y = -20 * gravity[1] / 25
                 self.shapes[0].angularVelocity = -5.4 * self.direction
                 
-    def expand(self, scale=1.5):
-        for i, shape in enumerate(self.shapes):
-            s = shape.fixtures[0].shape
-            newshape = arena.world.CreateDynamicBody(
-                position = shape.position,
-                fixtures = b2FixtureDef(
-                    shape = b2PolygonShape(box = (abs(s.vertices[0][1]-s.vertices[2][1])*scale,abs(s.vertices[0][0]-s.vertices[2][0])*scale)),
-                    density=shape.fixtures[0].density,
-                    friction = shape.fixtures[0].friction,
-                    restitution=shape.fixtures[0].restitution
-                ),
-                userData = shape.userData
-            )
-            arena.world.DestroyBody(self.shapes[i])
-            self.shapes[i] = newshape
-            return
+    def makeNewBlock(self, size):
+        i = 0
+        shape = self.shapes[i]
+        s = shape.fixtures[0].shape
+        
+        newshape = arena.world.CreateDynamicBody(
+            position = shape.position,
+            fixtures = b2FixtureDef(
+                shape = b2PolygonShape(box = size),
+                density=shape.fixtures[0].density,
+                friction = shape.fixtures[0].friction,
+                restitution=shape.fixtures[0].restitution
+            ),
+            userData = shape.userData
+        )
+        newshape.color = shape.color
+        arena.world.DestroyBody(self.shapes[i])
+        self.shapes[i] = newshape
+    
+    def expand(self):
+        self.makeNewBlock(self.large)
+    
+    def normal(self):
+        self.makeNewBlock(self.size)
+    
+    def shrink(self):
+        self.makeNewBlock(self.small)
 
 class Lars(Player):
     def __init__(self, direction, start_x, arena, playerNum):
+        self.small = (0.5,1)
+        self.size = (1,2)
+        self.large = (2,4)
+        
         Player.__init__(self, direction, start_x, (0, 0, 0), (255, 255, 0), arena, playerNum)
-        
-    def materialize(self, start_x, arena, playerNum):
-        self.clearShapes()
-            
-        block = arena.world.CreateDynamicBody(
-            position = (start_x, 30),
-            fixtures = b2FixtureDef(
-                shape = b2PolygonShape(box = (1,2)),
-                density=CHAR_DENSITY,
-                friction=CHAR_FRICTION,
-                restitution=0),
-                userData = "player" + str(playerNum)
-            )
-        self.shapes.append(block)
-        
-        foot = block.CreateFixture(
-                shape = b2PolygonShape(vertices = [(-1.6,-2.1),(1.6,-2.1),(1.6,2.1),(-1.6,2.1)]),
-                isSensor=True
-            )
-        self.foot = block.fixtures[1]
-        
-        self.dead = False
 
 class Pate(Player):
     def __init__(self, direction, start_x, arena, playerNum):
+        self.small = (0.4,1)
+        self.size = (0.8,2.3)
+        self.large = (1.6,4.2)
+        
         Player.__init__(self, direction, start_x, (0, 0, 0), (0, 255, 255), arena, playerNum)
         
     def materialize(self, start_x, arena, playerNum):
-        self.clearShapes()
+        self.clearShapes(arena)
             
         block = arena.world.CreateDynamicBody(
             position = (start_x, 30),
             fixtures = b2FixtureDef(
-                shape = b2PolygonShape(box = (0.8,2)),
+                shape = b2PolygonShape(box = self.size),
                 density=CHAR_DENSITY,
                 friction = 10000,
                 restitution=0),
-                userData = "player" + str(playerNum)
-            )
+            userData = "player"+str(playerNum)
+        )
+        block.color = self.color_2
         self.shapes.append(block)
         
         foot = block.CreateFixture(
@@ -1266,28 +1327,11 @@ class Buster(Player):
     def __init__(self, direction, start_x, arena, playerNum):
         Player.__init__(self, direction, start_x, (0, 0, 0), (153, 255, 0), arena, playerNum)
         
-    def materialize(self, start_x, arena, playerNum):
-        self.clearShapes()
-            
-        block = arena.world.CreateDynamicBody(
-            position = (start_x, 30),
-            fixtures = b2FixtureDef(
-                shape = b2PolygonShape(box = (1,1.8)),
-                density=CHAR_DENSITY,
-                friction = CHAR_FRICTION,
-                restitution=0),
-                userData = "player" + str(playerNum)
-            )
+        self.small = (0.5,1)
+        self.size = (1,2)
+        self.large = (2,4)
         
-        foot = block.CreateFixture(
-                shape = b2PolygonShape(vertices = [(-1.6,-2.1),(1.6,-2.1),(1.6,2.1),(-1.6,2.1)]),
-                isSensor=True
-            )
-        self.foot = block.fixtures[1]
-        
-        self.shapes.append(block)
-        
-        self.dead = False
+        self.materialize(start_x, arena, playerNum)
 
 class EricStrohm(Player):
     def __init__(self, direction, start_x, arena, playerNum):
@@ -1295,75 +1339,45 @@ class EricStrohm(Player):
         
         self.speed = 12
         self.airspeed = 20
-        
-    def materialize(self, start_x, arena, playerNum):
-        self.clearShapes()
-            
-        block = arena.world.CreateDynamicBody(
-            position = (start_x, 30),
-            fixtures = b2FixtureDef(
-                shape = b2PolygonShape(box = (1,2)),
-                density=CHAR_DENSITY,
-                friction = CHAR_FRICTION,
-                restitution=0),
-                userData = "player" + str(playerNum)
-            )
-        self.shapes.append(block)
-        
-        foot = block.CreateFixture(
-                shape = b2PolygonShape(vertices = [(-1.6,-2.1),(1.6,-2.1),(1.6,2.1),(-1.6,2.1)]),
-                isSensor=True
-            )
-        self.foot = block.fixtures[1]
-        
-        self.dead = False
 
 class Ted(Player):
     def __init__(self, direction, start_x, arena, playerNum):
         Player.__init__(self, direction, start_x, (0, 0, 0), (255, 0, 0), arena, playerNum)
         
-    def materialize(self, start_x, arena, playerNum):
-        self.clearShapes()
-            
-        block = arena.world.CreateDynamicBody(
-            position = (start_x, 30),
-            fixtures = b2FixtureDef(
-                shape = b2PolygonShape(box = (1.4,1.5)),
-                density=CHAR_DENSITY,
-                friction = CHAR_FRICTION,
-                restitution=0),
-            userData = "character" + str(playerNum)
-            )
-        self.shapes.append(block)
+        self.small = (0.7,0.7)
+        self.size = (1.3,1.3)
+        self.large = (2.5,2.5)
+        self.clearShapes(arena)        
         
-        foot = block.CreateFixture(
-                shape = b2PolygonShape(vertices = [(-1.6,-2.1),(1.6,-2.1),(1.6,2.1),(-1.6,2.1)]),
-                isSensor=True
-            )
-        self.foot = block.fixtures[1]
-        
-        self.dead = False
+        self.materialize(start_x, arena, playerNum)
 
 class SmithWickers(Player):
     def __init__(self, direction, start_x, arena, playerNum):
-        Player.__init__(self, direction, start_x, (0, 0, 0), (255, 0, 255), arena, playerNum)
         
         self.alt_color =  pygame.color.Color(255, 102, 0)
         self.alt_color_2 =  pygame.color.Color(102, 51, 102)
         
+        Player.__init__(self, direction, start_x, (0, 0, 0), (255, 0, 255), arena, playerNum)
+        
+        self.small = (0.3,0.8)
+        self.size = (0.75,1.7)
+        self.large = (1.5,3.5)
+        
+        self.materialize(start_x, arena, playerNum)
+        
     def materialize(self, start_x, arena, playerNum):
-        self.clearShapes()
+        self.clearShapes(arena)
             
-        size = (0.7, 1.8)
         block = arena.world.CreateDynamicBody(
             position = (start_x, 30),
             fixtures = b2FixtureDef(
-                shape = b2PolygonShape(box = size),
+                shape = b2PolygonShape(box = self.size),
                 density=CHAR_DENSITY,
                 friction = CHAR_FRICTION,
                 restitution=0),
-                userData = "player" + str(playerNum)
-            )
+            userData = "player"+str(playerNum)
+        )
+        block.color = self.alt_color
         self.shapes.append(block)
         
         foot = block.CreateFixture(
@@ -1375,31 +1389,33 @@ class SmithWickers(Player):
         block2 = arena.world.CreateDynamicBody(
             position = (start_x - 3, 30),
             fixtures = b2FixtureDef(
-                shape = b2PolygonShape(box = size),
+                shape = b2PolygonShape(box = self.size),
                 density=CHAR_DENSITY,
                 friction=CHAR_FRICTION,
                 restitution=0),
-                userData = "player" + str(playerNum)
-            )
+            userData = "player"+str(playerNum)
+        )
+        block2.color = self.alt_color_2
         self.shapes.append(block2)
         
         arena.world.CreateDistanceJoint(bodyA = block, bodyB = block2, anchorA = block.worldCenter, anchorB = block2.worldCenter, collideConnected = True)
         
         self.dead = False
                 
-    def expand(self, scale=1.5):
+    def expand(self):
         shape = self.shapes[0]
         s = shape.fixtures[0].shape
         block = arena.world.CreateDynamicBody(
             position = shape.position,
             fixtures = b2FixtureDef(
-                shape = b2PolygonShape(box = (abs(s.vertices[0][1]-s.vertices[2][1])*scale,abs(s.vertices[0][0]-s.vertices[2][0])*scale)),
+                shape = b2PolygonShape(box = self.large),
                 density=shape.fixtures[0].density,
                 friction = shape.fixtures[0].friction,
                 restitution=shape.fixtures[0].restitution
             ),
             userData = shape.userData
         )
+        block.color = self.alt_color
         arena.world.DestroyBody(self.shapes[0])
         self.shapes[0] = block
         
@@ -1408,15 +1424,53 @@ class SmithWickers(Player):
         newpos = shape2.position
         s = shape2.fixtures[0].shape
         block2 = arena.world.CreateDynamicBody(
-            position = (newpos.x + (newpos.x - oldpos.x) * scale, newpos.y + (newpos.y - oldpos.y) * scale),
+            position = (newpos.x + (newpos.x - oldpos.x) * 4/3, newpos.y + (newpos.y - oldpos.y) * 4/3),
             fixtures = b2FixtureDef(
-                shape = b2PolygonShape(box = (abs(s.vertices[0][1]-s.vertices[2][1])*scale,abs(s.vertices[0][0]-s.vertices[2][0])*scale)),
+                shape = b2PolygonShape(box = self.large),
                 density=shape2.fixtures[0].density,
                 friction = shape2.fixtures[0].friction,
                 restitution=shape2.fixtures[0].restitution
             ),
             userData = shape2.userData
         )
+        block2.color = self.alt_color_2
+        arena.world.DestroyBody(self.shapes[1])
+        self.shapes[1] = block2
+        
+        arena.world.CreateDistanceJoint(bodyA = block, bodyB = block2, anchorA = block.worldCenter, anchorB = block2.worldCenter, collideConnected = True)
+                
+    def normal(self):
+        shape = self.shapes[0]
+        s = shape.fixtures[0].shape
+        block = arena.world.CreateDynamicBody(
+            position = shape.position,
+            fixtures = b2FixtureDef(
+                shape = b2PolygonShape(box = self.size),
+                density=shape.fixtures[0].density,
+                friction = shape.fixtures[0].friction,
+                restitution=shape.fixtures[0].restitution
+            ),
+            userData = shape.userData
+        )
+        block.color = self.alt_color
+        arena.world.DestroyBody(self.shapes[0])
+        self.shapes[0] = block
+        
+        oldpos = shape.position
+        shape2 = self.shapes[1]
+        newpos = shape2.position
+        s = shape2.fixtures[0].shape
+        block2 = arena.world.CreateDynamicBody(
+            position = (oldpos.x - 3, oldpos.y),
+            fixtures = b2FixtureDef(
+                shape = b2PolygonShape(box = self.size),
+                density=shape2.fixtures[0].density,
+                friction = shape2.fixtures[0].friction,
+                restitution=shape2.fixtures[0].restitution
+            ),
+            userData = shape2.userData
+        )
+        block2.color = self.alt_color_2
         arena.world.DestroyBody(self.shapes[1])
         self.shapes[1] = block2
         
@@ -1427,27 +1481,35 @@ class CrowdMember(Player):
         Player.__init__(self, direction, start_x, (0, 0, 0), color, arena, 0)
         self.timeToJump = random.random() * 10000 + 1000
         
+        self.small = (0.5,1)
+        self.size = (1,2)
+        self.large = (2,4)
+    
     def materialize(self, start_x, arena, playerNum):
         self.clearShapes()
             
         block = arena.world.CreateDynamicBody(
             position = (start_x, 30),
             fixtures = b2FixtureDef(
-                shape = b2PolygonShape(box = (1,2)),
+                shape = b2PolygonShape(box = self.size),
                 density=CHAR_DENSITY,
                 friction=CHAR_FRICTION,
                 restitution=0,
                 filter = b2Filter(
                     categoryBits = 0x0010,
                     maskBits = 0xFFFF ^ 0x0010
-                )),
-                userData = "crowd member"
-            )
+                )
+            ),
+            userData = "crowd member"
+        )
+
         block.color = self.color_2
         self.shapes.append(block)
         
+        w = self.size[0]
+        h = self.size[1]
         foot = block.CreateFixture(
-                shape = b2PolygonShape(vertices = [(-1.6,-2.1),(1.6,-2.1),(1.6,2.1),(-1.6,2.1)]),
+                shape = b2PolygonShape(vertices = [(-1*w-.6,-1*h-.1),(w+.6,-1*h-.1),(w+.6,h+.1),(-1*w-.6,h+.1)]),
                 isSensor=True
             )
         self.foot = block.fixtures[1]
@@ -1479,11 +1541,11 @@ class CrowdMember(Player):
                 self.shapes[0].linearVelocity.x = 5 * (random.random() * 4 - 2)
             
     def jump(self):
-        if len(self.foot.body.contacts) > 0:
+        if len(self.shapes[0].contacts) > 0:
             self.shapes[0].linearVelocity.y -= 15
             
     def jumpBackUp(self):
-        if len(self.foot.body.contacts) > 0:
+        if len(self.shapes[0].contacts) > 0:
             self.shapes[0].linearVelocity.y = -10
             self.shapes[0].angularVelocity = 2
 
@@ -1567,7 +1629,7 @@ def charSelectInput(event):
 
 
 def init():
-    global time_font_lg,time_font_sm                # Font
+    global time_font_lg,time_font_sm,time_font_giant                # Font
     global player1, player2    # Players
     global currentArena        # Midpoint
     global gameState            # duh
@@ -1580,6 +1642,7 @@ def init():
     
     time_font_sm = pygame.font.Font("fonts/ka1.ttf", 30)
     time_font_lg = pygame.font.Font("fonts/ka1.ttf", 60)
+    time_font_giant = pygame.font.Font("fonts/ka1.ttf", 120)
     
     #arena = Arena()
     #prepare = PrepareForBattle()
@@ -1623,6 +1686,8 @@ while 1:
                 if event.type is pygame.KEYDOWN: sys.exit()
             if gameState == "Arena":
                 arena.doAction(event)
+            if gameState == "Prepare":
+                prepare.doAction(event)
     
     if gameState == "Title":
         drawTitle(screen)
