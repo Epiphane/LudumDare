@@ -5,7 +5,7 @@ CHARACTER_PADDING = [100, 20]
 CHARACTER_STEP = [4, 4]
 
 characters = ["Lars", "Buster", "Ted", "SmithWickers", "Pate", "EricStrohm"]
-characterColors = [(255,255,0), (153,255,0), (166,0,0), ((255,102,0), (102,51,102)), (0,51,255), (128,128,128)]
+characterColors = [(255,255,0), (153,255,0), (166,0,0), (255,102,0), (0,51,255), (128,128,128)]
 p1choice = 0
 p2choice = 1
 
@@ -26,7 +26,7 @@ def initCharSelect():
         images[character+"_winner"][1].left = (SCREEN_WIDTH_PX - 800) / 2
         images[character+"_winner"][1].top  = 0
         
-        images[character+"_loser"] = load_image(character + "_loser", (255,122,122))
+        images[character+"_loser"] = load_image(character + "_loser.png", (255,122,122))
         # Change imagerect to where the image actually is on screen
         images[character+"_loser"][1].left = (SCREEN_WIDTH_PX - 800) / 2
         images[character+"_loser"][1].top  = 0
