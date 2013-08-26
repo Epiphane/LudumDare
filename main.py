@@ -51,8 +51,8 @@ def init():
     images["bomb"] = load_image("bomb.png", (255, 255, 255))
     images["goal left"] = load_image("GOOOAL.png", (255,255,255))
     images["goal right"] = [pygame.transform.flip(images["goal left"][0], True, False), images["goal left"][1]]
-    images["red arrow"] = load_image("red arrow.png", (255,255,255))
-    images["blue arrow"] = load_image("blue arrow.png", (255,255,255))
+    images["red arrow"] = load_image("red_arrow.png", (255,255,255))
+    images["blue arrow"] = load_image("blue_arrow.png", (255,255,255))
     
     # Make sure alpha will properly render
     for key in images:

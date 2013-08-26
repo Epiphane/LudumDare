@@ -6,13 +6,35 @@ import sys
 import os
 import glob, shutil
 sys.argv.append("py2exe")
+
+SCRIPT_MAIN = 'main.py'
+text = open(SCRIPT_MAIN,'r')
+f = open("final.py","w")
+text = text.readlines()
+def addfile(text,tofile):
+    for line in text:
+        if line[0:10] == "exec(open(":
+            string = ""
+            for char in line[11:]:
+                if char != "'": string += char
+                else: break
+            newfile = open(string,"r")
+            newtxt = newfile.readlines()
+            addfile(newtxt,tofile)
+            tofile.write("\n")
+        else:
+            tofile.write(line)
+
+addfile(text,f)
+f.close()
+
  
 VERSION = '0.1'
 AUTHOR_NAME = 'Thomas Steinke & Elliot Fiske'
 AUTHOR_EMAIL = 'thomasteinke@gmail.com'
 AUTHOR_URL = "http://www.thomassteinke.net"
 PRODUCT_NAME = "Ludum Dare 27"
-SCRIPT_MAIN = 'main.py'
+SCRIPT_MAIN = 'final.py'
 VERSIONSTRING = PRODUCT_NAME + " ALPHA " + VERSION
 ICONFILE = 'favicon.ico'
  
@@ -93,6 +115,7 @@ setup(windows=[
  
 # Create the /save folder for inclusion with the installer
 shutil.copytree('img','dist/img')
+shutil.copytree('default','dist/default')
  
 if os.path.exists('dist/tcl'): shutil.rmtree('dist/tcl') 
  
