@@ -16,6 +16,8 @@ class Arena():
         self.shapes = []
         self.crowd = []
         
+        self.modeName = "none"
+        
         self.player1possession = 0
         self.player2possession = 0
         
@@ -55,7 +57,7 @@ class Arena():
         if delay > 0:
             self.toInit = (middle_x, delay)
             return
-            
+        resumeBackground()
         self.toInit = False
         self.pauseTime = delay
         
@@ -467,12 +469,20 @@ class Arena():
         mod = randomEvents[int(event)]
         mod[0]()
         self.modifications.append(mod)
+        
+        # Stop all inferior sounds
+        pygame.mixer.stop()
+        # Play the "woopwoopwoop" transition sound
+        playSound("transition")
+        # Put on a new backtrack, DJ!
+        playSound("background")
             
             
 class PrepareForBattle(Arena):
     def __init__(self):
         self.timeRemaining = 3000
         self.bignum = 3
+        playSound("start")
         
     def draw(self, screen):
         arena.draw(screen, False)
@@ -504,3 +514,5 @@ class PrepareForBattle(Arena):
         if(self.timeRemaining <= 0):
             global arena, gameState
             gameState = "Arena"
+            # Play the first background
+            playSound("background")

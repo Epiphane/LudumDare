@@ -94,13 +94,15 @@ def makeOptions():
     c.td(gui.Label("MUSIC VOLUME:"))
     
     c.tr()
-    c.td(gui.HSlider(value=23,min=0,max=100,size=20,width=120),colspan=3)
+    musicSlider = gui.HSlider(value=23,min=0,max=100,size=20,width=120)
+    c.td(musicSlider)
     
     c.tr()
     c.td(gui.Label("SOUND VOLUME:"))
     
     c.tr()
-    c.td(gui.HSlider(value=23,min=0,max=100,size=20,width=120),colspan=3)
+    soundSlider = gui.HSlider(value=23,min=0,max=100,size=20,width=120)
+    c.td(soundSlider)
     
     c.tr()
     c.td(gui.Label("SCREEN RESOLUTION"))

@@ -36,6 +36,14 @@ def init():
     global arena, prepare            # Arena for minigame
     global effects          # Sort of like AwesomeRogue!
     global images           # Dict of all the images we have to draw
+    global sounds           # Music to my ears
+    global musicVolume
+    global soundVolume      # Shhhh
+    global backgroundPlayer
+    
+    backgroundPlayer = pygame.mixer.Channel(7)
+    
+    musicVolume = soundVolume = 25
     
     effects = []
     
@@ -57,6 +65,10 @@ def init():
     # Make sure alpha will properly render
     for key in images:
         images[key] = (images[key][0].convert_alpha(), images[key][1])
+        
+    pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
+    pygame.mixer.set_num_channels(20)
+    sounds = loadSounds()
         
     
 # -----------------------------------------------------------------------|

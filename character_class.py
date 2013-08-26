@@ -172,6 +172,7 @@ class Player(pygame.sprite.Sprite):
         if gravity == b2Vec2(0,0): pass
         else:
             if len(self.shapes[0].contacts) > 0:
+                playSound("hop")
                 self.shapes[0].linearVelocity.y = -20 * gravity[1] / 25
                 self.shapes[0].angularVelocity = -5.4 * self.direction
                 
