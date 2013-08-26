@@ -403,20 +403,6 @@ class Arena():
         self.ball.color = pygame.color.Color(128,128,128)
         self.shapes.append(self.ball)
      
-    def nogravity(self):
-        BALL_FRICTION = 1
-        print "no gravity!"
-        self.world.gravity = (0,0)
-     
-    def nogravity_revert(self):
-        BALL_FRICTION = 0.9
-        print "no gravity reverted"
-        self.world.gravity = (0,25)
-     
-    def reversegravity(self):
-        print "gravty reversed..."
-        self.world.gravity = (0,-25)
-     
     def slowmo(self):
         print "slow mo!"
         global TIME_STEP
@@ -436,6 +422,22 @@ class Arena():
         print "fast mo reverted"
         global TIME_STEP
         TIME_STEP /= 2
+        
+    def giantMode(self):
+        shape = self.player1.shapes[0]
+        self.player1.shapes[0] = arena.world.CreateDynamicBody(
+            position = shape.position,
+            fixtures = b2FixtureDef(
+                shape = b2PolygonShape(box = (5,5)),
+                density=shape.fixtures[0].density,
+                friction = shape.fixtures[0].friction,
+                restitution=shape.fixtures[0].restitution
+            ),
+            userData = shape.userData
+        )
+    
+    def giantMode_revert(self):
+        pass
         
     def cleanUp(self):
         self.crowd = []
@@ -459,7 +461,7 @@ class Arena():
     def randomEvent(self):
         randomEvents = [ [self.bombDrop, self.bombDrop_revert],
                          [self.changeBall, self.changeBall_revert],
-                         [self.nogravity, self.nogravity_revert] ,
+                         #[self.giantMode, self.giantMode_revert]]# ,
                          [self.slowmo, self.slowmo_revert],
                          [self.fastmo, self.fastmo_revert] ]
                          
