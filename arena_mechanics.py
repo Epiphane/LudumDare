@@ -424,20 +424,12 @@ class Arena():
         TIME_STEP /= 2
         
     def giantMode(self):
-        shape = self.player1.shapes[0]
-        self.player1.shapes[0] = arena.world.CreateDynamicBody(
-            position = shape.position,
-            fixtures = b2FixtureDef(
-                shape = b2PolygonShape(box = (5,5)),
-                density=shape.fixtures[0].density,
-                friction = shape.fixtures[0].friction,
-                restitution=shape.fixtures[0].restitution
-            ),
-            userData = shape.userData
-        )
+        self.player1.toExpand = True
+        self.player2.toExpand = True
     
     def giantMode_revert(self):
-        pass
+        self.player1.toNormalSize = True
+        self.player2.toNormalSize = True
         
     def cleanUp(self):
         self.crowd = []
@@ -459,11 +451,10 @@ class Arena():
                 ef.finish()
         
     def randomEvent(self):
-        randomEvents = [ [self.bombDrop, self.bombDrop_revert],
+        randomEvents = [ #[self.bombDrop, self.bombDrop_revert],
                          [self.changeBall, self.changeBall_revert],
-                         #[self.giantMode, self.giantMode_revert]]# ,
-                         [self.slowmo, self.slowmo_revert],
-                         [self.fastmo, self.fastmo_revert] ]
+                         [self.giantMode, self.giantMode_revert]]#,
+                         #[self.slowmo, self.slowmo_revert]]
                          
         while len(self.modifications) > 0:
             mod = self.modifications[0]

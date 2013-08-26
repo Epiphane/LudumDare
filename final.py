@@ -812,19 +812,12 @@ class Arena():
         TIME_STEP /= 2
         
     def giantMode(self):
-        shape = self.player1.shapes[0]
-        self.player1.shapes[0] = arena.world.CreateDynamicBody(
-            position = shape.position,
-            fixtures = b2FixtureDef(
-                shape = b2PolygonShape(box = (5,5)),
-                density=shape.fixtures[0].density,
-                friction = shape.fixtures[0].friction,
-                restitution=shape.fixtures[0].restitution
-            ),
-            userData = shape.userData
-        )
+        self.player1.expand()
+        self.player2.expand()
     
     def giantMode_revert(self):
+        self.player1.expand(0.75)
+        self.player2.expand(0.75)
         pass
         
     def cleanUp(self):
@@ -849,9 +842,8 @@ class Arena():
     def randomEvent(self):
         randomEvents = [ [self.bombDrop, self.bombDrop_revert],
                          [self.changeBall, self.changeBall_revert],
-                         #[self.giantMode, self.giantMode_revert]]# ,
-                         [self.slowmo, self.slowmo_revert],
-                         [self.fastmo, self.fastmo_revert] ]
+                         [self.giantMode, self.giantMode_revert],
+                         [self.slowmo, self.slowmo_revert]]
                          
         while len(self.modifications) > 0:
             mod = self.modifications[0]
@@ -1200,6 +1192,23 @@ class Player(pygame.sprite.Sprite):
             if len(self.foot.body.contacts) > 0:
                 self.shapes[0].linearVelocity.y = -20 * gravity[1] / 25
                 self.shapes[0].angularVelocity = -5.4 * self.direction
+                
+    def expand(self, scale=1.5):
+        for i, shape in enumerate(self.shapes):
+            s = shape.fixtures[0].shape
+            newshape = arena.world.CreateDynamicBody(
+                position = shape.position,
+                fixtures = b2FixtureDef(
+                    shape = b2PolygonShape(box = (abs(s.vertices[0][1]-s.vertices[2][1])*scale,abs(s.vertices[0][0]-s.vertices[2][0])*scale)),
+                    density=shape.fixtures[0].density,
+                    friction = shape.fixtures[0].friction,
+                    restitution=shape.fixtures[0].restitution
+                ),
+                userData = shape.userData
+            )
+            arena.world.DestroyBody(self.shapes[i])
+            self.shapes[i] = newshape
+            return
 
 class Lars(Player):
     def __init__(self, direction, start_x, arena, playerNum):
@@ -1377,6 +1386,41 @@ class SmithWickers(Player):
         arena.world.CreateDistanceJoint(bodyA = block, bodyB = block2, anchorA = block.worldCenter, anchorB = block2.worldCenter, collideConnected = True)
         
         self.dead = False
+                
+    def expand(self, scale=1.5):
+        shape = self.shapes[0]
+        s = shape.fixtures[0].shape
+        block = arena.world.CreateDynamicBody(
+            position = shape.position,
+            fixtures = b2FixtureDef(
+                shape = b2PolygonShape(box = (abs(s.vertices[0][1]-s.vertices[2][1])*scale,abs(s.vertices[0][0]-s.vertices[2][0])*scale)),
+                density=shape.fixtures[0].density,
+                friction = shape.fixtures[0].friction,
+                restitution=shape.fixtures[0].restitution
+            ),
+            userData = shape.userData
+        )
+        arena.world.DestroyBody(self.shapes[0])
+        self.shapes[0] = block
+        
+        oldpos = shape.position
+        shape2 = self.shapes[1]
+        newpos = shape2.position
+        s = shape2.fixtures[0].shape
+        block2 = arena.world.CreateDynamicBody(
+            position = (newpos.x + (newpos.x - oldpos.x) * scale, newpos.y + (newpos.y - oldpos.y) * scale),
+            fixtures = b2FixtureDef(
+                shape = b2PolygonShape(box = (abs(s.vertices[0][1]-s.vertices[2][1])*scale,abs(s.vertices[0][0]-s.vertices[2][0])*scale)),
+                density=shape2.fixtures[0].density,
+                friction = shape2.fixtures[0].friction,
+                restitution=shape2.fixtures[0].restitution
+            ),
+            userData = shape2.userData
+        )
+        arena.world.DestroyBody(self.shapes[1])
+        self.shapes[1] = block2
+        
+        arena.world.CreateDistanceJoint(bodyA = block, bodyB = block2, anchorA = block.worldCenter, anchorB = block2.worldCenter, collideConnected = True)
 
 class CrowdMember(Player):
     def __init__(self, direction, start_x, color, arena):
