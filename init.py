@@ -8,7 +8,7 @@ from pgu import gui
 PPM = 16
 STAGE_WIDTH_PX = 4000
 STAGE_WIDTH_M = STAGE_WIDTH_PX / PPM
-SCREEN_WIDTH_PX = 1000
+SCREEN_WIDTH_PX = 1400
 SCREEN_WIDTH_M = SCREEN_WIDTH_PX / PPM
 SCREEN_HEIGHT_PX = 600
 SCREEN_HEIGHT_M = SCREEN_HEIGHT_PX / PPM
@@ -125,7 +125,7 @@ class ContactHandler(b2ContactListener):
             if goalLeft[1].body.userData is not None or goalLeft[1].userData is not None:
                 if goalLeft[1].body.userData == "goal left":
                     arena.score[0] += 1
-                    if arena.score[0] >= 10:
+                    if arena.score[0] >= 1:
                         winGame(1)
                     arena.player1.dead = True
                     arena.player2.dead = True
@@ -136,7 +136,7 @@ class ContactHandler(b2ContactListener):
                             shape.linearVelocity.y = random.random() * -15 - 5
                 if goalLeft[1].body.userData == "goal right":
                     arena.score[1] += 1
-                    if arena.score[1] >= 10:
+                    if arena.score[1] >= 1:
                         winGame(2)
                     arena.player1.dead = True
                     arena.player2.dead = True
