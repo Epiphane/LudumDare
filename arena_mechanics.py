@@ -42,7 +42,7 @@ class Arena():
         self.toInit = False
         self.pauseTime = 0
         
-        self.createCrowd(2, 27)
+        self.createCrowd(2, 24)
         self.createCrowd(227, 248)
         
         #self.bombDrop()
