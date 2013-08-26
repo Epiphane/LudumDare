@@ -26,7 +26,7 @@ from pgu import gui
 PPM = 16
 STAGE_WIDTH_PX = 4000
 STAGE_WIDTH_M = STAGE_WIDTH_PX / PPM
-SCREEN_WIDTH_PX = 1000
+SCREEN_WIDTH_PX = 1400
 SCREEN_WIDTH_M = SCREEN_WIDTH_PX / PPM
 SCREEN_HEIGHT_PX = 600
 SCREEN_HEIGHT_M = SCREEN_HEIGHT_PX / PPM
@@ -143,7 +143,7 @@ class ContactHandler(b2ContactListener):
             if goalLeft[1].body.userData is not None or goalLeft[1].userData is not None:
                 if goalLeft[1].body.userData == "goal left":
                     arena.score[0] += 1
-                    if arena.score[0] >= 10:
+                    if arena.score[0] >= 5:
                         winGame(1)
                     arena.player1.dead = True
                     arena.player2.dead = True
@@ -154,7 +154,7 @@ class ContactHandler(b2ContactListener):
                             shape.linearVelocity.y = random.random() * -15 - 5
                 if goalLeft[1].body.userData == "goal right":
                     arena.score[1] += 1
-                    if arena.score[1] >= 10:
+                    if arena.score[1] >= 5:
                         winGame(2)
                     arena.player1.dead = True
                     arena.player2.dead = True
@@ -1007,11 +1007,21 @@ class Camera():
             
     def stop(self): pass
 def winGame(winner):
-    global gameWinner, gameState
+    global gameWinner, gameLoser, gameState
+    global gameWinnerColor, gameLoserColor
     gameState = "GameOver"
-    gameWinner = winner
+    if winner == 1:
+        gameWinner = char1
+        gameWinnerColor = char1color
+        gameLoser = char2
+        gameLoserColor = char2color
+    else:
+        gameWinner = char2
+        gameWinnerColor = char2color
+        gameLoser = char1
+        gameLoserColor = char1color
     
-    arena.cleanUp()
+    #arena.cleanUp()
     initGameOver()
 
 game_over_buttons = [ ["menu",0], ["quit",0]]
@@ -1071,8 +1081,11 @@ def gameOverInput(event):
                     lastButtonClicked = ""
     
 def drawGameOver(screen):
+    screen.fill(gameWinnerColor, (0,0,SCREEN_WIDTH_PX/2,SCREEN_HEIGHT_PX))
+    screen.fill(gameLoserColor, (SCREEN_WIDTH_PX/2,0,SCREEN_WIDTH_PX/2,SCREEN_HEIGHT_PX))
     # TODO: put an image here?
-    screen.fill(pygame.Color("white"))
+    screen.blit(images[gameLoser+"_loser"][0], ((SCREEN_WIDTH_PX/2 - 400),0))
+    screen.blit(images[gameWinner+"_winner"][0], ((SCREEN_WIDTH_PX/2 - 400),0))
         
     for button in game_over_buttons:
         imageName = button[0] + "-" + states[button[1]]
@@ -1556,6 +1569,7 @@ CHARACTER_PADDING = [100, 20]
 CHARACTER_STEP = [4, 4]
 
 characters = ["Lars", "Buster", "Ted", "SmithWickers", "Pate", "EricStrohm"]
+characterColors = [(255,255,0), (153,255,0), (166,0,0), (255,102,0), (0,51,255), (128,128,128)]
 p1choice = 0
 p2choice = 1
 
@@ -1570,6 +1584,16 @@ def initCharSelect():
         # Change imagerect to where the image actually is on screen
         images[character][1].left = CHARACTER_PADDING[0] + (CHARACTER_STEP[0] + CHARACTER_WIDTH) * (i % 3)
         images[character][1].top  = CHARACTER_PADDING[1] + (CHARACTER_STEP[1] + CHARACTER_HEIGHT) * math.trunc(i / 3)
+        
+        images[character+"_winner"] = load_image(character + "_winner.png", (255,122,122))
+        # Change imagerect to where the image actually is on screen
+        images[character+"_winner"][1].left = (SCREEN_WIDTH_PX - 800) / 2
+        images[character+"_winner"][1].top  = 0
+        
+        images[character+"_loser"] = load_image(character + "_loser.png", (255,122,122))
+        # Change imagerect to where the image actually is on screen
+        images[character+"_loser"][1].left = (SCREEN_WIDTH_PX - 800) / 2
+        images[character+"_loser"][1].top  = 0
     
 def drawCharSelect(screen):
     global gameState, p1choice, p2choice
@@ -1591,11 +1615,12 @@ def drawCharSelect(screen):
 def charSelectInput(event):
     global lastButtonClicked
     global gameState, p1choice, p2choice
-    global arena, prepare, char1, char2
+    global arena, prepare, char1, char2, char1color, char2color
     
     if hasattr(event, 'key') and event.type is pygame.KEYDOWN:
         if event.key == K_SPACE or event.key == K_RETURN:
             char1, char2 = characters[p1choice], characters[p2choice]
+            char1color, char2color = characterColors[p1choice], characterColors[p2choice]
             arena = Arena()
             prepare = PrepareForBattle()
             gameState = "Prepare"
@@ -1699,13 +1724,13 @@ while 1:
     if gameState == "Arena":
         arena.update(dt)
         arena.draw(screen)
+
+        for i, ef in enumerate(effects):
+            ef.update()
+            ef.draw(screen)
+            if ef.done:
+                del effects[i]
     if gameState == "GameOver":
         drawGameOver(screen)
-      
-    for i, ef in enumerate(effects):
-        ef.update()
-        ef.draw(screen)
-        if ef.done:
-            del effects[i]
             
     pygame.display.flip()
