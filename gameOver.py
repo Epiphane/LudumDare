@@ -1,9 +1,19 @@
 def winGame(winner):
-    global gameWinner, gameState
+    global gameWinner, gameLoser, gameState
+    global gameWinnerColor, gameLoserColor
     gameState = "GameOver"
-    gameWinner = winner
+    if winner == 1:
+        gameWinner = char1
+        gameWinnerColor = char1color
+        gameLoser = char2
+        gameLoserColor = char2color
+    else:
+        gameWinner = char2
+        gameWinnerColor = char2color
+        gameLoser = char1
+        gameLoserColor = char1color
     
-    arena.cleanUp()
+    #arena.cleanUp()
     initGameOver()
 
 game_over_buttons = [ ["menu",0], ["quit",0]]
@@ -63,8 +73,11 @@ def gameOverInput(event):
                     lastButtonClicked = ""
     
 def drawGameOver(screen):
+    screen.fill(gameWinnerColor, (0,0,SCREEN_WIDTH_PX/2,SCREEN_HEIGHT_PX))
+    screen.fill(gameLoserColor, (SCREEN_WIDTH_PX/2,0,SCREEN_WIDTH_PX/2,SCREEN_HEIGHT_PX))
     # TODO: put an image here?
-    screen.fill(pygame.Color("white"))
+    screen.blit(images[gameWinner+"_winner"][0], ((SCREEN_WIDTH_PX/2 - 400),0))
+    screen.blit(images[gameLoser+"_loser"][0], ((SCREEN_WIDTH_PX/2 - 400),0))
         
     for button in game_over_buttons:
         imageName = button[0] + "-" + states[button[1]]
