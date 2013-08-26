@@ -3,7 +3,7 @@ BTN_WIDTH = 260
 # How much room between each button?
 BTN_STEP = 100
 
-buttons = [ ["play",0], ["opt",0], ["quit",0]]
+buttons = [ ["play",0], ["quit",0]]
 states =  ["des",  "sel", "cli" ]
 
 angle = 0
