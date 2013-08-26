@@ -52,7 +52,7 @@ class Player(pygame.sprite.Sprite):
         
     def draw(self, screen, offsetX, offsetY):
         for shape in self.shapes:
-            DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), self.color, self.color_2)
+            DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0), shape.color)
     
     def destroy(self):
         destructionShapes = []
@@ -63,8 +63,9 @@ class Player(pygame.sprite.Sprite):
                 # Convert them (with magic) using the body.transform thing
                 result = [(self.shapes[i].transform*v) for v in olds]
                 for v in result:
-                    body = arena.world.CreateDynamicBody(position = v)
+                    body = arena.world.CreateDynamicBody(position = v, userData = "particle")
                     shape = body.CreatePolygonFixture(box = (.2,.2), density = 1, isSensor = True)
+                    body.color = self.shapes[i].color
                     body.linearVelocity.y = -15
                     body.linearVelocity.x = random.random() * 6 - 3
                     destructionShapes.append(body)
@@ -75,8 +76,9 @@ class Player(pygame.sprite.Sprite):
             # Convert them (with magic) using the body.transform thing
             result = [(self.shapes[0].transform*v) for v in olds]
             for v in result:
-                body = arena.world.CreateDynamicBody(position = (v.x + random.random()*4 - 2, v.y + random.random()*4-2))
+                body = arena.world.CreateDynamicBody(position = (v.x + random.random()*4 - 2, v.y + random.random()*4-2), userData = "particle")
                 shape = body.CreatePolygonFixture(box = (.2,.2), density = 1, isSensor = True)
+                body.color = self.shapes[0].color
                 body.linearVelocity.y = -15
                 body.linearVelocity.x = random.random() * 16 - 8
                 destructionShapes.append(body)
@@ -230,6 +232,7 @@ class Pate(Player):
                 restitution=0),
             userData = "player"+str(playerNum)
         )
+        block.color = self.color_2
         self.shapes.append(block)
         
         foot = block.CreateFixture(
@@ -256,28 +259,6 @@ class EricStrohm(Player):
         
         self.speed = 12
         self.airspeed = 20
-        
-    def materialize(self, start_x, arena, playerNum):
-        self.clearShapes()
-            
-        block = arena.world.CreateDynamicBody(
-            position = (start_x, 30),
-            fixtures = b2FixtureDef(
-                shape = b2PolygonShape(box = (1,2)),
-                density=CHAR_DENSITY,
-                friction = CHAR_FRICTION,
-                restitution=0),
-            userData = "player"+str(playerNum)
-        )
-        self.shapes.append(block)
-        
-        foot = block.CreateFixture(
-                shape = b2PolygonShape(vertices = [(-1.6,-2.1),(1.6,-2.1),(1.6,2.1),(-1.6,2.1)]),
-                isSensor=True
-            )
-        self.foot = block.fixtures[1]
-        
-        self.dead = False
 
 class Ted(Player):
     def __init__(self, direction, start_x, arena, playerNum):
@@ -292,17 +273,20 @@ class Ted(Player):
 
 class SmithWickers(Player):
     def __init__(self, direction, start_x, arena, playerNum):
-        self.small = (0.25,0.8)
-        self.size = (0.5,1.7)
-        self.large = (1.5,3.5)
-        
-        Player.__init__(self, direction, start_x, (0, 0, 0), (255, 0, 255), arena, playerNum)
         
         self.alt_color =  pygame.color.Color(255, 102, 0)
         self.alt_color_2 =  pygame.color.Color(102, 51, 102)
         
+        Player.__init__(self, direction, start_x, (0, 0, 0), (255, 0, 255), arena, playerNum)
+        
+        self.small = (0.3,0.8)
+        self.size = (0.75,1.7)
+        self.large = (1.5,3.5)
+        
+        self.materialize(start_x, arena, playerNum)
+        
     def materialize(self, start_x, arena, playerNum):
-        self.clearShapes()
+        self.clearShapes(arena)
             
         block = arena.world.CreateDynamicBody(
             position = (start_x, 30),
@@ -313,6 +297,7 @@ class SmithWickers(Player):
                 restitution=0),
             userData = "player"+str(playerNum)
         )
+        block.color = self.alt_color
         self.shapes.append(block)
         
         foot = block.CreateFixture(
@@ -330,6 +315,7 @@ class SmithWickers(Player):
                 restitution=0),
             userData = "player"+str(playerNum)
         )
+        block2.color = self.alt_color_2
         self.shapes.append(block2)
         
         arena.world.CreateDistanceJoint(bodyA = block, bodyB = block2, anchorA = block.worldCenter, anchorB = block2.worldCenter, collideConnected = True)
@@ -349,6 +335,7 @@ class SmithWickers(Player):
             ),
             userData = shape.userData
         )
+        block.color = self.alt_color
         arena.world.DestroyBody(self.shapes[0])
         self.shapes[0] = block
         
@@ -366,6 +353,7 @@ class SmithWickers(Player):
             ),
             userData = shape2.userData
         )
+        block2.color = self.alt_color_2
         arena.world.DestroyBody(self.shapes[1])
         self.shapes[1] = block2
         
@@ -384,6 +372,7 @@ class SmithWickers(Player):
             ),
             userData = shape.userData
         )
+        block.color = self.alt_color
         arena.world.DestroyBody(self.shapes[0])
         self.shapes[0] = block
         
@@ -401,6 +390,7 @@ class SmithWickers(Player):
             ),
             userData = shape2.userData
         )
+        block2.color = self.alt_color_2
         arena.world.DestroyBody(self.shapes[1])
         self.shapes[1] = block2
         

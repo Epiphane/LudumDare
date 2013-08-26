@@ -13,12 +13,13 @@ def DrawPolygon(vertices, color = (0,0,0), color_2 = None):
             pygame.draw.polygon(screen, color_2, vertices, 0)
         pygame.draw.polygon(screen, color, vertices, 2)
 
-def DrawCircle(center, radius, color = (0,0,0)):
+def DrawCircle(center, radius, color = (0,0,0), color_2 = (0,0,0)):
     """ Draw a wireframe polygon given the screen vertices with the specified color."""
     if not center or not radius:
         return
         
     pygame.draw.circle(screen, color, center, int(radius*PPM))
+    pygame.draw.circle(screen, color_2, center, int(radius*PPM), 2)
             
 def DrawImage(vertices, userData):
     screen.blit(images[userData][0], (vertices[0], vertices[1]))

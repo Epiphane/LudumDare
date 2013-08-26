@@ -107,7 +107,7 @@ class ContactHandler(b2ContactListener):
                 pointA, pointB, distance, dummy = distResult
                 
                 # mass > 0 implies it's not a "Static" object
-                if distance < 6 and shape.massData.mass > 0.1:
+                if distance < 6 and shape.massData.mass > 0.1 and shape.userData != "particle":
                     xComp = int(random.random() * -5000 + 2500)
                     yComp = int(random.random() * -5000 + 2500)
                     print yComp
