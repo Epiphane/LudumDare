@@ -96,19 +96,20 @@ class ContactHandler(b2ContactListener):
     def BeginContact(self, contact):
     
         blowUp = self.checkContact(contact, "bomb")
-        if blowUp is not None and blowUp[1].body.userData != "cieling":
+        if blowUp is not None and blowUp[1].body.userData != "ceiling":
             # Since you can't call DestroyFixture while the physics is iterating,
             # flag it for destruction by setting userData to "kill me"
             blowUp[0].body.userData = "kill me"
             for shape in arena.shapes + [arena.player1.shapes[0], arena.player2.shapes[0]]:
                 # See how far everyone is from the 'splosion
-                distResult = b2Distance(shapeA = shape.shape, shapeB = blowUp[0].shape, transformA = shape.body.transform, transformB = blowUp[0].body.transform)
+                distResult = b2Distance(shapeA = shape.fixtures[0].shape, shapeB = blowUp[0].shape, transformA = shape.transform, transformB = blowUp[0].body.transform)
                 pointA, pointB, distance, dummy = distResult
                 
                 # mass > 0 implies it's not a "Static" object
                 if distance < 6 and shape.massData.mass > 0.1:
                     xComp = int(random.random() * -5000 + 2500)
                     yComp = int(random.random() * -5000 + 2500)
+                    print yComp
                     
                     shape.linearVelocity.x = xComp
                     shape.linearVelocity.y = yComp
@@ -130,6 +131,10 @@ class ContactHandler(b2ContactListener):
                     arena.player1.dead = True
                     arena.player2.dead = True
                     arena.toInit = (STAGE_WIDTH_M / 3, 2000)
+                    for shape in arena.shapes:
+                        # mass > 0 implies it's not a "Static" object
+                        if shape.userData == "crowd member":
+                            shape.linearVelocity.y = random.random() * -15 - 5
                 if goalLeft[1].body.userData == "goal right":
                     arena.score[1] += 1
                     if arena.score[1] >= 10:
@@ -137,14 +142,15 @@ class ContactHandler(b2ContactListener):
                     arena.player1.dead = True
                     arena.player2.dead = True
                     arena.toInit = (STAGE_WIDTH_M * 2 / 3, 2000)
+                    for shape in arena.shapes:
+                        # mass > 0 implies it's not a "Static" object
+                        if shape.userData == "crowd member":
+                            shape.linearVelocity.y = random.random() * -15 - 5
+                
                     
         kick = self.checkContact(contact, "player1")
         if kick is None:
             kick = self.checkContact(contact, "player2")
-            
-        hmm = self.checkContact(contact, "player")
-        if hmm is not None:
-            print "problematic..."
             
         if kick is not None:
             # Punt the ball a little ways kick[1] is ball, kick[0] is player.

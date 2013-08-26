@@ -42,8 +42,8 @@ class Arena():
         self.toInit = False
         self.pauseTime = 0
         
-        self.createCrowd(2, 27)
-        self.createCrowd(227, 248)
+        self.createCrowd(2, 24)
+        self.createCrowd(229, 248)
   
     def startGame(self, middle_x, delay=0):
         global char1, char2
@@ -102,8 +102,9 @@ class Arena():
         width = maxx - minx
         
         for i in range(numCrowd):
-            self.crowd.append(CrowdMember(0, random.random() * width, (int(random.random()*255),int(random.random()*255),int(random.random()*255)), self))
-            self.shapes.append(CrowdMember(0, random.random() * width, (int(random.random()*255),int(random.random()*255),int(random.random()*255)), self).shapes[0])
+            member = CrowdMember(0, minx + random.random() * width, (int(random.random()*255),int(random.random()*255),int(random.random()*255)), self)
+            self.crowd.append(member)
+            self.shapes.append(member.shapes[0])
         
     def initWalls(self):
         ground = self.world.CreateStaticBody(
@@ -240,6 +241,8 @@ class Arena():
             
         self.player1.update(self.world.gravity == b2Vec2(0,0))
         self.player2.update(self.world.gravity == b2Vec2(0,0))
+        for member in self.crowd:
+            member.update(dt, self.world.gravity == b2Vec2(0,0))
         
         # Murder things that need murdering
         for i, shape in enumerate(self.shapes):
@@ -303,9 +306,15 @@ class Arena():
                 if shape.userData == "goal left" or shape.userData == "goal right":
                     DrawImage(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), shape.userData)
                 else:
-                    DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0))
+                    if hasattr(shape, "color"):
+                        DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0), shape.color)
+                    else:
+                        DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0))
             else:
-                DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0))        
+                if hasattr(shape, "color"):
+                    DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0), shape.color)
+                else:
+                    DrawPolygon(vertices_with_offset(shape.fixtures[0], offsetX, offsetY), (0,0,0))
             
         # Draw arrows if the player is off screen
         self.playerOffCamera()
@@ -368,7 +377,8 @@ class Arena():
                 density=10,
                 restitution=0.5,
                 friction = 50),
-            userData="ball rock")
+            userData="ball")
+        self.ball.color = pygame.color.Color(128,128,128)
         self.shapes.append(self.ball)
     
     def changeBall_revert(self):
@@ -382,10 +392,10 @@ class Arena():
                 shape = b2CircleShape(radius=1.3),
                 density=1,
                 restitution=0.5,
-                friction = 0.5),
+                friction = 50),
             userData="ball")
             
-        self.ball.color = pygame.color.Color(0,0,0)
+        self.ball.color = pygame.color.Color(128,128,128)
         self.shapes.append(self.ball)
      
     def nogravity(self):

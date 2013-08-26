@@ -153,7 +153,7 @@ class Player(pygame.sprite.Sprite):
         if gravity == b2Vec2(0,0): pass
         else:
             if len(self.foot.body.contacts) > 0:
-                self.shapes[0].linearVelocity.y = -15 * gravity[1] / 25
+                self.shapes[0].linearVelocity.y = -20 * gravity[1] / 25
                 self.shapes[0].angularVelocity = -5.4 * self.direction
 
 class Lars(Player):
@@ -341,10 +341,9 @@ class SmithWickers(Player):
 class CrowdMember(Player):
     def __init__(self, direction, start_x, color, arena):
         Player.__init__(self, direction, start_x, (0, 0, 0), color, arena, 0)
-        
         self.timeToJump = random.random() * 10000 + 1000
         
-    def materialize(self, start_x, arena):
+    def materialize(self, start_x, arena, playerNum):
         self.clearShapes()
             
         block = arena.world.CreateDynamicBody(
@@ -358,7 +357,7 @@ class CrowdMember(Player):
                     categoryBits = 0x0010,
                     maskBits = 0xFFFF ^ 0x0010
                 )),
-                userData = "player"
+                userData = "crowd member"
             )
         block.color = self.color_2
         self.shapes.append(block)
@@ -370,12 +369,36 @@ class CrowdMember(Player):
         self.foot = block.fixtures[1]
         
         self.dead = False
+        self.dx = 0
+      
+    def update(self, dt, nogravity = False):
+        if(self.dead):
+            self.dead = False
+            return
+            
+        self.shapes[0].awake = True
+        if nogravity: pass
+        else:
+            if abs(self.shapes[0].transform.angle) > 0.1  and abs(self.shapes[0].transform.angle - 180) > 0.1 and self.shapes[0].linearVelocity.y == 0:
+                self.jumpBackUp()
+        
+            self.timeToJump -= dt
+            if self.timeToJump <= 0 and self.shapes[0].linearVelocity.y == 0:
+                self.jump()
+                self.timeToJump = random.random() * 10000 + 1000
+            maxspeed = 3
+            
+            if self.shapes[0].linearVelocity.x != 0 and random.random() > 0.7 and self.shapes[0].linearVelocity.y == 0:
+                self.shapes[0].linearVelocity.x = 0
+                
+            if self.shapes[0].linearVelocity.x == 0 and random.random() > 0.7 and self.shapes[0].linearVelocity.y == 0:
+                self.shapes[0].linearVelocity.x = 5 * (random.random() * 4 - 2)
             
     def jump(self):
         if len(self.foot.body.contacts) > 0:
-            self.shapes[0].linearVelocity.y = -15
+            self.shapes[0].linearVelocity.y -= 15
             
     def jumpBackUp(self):
         if len(self.foot.body.contacts) > 0:
-            self.shapes[0].linearVelocity.y = -15
-            self.shapes[0].angularVelocity = 8.1
+            self.shapes[0].linearVelocity.y = -10
+            self.shapes[0].angularVelocity = 2
