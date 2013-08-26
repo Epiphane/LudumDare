@@ -154,6 +154,7 @@ class ContactHandler(b2ContactListener):
             kick = self.checkContact(contact, "player2")
             
         if kick is not None:
+            
             # Punt the ball a little ways kick[1] is ball, kick[0] is player.
             if kick[1].body.userData == "ball":
                 if len(kick[0].body.contacts) < 3:
@@ -163,6 +164,10 @@ class ContactHandler(b2ContactListener):
                         kick[1].body.linearVelocity.y = kick[0].body.linearVelocity.y * 10
                     else:
                         kick[1].body.linearVelocity.y -= 100
+            if kick[1].body.userData == "player1" or kick[1].body.userData == "player2":
+                if kick[0].body.linearVelocity.y>= 25 or kick[1].body.linearVelocity.y >= 25:
+                    kick[0].body.linearVelocity.y = -25
+                    kick[1].body.linearVelocity.y = -25
                     
                     
                         

@@ -24,7 +24,7 @@ class Player(pygame.sprite.Sprite):
         self.materialize(start_x, arena, playerNum)
         
     def materialize(self, start_x, arena, playerNum):
-        self.clearShapes()
+        self.clearShapes(arena)
             
         block = arena.world.CreateDynamicBody(
             position = (start_x, 30),
@@ -32,9 +32,10 @@ class Player(pygame.sprite.Sprite):
                 shape = b2PolygonShape(box = self.size),
                 density=CHAR_DENSITY,
                 friction=CHAR_FRICTION,
-                restitution=0,
-                userData = "player"+str(playerNum)
-            ))
+                restitution=0
+            ),
+            userData = "player"+str(playerNum)
+        )
         block.color = self.color_2
         self.shapes.append(block)
         
@@ -208,29 +209,6 @@ class Lars(Player):
         self.large = (2,4)
         
         Player.__init__(self, direction, start_x, (0, 0, 0), (255, 255, 0), arena, playerNum)
-        
-        
-    #def materialize(self, start_x, arena, playerNum):
-    #    self.clearShapes()
-    #        
-    #    block = arena.world.CreateDynamicBody(
-    #        position = (start_x, 30),
-    #        fixtures = b2FixtureDef(
-    #            shape = b2PolygonShape(box = self.size),
-    #            density=CHAR_DENSITY,
-    #            friction=CHAR_FRICTION,
-    #            restitution=0),
-    #            userData = "player" + str(playerNum)
-    #        )
-    #    self.shapes.append(block)
-    #    
-    #    foot = block.CreateFixture(
-    #            shape = b2PolygonShape(vertices = [(-1.6,-2.1),(1.6,-2.1),(1.6,2.1),(-1.6,2.1)]),
-    #            isSensor=True
-    #        )
-    #    self.foot = block.fixtures[1]
-    #    
-    #    self.dead = False
 
 class Pate(Player):
     def __init__(self, direction, start_x, arena, playerNum):
@@ -240,88 +218,66 @@ class Pate(Player):
         
         Player.__init__(self, direction, start_x, (0, 0, 0), (0, 255, 255), arena, playerNum)
         
-    #def materialize(self, start_x, arena, playerNum):
-    #    self.clearShapes()
-    #        
-    #    block = arena.world.CreateDynamicBody(
-    #        position = (start_x, 30),
-    #        fixtures = b2FixtureDef(
-    #            shape = b2PolygonShape(box = (0.8,2)),
-    #            density=CHAR_DENSITY,
-    #            friction = 10000,
-    #            restitution=0),
-    #            userData = "player" + str(playerNum)
-    #        )
-    #    self.shapes.append(block)
-    #    
-    #    foot = block.CreateFixture(
-    #            shape = b2PolygonShape(vertices = [(-1.6,-2.1),(1.6,-2.1),(1.6,2.1),(-1.6,2.1)]),
-    #            isSensor=True
-    #        )
-    #    self.foot = block.fixtures[1]
-    #    
-    #    self.dead = False
+    def materialize(self, start_x, arena, playerNum):
+        self.clearShapes(arena)
+            
+        block = arena.world.CreateDynamicBody(
+            position = (start_x, 30),
+            fixtures = b2FixtureDef(
+                shape = b2PolygonShape(box = self.size),
+                density=CHAR_DENSITY,
+                friction = 10000,
+                restitution=0),
+            userData = "player"+str(playerNum)
+        )
+        self.shapes.append(block)
+        
+        foot = block.CreateFixture(
+                shape = b2PolygonShape(vertices = [(-1.6,-2.1),(1.6,-2.1),(1.6,2.1),(-1.6,2.1)]),
+                isSensor=True
+            )
+        self.foot = block.fixtures[1]
+        
+        self.dead = False
 
 class Buster(Player):
     def __init__(self, direction, start_x, arena, playerNum):
+        Player.__init__(self, direction, start_x, (0, 0, 0), (153, 255, 0), arena, playerNum)
+        
         self.small = (0.5,1)
         self.size = (1,2)
         self.large = (2,4)
         
-        Player.__init__(self, direction, start_x, (0, 0, 0), (153, 255, 0), arena, playerNum)
-        
-    #def materialize(self, start_x, arena, playerNum):
-    #    self.clearShapes()
-    #        
-    #    block = arena.world.CreateDynamicBody(
-    #        position = (start_x, 30),
-    #        fixtures = b2FixtureDef(
-    #            shape = b2PolygonShape(box = (1,1.8)),
-    #            density=CHAR_DENSITY,
-    #            friction = CHAR_FRICTION,
-    #            restitution=0),
-    #            userData = "player" + str(playerNum)
-    #        )
-    #    
-    #    foot = block.CreateFixture(
-    #            shape = b2PolygonShape(vertices = [(-1.6,-2.1),(1.6,-2.1),(1.6,2.1),(-1.6,2.1)]),
-    #            isSensor=True
-    #        )
-    #    self.foot = block.fixtures[1]
-    #    
-    #    self.shapes.append(block)
-    #    
-    #    self.dead = False
+        self.materialize(start_x, arena, playerNum)
 
 class EricStrohm(Player):
     def __init__(self, direction, start_x, arena, playerNum):
-        
         Player.__init__(self, direction, start_x, (0, 0, 0), (30, 30, 30), arena, playerNum)
         
         self.speed = 12
         self.airspeed = 20
         
-    #def materialize(self, start_x, arena, playerNum):
-    #    self.clearShapes()
-    #        
-    #    block = arena.world.CreateDynamicBody(
-    #        position = (start_x, 30),
-    #        fixtures = b2FixtureDef(
-    #            shape = b2PolygonShape(box = (1,2)),
-    #            density=CHAR_DENSITY,
-    #            friction = CHAR_FRICTION,
-    #            restitution=0),
-    #            userData = "player" + str(playerNum)
-    #        )
-    #    self.shapes.append(block)
-    #    
-    #    foot = block.CreateFixture(
-    #            shape = b2PolygonShape(vertices = [(-1.6,-2.1),(1.6,-2.1),(1.6,2.1),(-1.6,2.1)]),
-    #            isSensor=True
-    #        )
-    #    self.foot = block.fixtures[1]
-    #    
-    #    self.dead = False
+    def materialize(self, start_x, arena, playerNum):
+        self.clearShapes()
+            
+        block = arena.world.CreateDynamicBody(
+            position = (start_x, 30),
+            fixtures = b2FixtureDef(
+                shape = b2PolygonShape(box = (1,2)),
+                density=CHAR_DENSITY,
+                friction = CHAR_FRICTION,
+                restitution=0),
+            userData = "player"+str(playerNum)
+        )
+        self.shapes.append(block)
+        
+        foot = block.CreateFixture(
+                shape = b2PolygonShape(vertices = [(-1.6,-2.1),(1.6,-2.1),(1.6,2.1),(-1.6,2.1)]),
+                isSensor=True
+            )
+        self.foot = block.fixtures[1]
+        
+        self.dead = False
 
 class Ted(Player):
     def __init__(self, direction, start_x, arena, playerNum):
@@ -333,28 +289,6 @@ class Ted(Player):
         self.clearShapes(arena)        
         
         self.materialize(start_x, arena, playerNum)
-        
-    #def materialize(self, start_x, arena, playerNum):
-    #    self.clearShapes()
-    #        
-    #    block = arena.world.CreateDynamicBody(
-    #        position = (start_x, 30),
-    #        fixtures = b2FixtureDef(
-    #            shape = b2PolygonShape(box = (1.4,1.5)),
-    #            density=CHAR_DENSITY,
-    #            friction = CHAR_FRICTION,
-    #            restitution=0),
-    #        userData = "character" + str(playerNum)
-    #        )
-    #    self.shapes.append(block)
-    #    
-    #    foot = block.CreateFixture(
-    #            shape = b2PolygonShape(vertices = [(-1.6,-2.1),(1.6,-2.1),(1.6,2.1),(-1.6,2.1)]),
-    #            isSensor=True
-    #        )
-    #    self.foot = block.fixtures[1]
-    #    
-    #    self.dead = False
 
 class SmithWickers(Player):
     def __init__(self, direction, start_x, arena, playerNum):
@@ -377,8 +311,8 @@ class SmithWickers(Player):
                 density=CHAR_DENSITY,
                 friction = CHAR_FRICTION,
                 restitution=0),
-                userData = "player" + str(playerNum)
-            )
+            userData = "player"+str(playerNum)
+        )
         self.shapes.append(block)
         
         foot = block.CreateFixture(
@@ -394,8 +328,8 @@ class SmithWickers(Player):
                 density=CHAR_DENSITY,
                 friction=CHAR_FRICTION,
                 restitution=0),
-                userData = "player" + str(playerNum)
-            )
+            userData = "player"+str(playerNum)
+        )
         self.shapes.append(block2)
         
         arena.world.CreateDistanceJoint(bodyA = block, bodyB = block2, anchorA = block.worldCenter, anchorB = block2.worldCenter, collideConnected = True)
