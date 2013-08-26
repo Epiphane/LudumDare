@@ -37,7 +37,7 @@ pygame.mixer.pre_init(22050,-16, 2, 1024)
 pygame.init()
 
 screen = pygame.display.set_mode((SCREEN_WIDTH_PX, SCREEN_HEIGHT_PX), DOUBLEBUF, 32)
-pygame.display.set_caption("LD 27")
+pygame.display.set_caption("LD 27: Kickbox")
 clock = pygame.time.Clock()
 
 def load_image(name, colorkey=None):
@@ -180,7 +180,7 @@ class ContactHandler(b2ContactListener):
                 pointA, pointB, distance, dummy = distResult
                 
                 # mass > 0 implies it's not a "Static" object
-                if distance < 6 and shape.massData.mass > 0.1:
+                if distance < 6 and shape.massData.mass > 0.1 and shape.userData != "particle":
                     xComp = int(random.random() * -5000 + 2500)
                     yComp = int(random.random() * -5000 + 2500)
                     

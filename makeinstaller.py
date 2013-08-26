@@ -2,8 +2,8 @@ import os
 
 exec(open('exe_setup.py'))
 
-gameName = "LD27"
-version = "0.0.1"
+gameName = "Kickbox"
+version = "0.9"
 
 f = open("dist/installer.nsi","w")
 

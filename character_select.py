@@ -5,6 +5,7 @@ CHARACTER_PADDING = [100, 20]
 CHARACTER_STEP = [4, 4]
 
 characters = ["Lars", "Buster", "Ted", "SmithWickers", "Pate", "EricStrohm"]
+characterColors = [(255,255,0), (153,255,0), (166,0,0), (255,102,0), (0,51,255), (128,128,128)]
 p1choice = 0
 p2choice = 1
 
@@ -19,6 +20,16 @@ def initCharSelect():
         # Change imagerect to where the image actually is on screen
         images[character][1].left = CHARACTER_PADDING[0] + (CHARACTER_STEP[0] + CHARACTER_WIDTH) * (i % 3)
         images[character][1].top  = CHARACTER_PADDING[1] + (CHARACTER_STEP[1] + CHARACTER_HEIGHT) * math.trunc(i / 3)
+        
+        images[character+"_winner"] = load_image(character + "_winner.png", (255,122,122))
+        # Change imagerect to where the image actually is on screen
+        images[character+"_winner"][1].left = (SCREEN_WIDTH_PX - 800) / 2
+        images[character+"_winner"][1].top  = 0
+        
+        images[character+"_loser"] = load_image(character + "_loser.png", (255,122,122))
+        # Change imagerect to where the image actually is on screen
+        images[character+"_loser"][1].left = (SCREEN_WIDTH_PX - 800) / 2
+        images[character+"_loser"][1].top  = 0
     
 def drawCharSelect(screen):
     global gameState, p1choice, p2choice
@@ -40,11 +51,12 @@ def drawCharSelect(screen):
 def charSelectInput(event):
     global lastButtonClicked
     global gameState, p1choice, p2choice
-    global arena, prepare, char1, char2
+    global arena, prepare, char1, char2, char1color, char2color
     
     if hasattr(event, 'key') and event.type is pygame.KEYDOWN:
         if event.key == K_SPACE or event.key == K_RETURN:
             char1, char2 = characters[p1choice], characters[p2choice]
+            char1color, char2color = characterColors[p1choice], characterColors[p2choice]
             arena = Arena()
             prepare = PrepareForBattle()
             gameState = "Prepare"

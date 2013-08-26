@@ -28,7 +28,7 @@ exec(open('character_select.py'))
 
 
 def init():
-    global time_font_lg,time_font_sm                # Font
+    global time_font_lg,time_font_sm,time_font_giant                # Font
     global player1, player2    # Players
     global currentArena        # Midpoint
     global gameState            # duh
@@ -49,6 +49,7 @@ def init():
     
     time_font_sm = pygame.font.Font("fonts/ka1.ttf", 30)
     time_font_lg = pygame.font.Font("fonts/ka1.ttf", 60)
+    time_font_giant = pygame.font.Font("fonts/ka1.ttf", 120)
     
     #arena = Arena()
     #prepare = PrepareForBattle()
@@ -96,6 +97,8 @@ while 1:
                 if event.type is pygame.KEYDOWN: sys.exit()
             if gameState == "Arena":
                 arena.doAction(event)
+            if gameState == "Prepare":
+                prepare.doAction(event)
     
     if gameState == "Title":
         drawTitle(screen)
@@ -107,13 +110,13 @@ while 1:
     if gameState == "Arena":
         arena.update(dt)
         arena.draw(screen)
+
+        for i, ef in enumerate(effects):
+            ef.update()
+            ef.draw(screen)
+            if ef.done:
+                del effects[i]
     if gameState == "GameOver":
         drawGameOver(screen)
-      
-    for i, ef in enumerate(effects):
-        ef.update()
-        ef.draw(screen)
-        if ef.done:
-            del effects[i]
             
     pygame.display.flip()
