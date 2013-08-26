@@ -76,8 +76,8 @@ def drawGameOver(screen):
     screen.fill(gameWinnerColor, (0,0,SCREEN_WIDTH_PX/2,SCREEN_HEIGHT_PX))
     screen.fill(gameLoserColor, (SCREEN_WIDTH_PX/2,0,SCREEN_WIDTH_PX/2,SCREEN_HEIGHT_PX))
     # TODO: put an image here?
-    screen.blit(images[gameWinner+"_winner"][0], ((SCREEN_WIDTH_PX/2 - 400),0))
     screen.blit(images[gameLoser+"_loser"][0], ((SCREEN_WIDTH_PX/2 - 400),0))
+    screen.blit(images[gameWinner+"_winner"][0], ((SCREEN_WIDTH_PX/2 - 400),0))
         
     for button in game_over_buttons:
         imageName = button[0] + "-" + states[button[1]]
