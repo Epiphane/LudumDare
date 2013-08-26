@@ -98,13 +98,13 @@ while 1:
     if gameState == "Arena":
         arena.update(dt)
         arena.draw(screen)
+
+        for i, ef in enumerate(effects):
+            ef.update()
+            ef.draw(screen)
+            if ef.done:
+                del effects[i]
     if gameState == "GameOver":
         drawGameOver(screen)
-      
-    for i, ef in enumerate(effects):
-        ef.update()
-        ef.draw(screen)
-        if ef.done:
-            del effects[i]
             
     pygame.display.flip()
