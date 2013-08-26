@@ -207,7 +207,7 @@ class ContactHandler(b2ContactListener):
                     # Play the happy score sound
                     playSound("score")
                     arena.score[0] += 1
-                    if arena.score[0] >= 10:
+                    if arena.score[0] >= 7:
                         winGame(1)
                     arena.player1.dead = True
                     arena.player2.dead = True
@@ -223,7 +223,7 @@ class ContactHandler(b2ContactListener):
                     playSound("score")
 
                     arena.score[1] += 1
-                    if arena.score[1] >= 10:
+                    if arena.score[1] >= 7:
                         winGame(2)
                     arena.player1.dead = True
                     arena.player2.dead = True

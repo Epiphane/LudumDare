@@ -14,6 +14,11 @@ def winGame(winner):
         gameLoserColor = char1color
     
     #arena.cleanUp()
+    # Find the bomb drop and PUT A STOP TO THE MADNESS
+    for ef in effects:
+        if ef.__class__.__name__ == "BombDrop":
+            ef.finish()
+            
     initGameOver()
 
 game_over_buttons = [ ["menu",0], ["quit",0]]
