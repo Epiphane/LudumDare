@@ -192,6 +192,7 @@ class Player(pygame.sprite.Sprite):
             ),
             userData = shape.userData
         )
+        newshape.color = shape.color
         arena.world.DestroyBody(self.shapes[i])
         self.shapes[i] = newshape
     

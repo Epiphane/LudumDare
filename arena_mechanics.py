@@ -91,7 +91,7 @@ class Arena():
         
         if self.ball is not None: self.world.DestroyBody(self.ball)
         
-        self.ball = self.world.CreateDynamicBody(position = (middle_x,27),
+        self.ball = self.world.CreateDynamicBody(position = (middle_x,28),
             fixtures = b2FixtureDef(
                 shape = b2CircleShape(radius=1.3),
                 density=1,
@@ -101,6 +101,9 @@ class Arena():
             
         self.ball.color = pygame.color.Color(128,128,128)
         self.shapes.append(self.ball)
+        
+        self.textAlpha = 255
+        self.dispText = "Go!"
         
     def createCrowd(self, minx, maxx):
         numCrowd = int(math.ceil(random.random() * 10) + 10)
@@ -327,8 +330,8 @@ class Arena():
     def drawTimer(self, screen):
         color = (self.drawRed,0,0)
         
-        text = time_font_lg.render(str(self.bignum), True, color)
-        text_sm = time_font_sm.render(str(self.timeRemaining % 1000), True, color)
+        text = time_font_lg.render(str(self.bignum), False, color)
+        text_sm = time_font_sm.render(str(self.timeRemaining % 1000), False, color)
         
         if(self.drawRed > 0):
             self.drawRed -= 2
@@ -337,10 +340,29 @@ class Arena():
         else: screen.blit(text, (SCREEN_WIDTH_PX / 2 - 70,0))
         screen.blit(text_sm, (SCREEN_WIDTH_PX / 2,0))
         
-        text_l = time_font_lg.render(str(self.score[0]), True, (0,0,0))
-        text_r = time_font_lg.render(str(self.score[1]), True, (0,0,0))
+        text_l = time_font_lg.render(str(self.score[0]), False, (0,0,0))
+        text_r = time_font_lg.render(str(self.score[1]), False, (0,0,0))
         screen.blit(text_l, (0,0))
         screen.blit(text_r, (SCREEN_WIDTH_PX - 60,0))
+        
+        if self.textAlpha > 0:
+            self.textAlpha -= 2.5
+            
+            text = time_font_giant.render(self.dispText, False, (0, 0, 0), (255,255,255, 0))
+            if self.dispText == "SLOWWMOOOOO!":
+                surface = pygame.Surface((text.get_width()+30, text.get_height()))
+                surface.blit(text, (30,0))
+                text = time_font_giant.render(self.dispText, False, (0, 0, 0), (255,255,255, 0))
+                surface.blit(text, (0,0))
+                surface.set_colorkey((255,255,255))
+                surface.set_alpha(self.textAlpha)
+                screen.blit(surface, (SCREEN_WIDTH_PX / 2 - text.get_width()/2,180))
+            else:
+                surface = pygame.Surface((text.get_width(), text.get_height()))
+                surface.blit(text, (0,0))
+                surface.set_colorkey((255,255,255))
+                surface.set_alpha(self.textAlpha)
+                screen.blit(surface, (SCREEN_WIDTH_PX / 2 - text.get_width()/2,180))
 
     def doAction(self, event):
         if event.key is K_a:
@@ -385,6 +407,9 @@ class Arena():
             userData="ball")
         self.ball.color = pygame.color.Color(128,128,128)
         self.shapes.append(self.ball)
+        
+        self.textAlpha = 255
+        self.dispText = "ROCK BALLSTER!"
     
     def changeBall_revert(self):
         print "Changeball reverted"
@@ -407,21 +432,14 @@ class Arena():
         print "slow mo!"
         global TIME_STEP
         TIME_STEP /= 4
+        
+        self.textAlpha = 255
+        self.dispText = "SLOWWMOOOOO!"
      
     def slowmo_revert(self):
         print "slow mo reverted"
         global TIME_STEP
         TIME_STEP *= 4
-     
-    def fastmo(self):
-        print "fast mo!"
-        global TIME_STEP
-        TIME_STEP *= 2
-     
-    def fastmo_revert(self):
-        print "fast mo reverted"
-        global TIME_STEP
-        TIME_STEP /= 2
         
     def giantMode(self):
         self.player1.toExpand = True
@@ -443,6 +461,9 @@ class Arena():
         bombs = BombDrop()
         effects.append(bombs)
         
+        self.textAlpha = 255
+        self.dispText = "Bombs!"
+        
     def bombDrop_revert(self):
         print "bomb droppin reversion!"
         # Find the bomb drop and PUT A STOP TO THE MADNESS
@@ -453,7 +474,7 @@ class Arena():
     def randomEvent(self):
         randomEvents = [ [self.bombDrop, self.bombDrop_revert],
                          [self.changeBall, self.changeBall_revert],
-                         [self.giantMode, self.giantMode_revert],#]#,
+                         [self.giantMode, self.giantMode_revert],
                          [self.slowmo, self.slowmo_revert]]
                          
         while len(self.modifications) > 0:
@@ -479,7 +500,7 @@ class PrepareForBattle(Arena):
         
         self.drawTimer(screen)
         
-        text = (time_font_lg.render("PREPARE", True, (0, 70, 0)), time_font_lg.render("YOURSELF", True, (0, 70, 0)))
+        text = (time_font_lg.render("PREPARE", False, (0, 0, 0)), time_font_lg.render("YOURSELF", False, (0, 0, 0)))
         screen.blit(text[0], (SCREEN_WIDTH_PX / 2 - 210,180))
         screen.blit(text[1], (SCREEN_WIDTH_PX / 2 - 220,260))
         
@@ -487,8 +508,8 @@ class PrepareForBattle(Arena):
     def drawTimer(self, screen):
         color = (self.drawRed,0,0)
         
-        text = time_font_lg.render(str(self.bignum), True, color)
-        text_sm = time_font_sm.render(str(self.timeRemaining % 1000), True, color)
+        text = time_font_lg.render(str(self.bignum), False, color)
+        text_sm = time_font_sm.render(str(self.timeRemaining % 1000), False, color)
         
         if(self.drawRed > 0):
             self.drawRed -= 2
@@ -504,3 +525,21 @@ class PrepareForBattle(Arena):
         if(self.timeRemaining <= 0):
             global arena, gameState
             gameState = "Arena"
+
+    def doAction(self, event):
+        if event.key is K_a:
+            arena.player1.input["left"] = (event.type is pygame.KEYDOWN)
+        if event.key is K_d:
+            arena.player1.input["right"] = (event.type is pygame.KEYDOWN)
+        if event.key == K_LEFT:
+            arena.player2.input["left"] = (event.type is pygame.KEYDOWN)
+        if event.key == K_RIGHT:
+            arena.player2.input["right"] = (event.type is pygame.KEYDOWN)
+        if event.key == K_UP:
+            arena.player2.input["up"] = (event.type is pygame.KEYDOWN)
+        if event.key == K_DOWN:
+            arena.player2.input["down"] = (event.type is pygame.KEYDOWN)
+        if event.key is K_w:
+            arena.player1.input["up"] = (event.type is pygame.KEYDOWN)
+        if event.key is K_s:
+            arena.player1.input["down"] = (event.type is pygame.KEYDOWN)

@@ -715,7 +715,7 @@ class Arena():
     def drawTimer(self, screen):
         color = (self.drawRed,0,0)
         
-        text = time_font_lg.render(str(self.bignum), True, color)
+        text = time_font_lg.render(str(self.bignum), False, color)
         text_sm = time_font_sm.render(str(self.timeRemaining % 1000), True, color)
         
         if(self.drawRed > 0):
