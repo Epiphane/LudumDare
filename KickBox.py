@@ -91,19 +91,22 @@ def loadSounds():
     result["transition3"] = pygame.mixer.Sound(os.path.join(sfxPath, "transition3.wav"))
     result["start1"] = pygame.mixer.Sound(os.path.join(sfxPath, "start1.wav"))
     result["score1"] = pygame.mixer.Sound(os.path.join(sfxPath, "score1.wav"))
+    result["score2"] = pygame.mixer.Sound(os.path.join(sfxPath, "score2.wav"))
+    result["score3"] = pygame.mixer.Sound(os.path.join(sfxPath, "score3.wav"))
     
     # 10 second themes
     musicPath = os.path.join("sounds", "music")
     result["background1"] = pygame.mixer.Sound(os.path.join(musicPath, "antigravity1.wav"))
-    result["background2"] = pygame.mixer.Sound(os.path.join(musicPath, "antigravity2.wav"))
-    result["background3"] = pygame.mixer.Sound(os.path.join(musicPath, "chill1.wav"))
-    result["background4"] = pygame.mixer.Sound(os.path.join(musicPath, "chill2.wav"))
-    result["background5"] = pygame.mixer.Sound(os.path.join(musicPath, "chill3.wav"))
-    result["background6"] = pygame.mixer.Sound(os.path.join(musicPath, "chill4.wav"))
-    result["background7"] = pygame.mixer.Sound(os.path.join(musicPath, "chill5.wav"))
-    result["background8"] = pygame.mixer.Sound(os.path.join(musicPath, "lowkey1.wav"))
-    result["background9"] = pygame.mixer.Sound(os.path.join(musicPath, "upbeat1.wav"))
-    result["backgroundA"] = pygame.mixer.Sound(os.path.join(musicPath, "whee1.wav"))
+    result["background2"] = pygame.mixer.Sound(os.path.join(musicPath, "chill1.wav"))
+    result["background3"] = pygame.mixer.Sound(os.path.join(musicPath, "chill2.wav"))
+    result["background4"] = pygame.mixer.Sound(os.path.join(musicPath, "chill3.wav"))
+    result["background5"] = pygame.mixer.Sound(os.path.join(musicPath, "chill4.wav"))
+    result["background6"] = pygame.mixer.Sound(os.path.join(musicPath, "chill5.wav"))
+    result["background7"] = pygame.mixer.Sound(os.path.join(musicPath, "chill6.wav"))
+    result["background8"] = pygame.mixer.Sound(os.path.join(musicPath, "chill7.wav"))
+    result["background9"] = pygame.mixer.Sound(os.path.join(musicPath, "lowkey1.wav"))
+    result["backgroundA"] = pygame.mixer.Sound(os.path.join(musicPath, "upbeat1.wav"))
+    result["backgroundB"] = pygame.mixer.Sound(os.path.join(musicPath, "whee1.wav"))
     
     for sound in result.values():
         sound.set_volume(0.3)
@@ -222,7 +225,7 @@ class ContactHandler(b2ContactListener):
                     # Play the happy score sound
                     playSound("score")
                     arena.score[0] += 1
-                    if arena.score[0] >= 10:
+                    if arena.score[0] >= 5:
                         winGame(1)
                     arena.player1.dead = True
                     arena.player2.dead = True
@@ -238,7 +241,7 @@ class ContactHandler(b2ContactListener):
                     playSound("score")
 
                     arena.score[1] += 1
-                    if arena.score[1] >= 10:
+                    if arena.score[1] >= 5:
                         winGame(2)
                     arena.player1.dead = True
                     arena.player2.dead = True
@@ -284,7 +287,7 @@ BTN_WIDTH = 260
 # How much room between each button?
 BTN_STEP = 100
 
-buttons = [ ["play",0], ["opt",0], ["quit",0]]
+buttons = [ ["play",0], ["quit",0]]
 states =  ["des",  "sel", "cli" ]
 
 angle = 0
@@ -403,6 +406,7 @@ class BombDrop():
     def draw(self, screen):
         # Draw the bombas
         for i,bomb in enumerate(self.bombs):
+            if bomb.body is None: return
             rotAngle = bomb.body.angle
             offsetX, offsetY = arena.camera.getOffset_in_px()
             verts = vertices_with_offset(bomb, offsetX, offsetY)
@@ -1126,6 +1130,11 @@ def winGame(winner):
         gameLoserColor = char1color
     
     #arena.cleanUp()
+    # Find the bomb drop and PUT A STOP TO THE MADNESS
+    for ef in effects:
+        if ef.__class__.__name__ == "BombDrop":
+            ef.finish()
+            
     initGameOver()
 
 game_over_buttons = [ ["menu",0], ["quit",0]]
