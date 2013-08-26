@@ -6,9 +6,9 @@ BTN_STEP = 100
 buttons = [ ["play",0], ["opt",0], ["quit",0]]
 states =  ["des",  "sel", "cli" ]
 
-global lastButtonClicked
 angle = 0
 lastButtonClicked = ""
+app = gui.Desktop()
 
 def initTitle():
     # Load all the menu buttons
@@ -24,6 +24,10 @@ def initTitle():
             images[imageName][1].top  = buttonY
         
         buttonY += BTN_STEP
+        
+    global app
+    app = gui.Desktop()
+    
             
 def titleInput(event):
     # Grab mouse coords
@@ -61,7 +65,7 @@ def titleInput(event):
                         initCharSelect()
                         gameState = "CharSelect"
                     elif button[0] == "opt":
-                        gameState = "Options"
+                        makeOptions()
                     elif button[0] == "quit":
                         sys.exit()
                 else:
@@ -75,3 +79,35 @@ def drawTitle(screen):
     for button in buttons:
         imageName = button[0] + "-" + states[button[1]]
         screen.blit(images[imageName][0], images[imageName][1])
+        
+# Make the Options menu out of pgu
+def endItAll(what):
+    sys.exit()
+    
+def makeOptions():
+    app = gui.Desktop()
+    # make sure the game closes when you hit X
+    app.connect(gui.QUIT,endItAll,None)
+    c = gui.Table()
+    
+    c.tr()
+    c.td(gui.Label("MUSIC VOLUME:"))
+    
+    c.tr()
+    c.td(gui.HSlider(value=23,min=0,max=100,size=20,width=120),colspan=3)
+    
+    c.tr()
+    c.td(gui.Label("SOUND VOLUME:"))
+    
+    c.tr()
+    c.td(gui.HSlider(value=23,min=0,max=100,size=20,width=120),colspan=3)
+    
+    c.tr()
+    c.td(gui.Label("SCREEN RESOLUTION"))
+    
+    c.tr()
+    btn = gui.Button("BACK")
+    btn.connect(gui.CLICK, app.quit)
+    c.td(btn,colspan=3)
+    app.run(c)
+    

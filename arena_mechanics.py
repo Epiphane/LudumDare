@@ -42,8 +42,13 @@ class Arena():
         self.toInit = False
         self.pauseTime = 0
         
-        self.createCrowd(2, 24)
-        self.createCrowd(229, 248)
+        self.createCrowd(2, 27)
+        self.createCrowd(227, 248)
+        
+        #self.bombDrop()
+        #self.changeBall()
+        #self.nogravity()
+        #self.slowmo()
   
     def startGame(self, middle_x, delay=0):
         global char1, char2
@@ -452,11 +457,11 @@ class Arena():
                 ef.finish()
         
     def randomEvent(self):
-        randomEvents = [ [self.bombDrop, self.bombDrop_revert],
-                         [self.changeBall, self.changeBall_revert],
-                         [self.nogravity, self.nogravity_revert],
-                         [self.slowmo, self.slowmo_revert],
-                         [self.fastmo, self.fastmo_revert] ]
+        #randomEvents = [ [self.bombDrop, self.bombDrop_revert],
+        #                 [self.changeBall, self.changeBall_revert],
+        randomEvents = [ [self.nogravity, self.nogravity_revert] ]#,
+        #                 [self.slowmo, self.slowmo_revert],
+        #                 [self.fastmo, self.fastmo_revert] ]
                          
         while len(self.modifications) > 0:
             mod = self.modifications[0]

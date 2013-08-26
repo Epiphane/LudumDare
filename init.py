@@ -3,6 +3,7 @@ from Box2D import *
 import Box2D
 import time
 from pygame.locals import *
+from pgu import gui
 
 PPM = 16
 STAGE_WIDTH_PX = 4000
@@ -156,17 +157,14 @@ class ContactHandler(b2ContactListener):
             # Punt the ball a little ways kick[1] is ball, kick[0] is player.
             if kick[1].body.userData == "ball":
                 if len(kick[0].body.contacts) < 3:
-                    p = kick[1].body.GetWorldPoint(localPoint = (0,0))
-                    if kick[0].body.position.x < kick[1].body.position.x:
-                        # kick right
-                        kick[1].body.linearVelocity.y -= 100
-                        kick[1].body.linearVelocity.x =  200
-                        print("kick right")
+                    kick[1].body.linearVelocity.x = kick[0].body.linearVelocity.x * 10
+                    if arena.world.gravity == (0, 0):
+                    
+                        kick[1].body.linearVelocity.y = kick[0].body.linearVelocity.y * 10
                     else:
-                        # kick left
                         kick[1].body.linearVelocity.y -= 100
-                        kick[1].body.linearVelocity.x =  -350
-                        print("kick left")
+                    
+                    
                         
             # If the player has touched the ball recently, they're considered
             # "in possession," and have their run speed limited slightly,
