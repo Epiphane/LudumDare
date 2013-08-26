@@ -62,6 +62,7 @@ def init():
     images["goal right"] = [pygame.transform.flip(images["goal left"][0], True, False), images["goal left"][1]]
     images["red arrow"] = load_image("red_arrow.png", (255,255,255))
     images["blue arrow"] = load_image("blue_arrow.png", (255,255,255))
+    images["title"] = load_image("title.png")
     
     # Make sure alpha will properly render
     for key in images:

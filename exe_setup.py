@@ -116,6 +116,7 @@ setup(windows=[
 # Create the /save folder for inclusion with the installer
 shutil.copytree('img','dist/img')
 shutil.copytree('default','dist/default')
+shutil.copytree('sounds','dist/sounds')
  
 if os.path.exists('dist/tcl'): shutil.rmtree('dist/tcl') 
  

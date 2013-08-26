@@ -75,6 +75,7 @@ def titleInput(event):
 def drawTitle(screen):
     # TODO: put an image here?
     screen.fill(pygame.Color("white"))
+    screen.blit(images["title"][0], (SCREEN_WIDTH_PX / 2 - 500, 0))
     
     for button in buttons:
         imageName = button[0] + "-" + states[button[1]]

@@ -356,6 +356,7 @@ def titleInput(event):
 def drawTitle(screen):
     # TODO: put an image here?
     screen.fill(pygame.Color("white"))
+    screen.blit(images["title"][0], (SCREEN_WIDTH_PX / 2 - 500, 0))
     
     for button in buttons:
         imageName = button[0] + "-" + states[button[1]]
@@ -1792,6 +1793,7 @@ def init():
     images["goal right"] = [pygame.transform.flip(images["goal left"][0], True, False), images["goal left"][1]]
     images["red arrow"] = load_image("red_arrow.png", (255,255,255))
     images["blue arrow"] = load_image("blue_arrow.png", (255,255,255))
+    images["title"] = load_image("title.png")
     
     # Make sure alpha will properly render
     for key in images:
