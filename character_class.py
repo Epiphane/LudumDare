@@ -194,7 +194,7 @@ class Pate(Player):
             fixtures = b2FixtureDef(
                 shape = b2PolygonShape(box = (0.8,2)),
                 density=CHAR_DENSITY,
-                friction = CHAR_FRICTION,
+                friction = 10000,
                 restitution=0),
                 userData = "player" + str(playerNum)
             )
@@ -207,11 +207,6 @@ class Pate(Player):
         self.foot = block.fixtures[1]
         
         self.dead = False
-            
-    def jump(self):
-        if len(self.foot.body.contacts) > 0:
-            self.shapes[0].linearVelocity.y = -15
-            self.shapes[0].angularVelocity = 8.1
 
 class Buster(Player):
     def __init__(self, direction, start_x, arena, playerNum):
